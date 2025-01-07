@@ -16,6 +16,7 @@ public class FileValidator extends Validator {
     public void validate() {
         this.validateId();
         this.validateName();
+        this.validateExtension();
     }
 
     private void validateId() {
@@ -24,6 +25,10 @@ public class FileValidator extends Validator {
 
     private void validateName() {
         this.file.getName().validate(this.validationHandler());
+    }
+
+    private void validateExtension() {
+        this.file.getExtension().validate(this.validationHandler());
     }
 
 }

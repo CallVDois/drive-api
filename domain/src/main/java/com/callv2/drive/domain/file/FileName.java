@@ -32,8 +32,10 @@ public record FileName(String value) implements ValueObject {
     @Override
     public void validate(ValidationHandler aHandler) {
 
-        if (value == null || value.trim().isEmpty())
+        if (value == null || value.trim().isEmpty()) {
             aHandler.append(new Error("File name cannot be null or empty."));
+            return;
+        }
 
         String trimmedName = value.trim();
         if (trimmedName.length() < MIN_LENGTH || trimmedName.length() > MAX_LENGTH)
