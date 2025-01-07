@@ -35,7 +35,7 @@ public class File extends AggregateRoot<FileID> {
     }
 
     @Override
-    public void validate(ValidationHandler handler) {
+    public void validate(final ValidationHandler handler) {
         new FileValidator(this, handler).validate();
     }
 

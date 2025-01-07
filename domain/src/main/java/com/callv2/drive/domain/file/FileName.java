@@ -9,7 +9,7 @@ import com.callv2.drive.domain.validation.ValidationHandler;
 public record FileName(String value) implements ValueObject {
 
     private static final int MIN_LENGTH = 1;
-    private static final int MAX_LENGTH = 255;
+    private static final int MAX_LENGTH = 64;
     private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9._-]+$");
     private static final String[] RESERVED_NAMES = {
             "CON",
@@ -30,7 +30,7 @@ public record FileName(String value) implements ValueObject {
     }
 
     @Override
-    public void validate(ValidationHandler aHandler) {
+    public void validate(final ValidationHandler aHandler) {
 
         if (value == null || value.trim().isEmpty()) {
             aHandler.append(new Error("File name cannot be null or empty."));
@@ -50,7 +50,7 @@ public record FileName(String value) implements ValueObject {
             aHandler.append(new Error("File name cannot be a reserved name: " + trimmedName));
     }
 
-    private boolean isReservedName(String name) {
+    private boolean isReservedName(final String name) {
         for (String reserved : RESERVED_NAMES)
             if (reserved.equalsIgnoreCase(name))
                 return true;

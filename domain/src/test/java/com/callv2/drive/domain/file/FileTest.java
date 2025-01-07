@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -102,6 +103,32 @@ public class FileTest {
     }
 
     @Test
+    void givenNameWithMoreThan64Chars_whenCallsCreate_thenShouldThrowsValidationException() {
+
+        final var expectedName = """
+                filefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefile
+                """;
+        final var expectedExtension = "txt";
+        final var expectedContent = new byte[] {};
+
+        final var expectedExceptionMessage = "Validation fail has occoured";
+        final var expectedErrorsCount = 1;
+        final var expectedErrorMessage = "File name must be between 1 and 64 characters.";
+
+        final var actualException = assertThrows(
+                ValidationException.class,
+                () -> File.create(
+                        FileName.of(expectedName),
+                        FileExtension.of(expectedExtension),
+                        BinaryContent.of(expectedContent)));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorsCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+    }
+
+    @Test
     void givenReservedName_whenCallsCreate_thenShouldThrowsValidationException() {
 
         final var expectedName = "nul";
@@ -123,6 +150,105 @@ public class FileTest {
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
+    }
+
+    @Test
+    void givenEmptyExtension_whenCallsCreate_thenShouldThrowsValidationException() {
+
+        final var expectedName = "file";
+        final var expectedExtension = "";
+        final var expectedContent = new byte[] {};
+
+        final var expectedExceptionMessage = "Validation fail has occoured";
+        final var expectedErrorsCount = 1;
+        final var expectedErrorMessage = "File extension cannot be null or empty.";
+
+        final var actualException = assertThrows(
+                ValidationException.class,
+                () -> File.create(
+                        FileName.of(expectedName),
+                        FileExtension.of(expectedExtension),
+                        BinaryContent.of(expectedContent)));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorsCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenExtensionWithMoreThan16Chars_whenCallsCreate_thenShouldThrowsValidationException() {
+
+        final var expectedName = "file";
+        final String expectedExtension = null;
+        final var expectedContent = new byte[] {};
+
+        final var expectedExceptionMessage = "Validation fail has occoured";
+        final var expectedErrorsCount = 1;
+        final var expectedErrorMessage = "File extension cannot be null or empty.";
+
+        final var actualException = assertThrows(
+                ValidationException.class,
+                () -> File.create(
+                        FileName.of(expectedName),
+                        FileExtension.of(expectedExtension),
+                        BinaryContent.of(expectedContent)));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorsCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenNullExtension_whenCallsCreate_thenShouldThrowsValidationException() {
+
+        final var expectedName = "file";
+        final var expectedExtension = """
+                txttxttxttxttxttxttxttxt
+                """;
+        final var expectedContent = new byte[] {};
+
+        final var expectedExceptionMessage = "Validation fail has occoured";
+        final var expectedErrorsCount = 1;
+        final var expectedErrorMessage = "File extension must be between 1 and 16 characters.";
+
+        final var actualException = assertThrows(
+                ValidationException.class,
+                () -> File.create(
+                        FileName.of(expectedName),
+                        FileExtension.of(expectedExtension),
+                        BinaryContent.of(expectedContent)));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorsCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenMultipleInvalidParams_whenCallsCreate_thenShouldThrowsValidationExceptionWithMultipleErrors() {
+
+        final String expectedName = "nul";
+        final String expectedExtension = "";
+        final var expectedContent = new byte[] {};
+
+        final var expectedExceptionMessage = "Validation fail has occoured";
+        final var expectedErrorsCount = 2;
+        final var expectedNameErrorMessage = "File name cannot be a reserved name: %s".formatted(expectedName);
+        final var expectedExtensionErrorMessage = "File extension cannot be null or empty.";
+
+        final var actualException = assertThrows(
+                ValidationException.class,
+                () -> File.create(
+                        FileName.of(expectedName),
+                        FileExtension.of(expectedExtension),
+                        BinaryContent.of(expectedContent)));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorsCount, actualException.getErrors().size());
+
+        assertTrue(actualException
+                .getErrors().stream().anyMatch(e -> e.message().equals(expectedNameErrorMessage)));
+        assertTrue(actualException
+                .getErrors().stream().anyMatch(e -> e.message().equals(expectedExtensionErrorMessage)));
     }
 
 }

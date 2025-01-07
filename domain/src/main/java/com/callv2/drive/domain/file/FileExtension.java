@@ -7,17 +7,19 @@ import com.callv2.drive.domain.validation.ValidationHandler;
 public record FileExtension(String value) implements ValueObject {
 
     private static final int MIN_LENGTH = 1;
-    private static final int MAX_LENGTH = 255;
+    private static final int MAX_LENGTH = 16;
 
     public static FileExtension of(final String value) {
         return new FileExtension(value);
     }
 
     @Override
-    public void validate(ValidationHandler aHandler) {
+    public void validate(final ValidationHandler aHandler) {
 
-        if (value == null || value.trim().isEmpty())
+        if (value == null || value.trim().isEmpty()) {
             aHandler.append(new Error("File extension cannot be null or empty."));
+            return;
+        }
 
         String trimmedValue = value.trim();
         if (trimmedValue.length() < MIN_LENGTH || trimmedValue.length() > MAX_LENGTH)
