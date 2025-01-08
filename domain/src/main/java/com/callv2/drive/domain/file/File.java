@@ -39,6 +39,26 @@ public class File extends AggregateRoot<FileID> {
         new FileValidator(this, handler).validate();
     }
 
+    public static File with(
+            final FileID id,
+            final FileName name,
+            final FileExtension extension,
+            final BinaryContent content,
+            final Instant createdAt,
+            final Instant updatedAt) {
+        return new File(id, name, extension, content, createdAt, updatedAt);
+    }
+
+    public static File with(final File file) {
+        return File.with(
+                file.getId(),
+                file.getName(),
+                file.getExtension(),
+                file.getContent(),
+                file.getCreatedAt(),
+                file.getUpdatedAt());
+    }
+
     public static File create(
             final FileName name,
             final FileExtension extension,
@@ -55,12 +75,17 @@ public class File extends AggregateRoot<FileID> {
                 now);
     }
 
-    private void selfValidate() {
-        final var notification = Notification.create();
-        validate(notification);
+    public File update(
+            final FileName name,
+            final FileExtension extension) {
 
-        if (notification.hasError())
-            throw ValidationException.with("Validation fail has occoured", notification);
+        this.name = name;
+        this.extension = extension;
+
+        this.updatedAt = Instant.now();
+
+        selfValidate();
+        return this;
     }
 
     public FileName getName() {
@@ -81,6 +106,14 @@ public class File extends AggregateRoot<FileID> {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    private void selfValidate() {
+        final var notification = Notification.create();
+        validate(notification);
+
+        if (notification.hasError())
+            throw ValidationException.with("Validation fail has occoured", notification);
     }
 
 }
