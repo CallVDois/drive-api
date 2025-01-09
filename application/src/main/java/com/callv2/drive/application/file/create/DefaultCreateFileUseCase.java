@@ -29,7 +29,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         final File file = notification.valdiate(() -> File.create(fileName, fileExtension, binaryContent));
 
         if (notification.hasError())
-            throw ValidationException.with("Could not create Aggregate Genre", notification);
+            throw ValidationException.with("Could not create Aggregate File", notification);
 
         return CreateFileOutput.from(fileGateway.create(file));
     }
