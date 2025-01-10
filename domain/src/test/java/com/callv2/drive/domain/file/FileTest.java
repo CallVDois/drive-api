@@ -17,16 +17,16 @@ public class FileTest {
 
         final var expectedName = "file";
         final var expectedExtension = "txt";
-        final var expectedContent = new byte[] {};
+        final var expectedContent = BinaryContentID.unique();
 
         final var actualFile = assertDoesNotThrow(() -> File.create(
                 FileName.of(expectedName),
                 FileExtension.of(expectedExtension),
-                BinaryContent.of(expectedContent)));
+                expectedContent));
 
         assertEquals(expectedName, actualFile.getName().value());
         assertEquals(expectedExtension, actualFile.getExtension().value());
-        assertEquals(expectedContent, actualFile.getContent().bytes());
+        assertEquals(expectedContent, actualFile.getContent());
         assertNotNull(actualFile.getCreatedAt());
         assertNotNull(actualFile.getUpdatedAt());
         assertEquals(actualFile.getCreatedAt(), actualFile.getUpdatedAt());
@@ -37,7 +37,6 @@ public class FileTest {
 
         final var expectedName = "";
         final var expectedExtension = "txt";
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -48,7 +47,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -60,7 +59,6 @@ public class FileTest {
 
         final String expectedName = null;
         final var expectedExtension = "txt";
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -71,7 +69,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -83,7 +81,6 @@ public class FileTest {
 
         final var expectedName = "/file";
         final var expectedExtension = "txt";
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -94,7 +91,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -109,7 +106,6 @@ public class FileTest {
                 filefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefile
                 """;
         final var expectedExtension = "txt";
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -120,7 +116,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -133,7 +129,6 @@ public class FileTest {
 
         final var expectedName = "nul";
         final var expectedExtension = "txt";
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -144,7 +139,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -157,7 +152,6 @@ public class FileTest {
 
         final var expectedName = "file";
         final var expectedExtension = "";
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -168,7 +162,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -180,7 +174,6 @@ public class FileTest {
 
         final var expectedName = "file";
         final String expectedExtension = null;
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -191,7 +184,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -205,7 +198,6 @@ public class FileTest {
         final var expectedExtension = """
                 txttxttxttxttxttxttxttxt
                 """;
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
@@ -216,7 +208,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -228,7 +220,6 @@ public class FileTest {
 
         final String expectedName = "nul";
         final String expectedExtension = "";
-        final var expectedContent = new byte[] {};
 
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 2;
@@ -240,7 +231,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         FileExtension.of(expectedExtension),
-                        BinaryContent.of(expectedContent)));
+                        BinaryContentID.unique()));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -256,7 +247,7 @@ public class FileTest {
 
         final var expectedName = FileName.of("File");
         final var expectedExtension = FileExtension.of("txt");
-        final var expectedContent = BinaryContent.of(new byte[] { 1, 2, 3, 4, 5 });
+        final var expectedContent = BinaryContentID.unique();
 
         final var aFile = File.create(
                 FileName.of("file"),
@@ -288,7 +279,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -313,7 +304,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -339,7 +330,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -367,7 +358,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -393,7 +384,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -419,7 +410,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -445,7 +436,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -473,7 +464,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -500,7 +491,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 FileExtension.of("xtx"),
-                BinaryContent.of(null));
+                BinaryContentID.unique());
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(

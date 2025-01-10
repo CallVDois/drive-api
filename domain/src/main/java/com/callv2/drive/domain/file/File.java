@@ -11,7 +11,7 @@ public class File extends AggregateRoot<FileID> {
 
     private FileName name;
     private FileExtension extension;
-    private BinaryContent content;
+    private BinaryContentID content;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -20,7 +20,7 @@ public class File extends AggregateRoot<FileID> {
             final FileID anId,
             final FileName name,
             final FileExtension extension,
-            final BinaryContent content,
+            final BinaryContentID content,
             final Instant createdAt,
             final Instant updatedAt) {
         super(anId);
@@ -43,7 +43,7 @@ public class File extends AggregateRoot<FileID> {
             final FileID id,
             final FileName name,
             final FileExtension extension,
-            final BinaryContent content,
+            final BinaryContentID content,
             final Instant createdAt,
             final Instant updatedAt) {
         return new File(id, name, extension, content, createdAt, updatedAt);
@@ -62,7 +62,7 @@ public class File extends AggregateRoot<FileID> {
     public static File create(
             final FileName name,
             final FileExtension extension,
-            final BinaryContent content) {
+            final BinaryContentID content) {
 
         final Instant now = Instant.now();
 
@@ -96,7 +96,7 @@ public class File extends AggregateRoot<FileID> {
         return extension;
     }
 
-    public BinaryContent getContent() {
+    public BinaryContentID getContent() {
         return content;
     }
 
