@@ -32,22 +32,27 @@ public record FileName(String value) implements ValueObject {
     @Override
     public void validate(final ValidationHandler aHandler) {
 
-        if (value == null || value.trim().isEmpty()) {
-            aHandler.append(new Error("File name cannot be null or empty."));
+        if (value == null) {
+            aHandler.append(new Error("'name' cannot be null."));
+            return;
+        }
+
+        if (value.trim().isEmpty()) {
+            aHandler.append(new Error("'name' cannot be empty."));
             return;
         }
 
         String trimmedName = value.trim();
         if (trimmedName.length() < MIN_LENGTH || trimmedName.length() > MAX_LENGTH)
             aHandler.append(
-                    new Error("File name must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters."));
+                    new Error("'name' must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters."));
 
         if (!VALID_NAME_PATTERN.matcher(trimmedName).matches())
             aHandler.append(new Error(
-                    "File name contains invalid characters. Allowed: letters, digits, dots, underscores, and hyphens."));
+                    "'name' contains invalid characters. Allowed: letters, digits, dots, underscores, and hyphens."));
 
         if (isReservedName(trimmedName))
-            aHandler.append(new Error("File name cannot be a reserved name: " + trimmedName));
+            aHandler.append(new Error("'name' cannot be a reserved name: " + trimmedName));
     }
 
     private boolean isReservedName(final String name) {

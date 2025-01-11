@@ -11,7 +11,7 @@ public class BinaryContentTest {
     void givenABytes_whenCallsBytes_thenReturnsBytes() {
         final byte[] expectedBytes = new byte[] { 1, 2, 3, 4, 5 };
 
-        final var aContent = BinaryContent.of(expectedBytes);
+        final var aContent = BinaryContent.create(expectedBytes);
 
         final var actualBytes = aContent.bytes();
 
@@ -23,7 +23,7 @@ public class BinaryContentTest {
     void givenANullBytes_whenCallsBytes_thenReturnsNonNullByteArray() {
         final byte[] expectedBytes = new byte[] {};
 
-        final var aContent = BinaryContent.of(null);
+        final var aContent = BinaryContent.create(null);
 
         final var actualBytes = aContent.bytes();
 
