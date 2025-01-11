@@ -67,7 +67,7 @@ public class DefaultCreateFileUseCaseTest {
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
-            assertEquals(actualOuptut.id(), file.getId().getValue().toString());
+            assertEquals(actualOuptut.id().getValue(), file.getId().getValue());
             assertEquals(expectedFileName, file.getName());
             assertEquals(expectedContentType, file.getContentType());
             assertNotNull(file.getCreatedAt());
