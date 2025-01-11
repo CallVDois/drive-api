@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.create.DefaultCreateFileUseCase;
+import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
+import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.domain.file.ContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
 
@@ -24,6 +26,11 @@ public class FileUseCaseConfig {
     @Bean
     CreateFileUseCase createFileUseCase() {
         return new DefaultCreateFileUseCase(fileGateway, contentGateway);
+    }
+
+    @Bean
+    GetFileUseCase getFileUseCase() {
+        return new DefaultGetFileUseCase(fileGateway);
     }
 
 }
