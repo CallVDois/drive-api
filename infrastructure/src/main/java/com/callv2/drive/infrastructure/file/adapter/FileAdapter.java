@@ -10,8 +10,7 @@ public interface FileAdapter {
     static CreateFileInput adaptCreateFileInput(final MultipartFile aFile) {
         try {
             return new CreateFileInput(
-                    // aFile.getOriginalFilename(),
-                    aFile.getName(),
+                    aFile.getOriginalFilename(),
                     aFile.getContentType(),
                     aFile.getBytes());
         } catch (Exception e) {
