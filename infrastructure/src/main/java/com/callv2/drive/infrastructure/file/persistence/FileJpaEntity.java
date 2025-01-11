@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import com.callv2.drive.domain.file.BinaryContentID;
 import com.callv2.drive.domain.file.File;
-import com.callv2.drive.domain.file.FileExtension;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
 
@@ -24,8 +23,8 @@ public class FileJpaEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "extension", nullable = false)
-    private String extension;
+    @Column(name = "content_type", nullable = false)
+    private String contentType;
 
     @Column(name = "content", nullable = false)
     private UUID content;
@@ -39,13 +38,13 @@ public class FileJpaEntity {
     private FileJpaEntity(
             final UUID id,
             final String name,
-            final String extension,
+            final String contentType,
             final UUID content,
             final Instant createdAt,
             final Instant updatedAt) {
         this.id = id;
         this.name = name;
-        this.extension = extension;
+        this.contentType = contentType;
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -58,7 +57,7 @@ public class FileJpaEntity {
         return new FileJpaEntity(
                 file.getId().getValue(),
                 file.getName().value(),
-                file.getExtension().value(),
+                file.getContentType(),
                 file.getContent().getValue(),
                 file.getCreatedAt(),
                 file.getUpdatedAt());
@@ -66,12 +65,12 @@ public class FileJpaEntity {
 
     public File toDomain() {
         return File.with(
-                FileID.of(id),
-                FileName.of(name),
-                FileExtension.of(extension),
-                BinaryContentID.of(content),
-                createdAt,
-                updatedAt);
+                FileID.of(getId()),
+                FileName.of(getName()),
+                getContentType(),
+                BinaryContentID.of(getContent()),
+                getCreatedAt(),
+                getUpdatedAt());
     }
 
     public UUID getId() {
@@ -90,12 +89,12 @@ public class FileJpaEntity {
         this.name = name;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public UUID getContent() {
