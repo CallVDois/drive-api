@@ -22,3 +22,7 @@ spring:
     console:
       enabled: true
       path: /h2
+
+storage:
+  file-system:
+    location: C:\
