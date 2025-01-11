@@ -10,7 +10,7 @@ import com.callv2.drive.domain.validation.handler.Notification;
 public class File extends AggregateRoot<FileID> {
 
     private FileName name;
-    private FileExtension extension;
+    private String contentType;
     private BinaryContentID content;
 
     private Instant createdAt;
@@ -19,14 +19,14 @@ public class File extends AggregateRoot<FileID> {
     private File(
             final FileID anId,
             final FileName name,
-            final FileExtension extension,
+            final String contentType,
             final BinaryContentID content,
             final Instant createdAt,
             final Instant updatedAt) {
         super(anId);
 
         this.name = name;
-        this.extension = extension;
+        this.contentType = contentType;
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -42,18 +42,18 @@ public class File extends AggregateRoot<FileID> {
     public static File with(
             final FileID id,
             final FileName name,
-            final FileExtension extension,
+            final String contentType,
             final BinaryContentID content,
             final Instant createdAt,
             final Instant updatedAt) {
-        return new File(id, name, extension, content, createdAt, updatedAt);
+        return new File(id, name, contentType, content, createdAt, updatedAt);
     }
 
     public static File with(final File file) {
         return File.with(
                 file.getId(),
                 file.getName(),
-                file.getExtension(),
+                file.getContentType(),
                 file.getContent(),
                 file.getCreatedAt(),
                 file.getUpdatedAt());
@@ -61,7 +61,7 @@ public class File extends AggregateRoot<FileID> {
 
     public static File create(
             final FileName name,
-            final FileExtension extension,
+            final String contentType,
             final BinaryContentID content) {
 
         final Instant now = Instant.now();
@@ -69,7 +69,7 @@ public class File extends AggregateRoot<FileID> {
         return new File(
                 FileID.unique(),
                 name,
-                extension,
+                contentType,
                 content,
                 now,
                 now);
@@ -77,10 +77,10 @@ public class File extends AggregateRoot<FileID> {
 
     public File update(
             final FileName name,
-            final FileExtension extension) {
+            final String contentType) {
 
         this.name = name;
-        this.extension = extension;
+        this.contentType = contentType;
 
         this.updatedAt = Instant.now();
 
@@ -92,8 +92,8 @@ public class File extends AggregateRoot<FileID> {
         return name;
     }
 
-    public FileExtension getExtension() {
-        return extension;
+    public String getContentType() {
+        return contentType;
     }
 
     public BinaryContentID getContent() {
