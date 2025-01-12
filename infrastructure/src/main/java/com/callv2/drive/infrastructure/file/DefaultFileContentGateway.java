@@ -1,9 +1,8 @@
 package com.callv2.drive.infrastructure.file;
 
-import java.io.InputStream;
-
 import org.springframework.stereotype.Component;
 
+import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.infrastructure.storage.StorageService;
@@ -18,12 +17,12 @@ public class DefaultFileContentGateway implements FileContentGateway {
     }
 
     @Override
-    public void store(final File file, final InputStream inputStream) {
-        storageService.store(file.getContentLocation(), inputStream);
+    public void store(final File file, final Content content) {
+        storageService.store(file.getContentLocation(), content);
     }
 
     @Override
-    public InputStream load(final File file) {
+    public Content load(final File file) {
         return storageService.load(file.getContentLocation());
     }
 

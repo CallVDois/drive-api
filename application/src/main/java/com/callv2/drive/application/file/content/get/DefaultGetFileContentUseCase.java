@@ -1,6 +1,5 @@
 package com.callv2.drive.application.file.content.get;
 
-import java.io.InputStream;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -31,9 +30,9 @@ public class DefaultGetFileContentUseCase extends GetFileContentUseCase {
                 .findById(fileId)
                 .orElseThrow(() -> NotFoundException.with(File.class, input.fileId()));
 
-        InputStream content = contentGateway.load(file);
+        final var content = contentGateway.load(file);
 
-        return GetFileContentOutput.with(file.getName().value(), content);
+        return GetFileContentOutput.with(file.getName().value(), content.inputStream(), content.size());
     }
 
 }

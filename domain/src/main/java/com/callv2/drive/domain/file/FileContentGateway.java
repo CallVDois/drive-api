@@ -1,11 +1,9 @@
 package com.callv2.drive.domain.file;
 
-import java.io.InputStream;
-
 public interface FileContentGateway {
 
-    void store(File file, InputStream inputStream);
+    void store(File file, Content content);
 
-    InputStream load(final File file);
+    Content load(final File file);
 
 }

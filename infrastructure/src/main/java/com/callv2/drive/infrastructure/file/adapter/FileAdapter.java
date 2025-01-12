@@ -9,10 +9,11 @@ public interface FileAdapter {
 
     static CreateFileInput adaptCreateFileInput(final MultipartFile aFile) {
         try {
-            return new CreateFileInput(
+            return CreateFileInput.of(
                     aFile.getOriginalFilename(),
                     aFile.getContentType(),
-                    aFile.getInputStream());
+                    aFile.getInputStream(),
+                    aFile.getSize());
         } catch (Exception e) {
             throw InternalErrorException.with("An Error ocurred on adapt MultipartFile to CreateFileInput", e);
         }

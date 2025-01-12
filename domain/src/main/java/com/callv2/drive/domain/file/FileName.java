@@ -1,7 +1,5 @@
 package com.callv2.drive.domain.file;
 
-import java.util.regex.Pattern;
-
 import com.callv2.drive.domain.ValueObject;
 import com.callv2.drive.domain.validation.Error;
 import com.callv2.drive.domain.validation.ValidationHandler;
@@ -10,7 +8,6 @@ public record FileName(String value) implements ValueObject {
 
     private static final int MIN_LENGTH = 1;
     private static final int MAX_LENGTH = 64;
-    private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9._-]+$");
     private static final String[] RESERVED_NAMES = {
             "CON",
             "NUL",
@@ -46,10 +43,6 @@ public record FileName(String value) implements ValueObject {
         if (trimmedName.length() < MIN_LENGTH || trimmedName.length() > MAX_LENGTH)
             aHandler.append(
                     new Error("'name' must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters."));
-
-        if (!VALID_NAME_PATTERN.matcher(trimmedName).matches())
-            aHandler.append(new Error(
-                    "'name' contains invalid characters. Allowed: letters, digits, dots, underscores, and hyphens."));
 
         if (isReservedName(trimmedName))
             aHandler.append(new Error("'name' cannot be a reserved name: " + trimmedName));

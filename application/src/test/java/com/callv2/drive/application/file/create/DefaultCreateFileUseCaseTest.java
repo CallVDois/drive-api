@@ -39,7 +39,11 @@ public class DefaultCreateFileUseCaseTest {
 
         final var expectedFileName = FileName.of("file");
         final var expectedContentType = "image/jpeg";
-        final var expectedContent = new ByteArrayInputStream("content".getBytes());
+
+        final var contentBytes = "content".getBytes();
+
+        final var expectedContent = new ByteArrayInputStream(contentBytes);
+        final var expectedSize = (long) contentBytes.length;
 
         doNothing()
                 .when(contentGateway)
@@ -48,10 +52,11 @@ public class DefaultCreateFileUseCaseTest {
         when(fileGateway.create(any()))
                 .thenAnswer(returnsFirstArg());
 
-        final var input = new CreateFileInput(
+        final var input = CreateFileInput.of(
                 expectedFileName.value(),
                 expectedContentType,
-                expectedContent);
+                expectedContent,
+                expectedSize);
 
         final var actualOuptut = useCase.execute(input);
 
@@ -60,10 +65,10 @@ public class DefaultCreateFileUseCaseTest {
         verify(contentGateway, times(1)).store(any(), any());
         // verify(contentGateway, times(1)).store(argThat(content -> {
 
-        //     assertEquals(expectedContent, content.bytes());
-        //     assertNotNull(content.getId());
+        // assertEquals(expectedContent, content.bytes());
+        // assertNotNull(content.getId());
 
-        //     return true;
+        // return true;
         // }));
 
         verify(fileGateway, times(1)).create(any());

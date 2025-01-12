@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
@@ -38,7 +39,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
             throw ValidationException.with("Could not create Aggregate File", notification);
 
         storeFile(file);
-        storeFileContent(file, input.content());
+        storeFileContent(file, input.content(), input.size());
 
         return CreateFileOutput.from(file);
     }
@@ -51,9 +52,9 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         }
     }
 
-    private void storeFileContent(final File file, final InputStream inputStream) {
+    private void storeFileContent(final File file, final InputStream inputStream, final Long size) {
         try {
-            contentGateway.store(file, inputStream);
+            contentGateway.store(file, Content.of(inputStream, size));
         } catch (Exception e) {
             throw InternalErrorException.with("Could not store BinaryContent", e);
         }

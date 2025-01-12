@@ -77,29 +77,6 @@ public class FileTest {
     }
 
     @Test
-    void givenBadCharName_whenCallsCreate_thenShouldThrowsValidationException() {
-
-        final var expectedName = "/file";
-        final var expectedContentType = "image/jpeg";
-
-        final var expectedExceptionMessage = "Validation fail has occoured";
-        final var expectedErrorsCount = 1;
-        final var expectedErrorMessage = "'name' contains invalid characters. Allowed: letters, digits, dots, underscores, and hyphens.";
-
-        final var actualException = assertThrows(
-                ValidationException.class,
-                () -> File.create(
-                        FileName.of(expectedName),
-                        expectedContentType,
-                        "location"));
-
-        assertEquals(expectedExceptionMessage, actualException.getMessage());
-        assertEquals(expectedErrorsCount, actualException.getErrors().size());
-        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
-
-    }
-
-    @Test
     void givenNameWithMoreThan64Chars_whenCallsCreate_thenShouldThrowsValidationException() {
 
         final var expectedName = """
@@ -276,32 +253,6 @@ public class FileTest {
         final var expectedExceptionMessage = "Validation fail has occoured";
         final var expectedErrorsCount = 1;
         final var expectedErrorMessage = "'name' cannot be null.";
-
-        final var aFile = File.create(
-                FileName.of("file"),
-                "video/mp4",
-                "Location");
-
-        final var actualException = assertThrows(ValidationException.class,
-                () -> File.with(aFile).update(
-                        FileName.of(expectedName),
-                        expectedContentType));
-
-        assertEquals(expectedExceptionMessage, actualException.getMessage());
-        assertEquals(expectedErrorsCount, actualException.getErrors().size());
-        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
-
-    }
-
-    @Test
-    void givenBadCharName_whenCallsUpdate_thenShouldThrowsValidationException() {
-
-        final var expectedName = "/file";
-        final var expectedContentType = "image/jpeg";
-
-        final var expectedExceptionMessage = "Validation fail has occoured";
-        final var expectedErrorsCount = 1;
-        final var expectedErrorMessage = "'name' contains invalid characters. Allowed: letters, digits, dots, underscores, and hyphens.";
 
         final var aFile = File.create(
                 FileName.of("file"),
