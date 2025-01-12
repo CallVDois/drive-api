@@ -11,7 +11,7 @@ public class File extends AggregateRoot<FileID> {
 
     private FileName name;
     private String contentType;
-    private BinaryContentID content;
+    private String contentLocation;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -20,14 +20,14 @@ public class File extends AggregateRoot<FileID> {
             final FileID anId,
             final FileName name,
             final String contentType,
-            final BinaryContentID content,
+            final String location,
             final Instant createdAt,
             final Instant updatedAt) {
         super(anId);
 
         this.name = name;
         this.contentType = contentType;
-        this.content = content;
+        this.contentLocation = location;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
 
@@ -43,10 +43,10 @@ public class File extends AggregateRoot<FileID> {
             final FileID id,
             final FileName name,
             final String contentType,
-            final BinaryContentID content,
+            final String location,
             final Instant createdAt,
             final Instant updatedAt) {
-        return new File(id, name, contentType, content, createdAt, updatedAt);
+        return new File(id, name, contentType, location, createdAt, updatedAt);
     }
 
     public static File with(final File file) {
@@ -54,7 +54,7 @@ public class File extends AggregateRoot<FileID> {
                 file.getId(),
                 file.getName(),
                 file.getContentType(),
-                file.getContent(),
+                file.getContentLocation(),
                 file.getCreatedAt(),
                 file.getUpdatedAt());
     }
@@ -62,7 +62,7 @@ public class File extends AggregateRoot<FileID> {
     public static File create(
             final FileName name,
             final String contentType,
-            final BinaryContentID content) {
+            final String location) {
 
         final Instant now = Instant.now();
 
@@ -70,7 +70,7 @@ public class File extends AggregateRoot<FileID> {
                 FileID.unique(),
                 name,
                 contentType,
-                content,
+                location,
                 now,
                 now);
     }
@@ -96,8 +96,8 @@ public class File extends AggregateRoot<FileID> {
         return contentType;
     }
 
-    public BinaryContentID getContent() {
-        return content;
+    public String getContentLocation() {
+        return contentLocation;
     }
 
     public Instant getCreatedAt() {

@@ -12,7 +12,7 @@ public interface FileAdapter {
             return new CreateFileInput(
                     aFile.getOriginalFilename(),
                     aFile.getContentType(),
-                    aFile.getBytes());
+                    aFile.getInputStream());
         } catch (Exception e) {
             throw InternalErrorException.with("An Error ocurred on adapt MultipartFile to CreateFileInput", e);
         }

@@ -17,7 +17,7 @@ public class FileTest {
 
         final var expectedName = "file";
         final var expectedContentType = "image/jpeg";
-        final var expectedContent = BinaryContentID.unique();
+        final var expectedContent = "location";
 
         final var actualFile = assertDoesNotThrow(() -> File.create(
                 FileName.of(expectedName),
@@ -26,7 +26,7 @@ public class FileTest {
 
         assertEquals(expectedName, actualFile.getName().value());
         assertEquals(expectedContentType, actualFile.getContentType());
-        assertEquals(expectedContent, actualFile.getContent());
+        assertEquals(expectedContent, actualFile.getContentLocation());
         assertNotNull(actualFile.getCreatedAt());
         assertNotNull(actualFile.getUpdatedAt());
         assertEquals(actualFile.getCreatedAt(), actualFile.getUpdatedAt());
@@ -47,7 +47,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -69,7 +69,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -91,7 +91,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -116,7 +116,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -139,7 +139,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -162,7 +162,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -184,7 +184,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -207,7 +207,7 @@ public class FileTest {
                 () -> File.create(
                         FileName.of(expectedName),
                         expectedContentType,
-                        BinaryContentID.unique()));
+                        "location"));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -223,7 +223,7 @@ public class FileTest {
 
         final var expectedName = FileName.of("File");
         final var expectedContentType = "image/jpeg";
-        final var expectedContent = BinaryContentID.unique();
+        final var expectedContent = "location";
 
         final var aFile = File.create(
                 FileName.of("file"),
@@ -236,7 +236,7 @@ public class FileTest {
 
         assertEquals(expectedName, actualUpdatedFile.getName());
         assertEquals(expectedContentType, actualUpdatedFile.getContentType());
-        assertEquals(expectedContent, actualUpdatedFile.getContent());
+        assertEquals(expectedContent, actualUpdatedFile.getContentLocation());
         assertNotNull(actualUpdatedFile.getCreatedAt());
         assertNotNull(actualUpdatedFile.getUpdatedAt());
         assertTrue(aFile.getCreatedAt().isBefore(actualUpdatedFile.getUpdatedAt()));
@@ -255,7 +255,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "Location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -280,7 +280,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "Location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -306,7 +306,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "Location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -334,7 +334,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "Location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -360,7 +360,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -386,7 +386,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -412,7 +412,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(
@@ -439,7 +439,7 @@ public class FileTest {
         final var aFile = File.create(
                 FileName.of("file"),
                 "video/mp4",
-                BinaryContentID.unique());
+                "location");
 
         final var actualException = assertThrows(ValidationException.class,
                 () -> File.with(aFile).update(

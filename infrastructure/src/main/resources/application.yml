@@ -20,7 +20,7 @@ spring:
     url: jdbc:h2:file:./drive;DATABASE_TO_LOWER=TRUE
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
   h2:
     console:
@@ -29,4 +29,4 @@ spring:
 
 storage:
   file-system:
-    location: C:\
+    location: C:\Users\jhona\Desktop\Workspace\teste

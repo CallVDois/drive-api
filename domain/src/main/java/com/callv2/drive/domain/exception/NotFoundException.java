@@ -13,6 +13,16 @@ public class NotFoundException extends DomainException {
     }
 
     public static NotFoundException with(
+            final Class<? extends Entity<? extends Identifier<?>>> entityClass) {
+
+        final String message = String.format(
+                "%s not found",
+                entityClass.getSimpleName());
+
+        return new NotFoundException(message);
+    }
+
+    public static NotFoundException with(
             final Class<? extends Entity<? extends Identifier<?>>> entityClass,
             final String id) {
 

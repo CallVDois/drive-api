@@ -2,13 +2,20 @@ package com.callv2.drive.infrastructure.api.controller;
 
 import java.net.URI;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import com.callv2.drive.application.file.content.get.GetFileContentInput;
+import com.callv2.drive.application.file.content.get.GetFileContentOutput;
+import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
+import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.infrastructure.api.FileAPI;
 import com.callv2.drive.infrastructure.file.adapter.FileAdapter;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
@@ -20,12 +27,15 @@ public class FileController implements FileAPI {
 
     private final CreateFileUseCase createFileUseCase;
     private final GetFileUseCase getFileUseCase;
+    private final GetFileContentUseCase getFileContentUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
-            final GetFileUseCase getFileUseCase) {
+            final GetFileUseCase getFileUseCase,
+            final GetFileContentUseCase getFileContentUseCase) {
         this.createFileUseCase = createFileUseCase;
         this.getFileUseCase = getFileUseCase;
+        this.getFileContentUseCase = getFileContentUseCase;
     }
 
     @Override
@@ -41,6 +51,33 @@ public class FileController implements FileAPI {
     @Override
     public ResponseEntity<GetFileResponse> get(String id) {
         return ResponseEntity.ok(FilePresenter.presenter(getFileUseCase.execute(GetFileInput.from(id))));
+    }
+
+    @Override
+    public ResponseEntity<StreamingResponseBody> download(String id) {
+
+        final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id));
+
+        final StreamingResponseBody responseBody = outputStream -> {
+
+            try {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = output.content().read(buffer)) != -1)
+                    outputStream.write(buffer, 0, bytesRead);
+
+                outputStream.flush();
+            } catch (Exception e) {
+                throw InternalErrorException.with("Error on process File Content", e);
+            }
+
+        };
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.name() + "\"")
+                // .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(output.content()))
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(responseBody);
     }
 
 }
