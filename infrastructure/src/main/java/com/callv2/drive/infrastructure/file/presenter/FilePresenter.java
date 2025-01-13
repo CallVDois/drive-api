@@ -16,6 +16,7 @@ public interface FilePresenter {
                 output.id(),
                 output.name(),
                 output.contentType(),
+                output.contentSize(),
                 output.createdAt(),
                 output.updatedAt());
     }

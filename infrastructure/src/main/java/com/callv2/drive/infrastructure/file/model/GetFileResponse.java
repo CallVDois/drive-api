@@ -6,6 +6,7 @@ public record GetFileResponse(
         String id,
         String name,
         String contentType,
+        Long contentSize,
         Instant createdAt,
         Instant updatedAt) {
 
