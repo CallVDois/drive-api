@@ -21,7 +21,7 @@ public class FileJPAGateway implements FileGateway {
 
     @Override
     public File create(File file) {
-        return fileRepository.save(FileJpaEntity.fromDomain(file)).toDomain();
+        return fileRepository.save(FileJpaEntity.from(file)).toDomain();
     }
 
     @Override

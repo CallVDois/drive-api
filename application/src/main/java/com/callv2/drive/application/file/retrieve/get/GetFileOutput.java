@@ -8,6 +8,7 @@ public record GetFileOutput(
         String id,
         String name,
         String contentType,
+        Long contentSize,
         Instant createdAt,
         Instant updatedAt) {
 
@@ -15,7 +16,8 @@ public record GetFileOutput(
         return new GetFileOutput(
                 aFile.getId().getValue().toString(),
                 aFile.getName().value(),
-                aFile.getContentType(),
+                aFile.getContent().type(),
+                aFile.getContent().size(),
                 aFile.getCreatedAt(),
                 aFile.getUpdatedAt());
     }

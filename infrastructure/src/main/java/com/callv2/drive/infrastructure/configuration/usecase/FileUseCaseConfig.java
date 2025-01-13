@@ -37,7 +37,7 @@ public class FileUseCaseConfig {
 
     @Bean
     GetFileContentUseCase getFileContentUseCase() {
-        return new DefaultGetFileContentUseCase(contentGateway, fileGateway);
+        return new DefaultGetFileContentUseCase(fileGateway);
     }
 
 }

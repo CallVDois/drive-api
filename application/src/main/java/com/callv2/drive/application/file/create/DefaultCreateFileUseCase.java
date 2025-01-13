@@ -29,17 +29,21 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
     public CreateFileOutput execute(final CreateFileInput input) {
 
         final FileName fileName = FileName.of(input.name());
+
+        final String randomContentName = UUID.randomUUID().toString();
+        final String contentLocation = storeContentFile(randomContentName, input.content());
         final String contentType = input.contentType();
-        final String randomLocation = UUID.randomUUID().toString();
+        final Long contentSize = input.size();
+
+        final Content content = Content.of(contentLocation, contentType, contentSize);
 
         final Notification notification = Notification.create();
-        final File file = notification.valdiate(() -> File.create(fileName, contentType, randomLocation));
+        final File file = notification.valdiate(() -> File.create(fileName, content));
 
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate File", notification);
 
         storeFile(file);
-        storeFileContent(file, input.content(), input.size());
 
         return CreateFileOutput.from(file);
     }
@@ -48,15 +52,24 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         try {
             fileGateway.create(file);
         } catch (Exception e) {
+            deleteContentFile(file.getContent().location());
             throw InternalErrorException.with("Could not store File", e);
         }
     }
 
-    private void storeFileContent(final File file, final InputStream inputStream, final Long size) {
+    private String storeContentFile(final String contentName, final InputStream inputStream) {
         try {
-            contentGateway.store(file, Content.of(inputStream, size));
+            return contentGateway.store(contentName, inputStream);
         } catch (Exception e) {
             throw InternalErrorException.with("Could not store BinaryContent", e);
+        }
+    }
+
+    private void deleteContentFile(final String contentLocation) {
+        try {
+            contentGateway.delete(contentLocation);
+        } catch (Exception e) {
+            throw InternalErrorException.with("Could not delete BinaryContent", e);
         }
     }
 

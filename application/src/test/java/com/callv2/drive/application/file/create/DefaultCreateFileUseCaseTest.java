@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,15 +39,13 @@ public class DefaultCreateFileUseCaseTest {
 
         final var expectedFileName = FileName.of("file");
         final var expectedContentType = "image/jpeg";
-
         final var contentBytes = "content".getBytes();
 
         final var expectedContent = new ByteArrayInputStream(contentBytes);
-        final var expectedSize = (long) contentBytes.length;
+        final var expectedContentSize = (long) contentBytes.length;
 
-        doNothing()
-                .when(contentGateway)
-                .store(any(), any());
+        when(contentGateway.store(any(), any()))
+                .then(returnsFirstArg());
 
         when(fileGateway.create(any()))
                 .thenAnswer(returnsFirstArg());
@@ -56,30 +54,23 @@ public class DefaultCreateFileUseCaseTest {
                 expectedFileName.value(),
                 expectedContentType,
                 expectedContent,
-                expectedSize);
+                expectedContentSize);
 
         final var actualOuptut = useCase.execute(input);
 
         assertNotNull(actualOuptut.id());
 
         verify(contentGateway, times(1)).store(any(), any());
-        // verify(contentGateway, times(1)).store(argThat(content -> {
-
-        // assertEquals(expectedContent, content.bytes());
-        // assertNotNull(content.getId());
-
-        // return true;
-        // }));
-
+        verify(contentGateway, times(1)).store(any(), eq(expectedContent));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
             assertEquals(actualOuptut.id().getValue(), file.getId().getValue());
             assertEquals(expectedFileName, file.getName());
-            assertEquals(expectedContentType, file.getContentType());
+            assertEquals(expectedContentType, file.getContent().type());
             assertNotNull(file.getCreatedAt());
             assertNotNull(file.getUpdatedAt());
-            assertNotNull(file.getContentLocation());
+            assertNotNull(file.getContent().location());
             assertEquals(file.getCreatedAt(), file.getUpdatedAt());
 
             return true;

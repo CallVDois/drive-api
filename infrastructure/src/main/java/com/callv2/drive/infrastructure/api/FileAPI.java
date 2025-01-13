@@ -1,5 +1,6 @@
 package com.callv2.drive.infrastructure.api;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
@@ -47,6 +47,6 @@ public interface FileAPI {
             @ApiResponse(responseCode = "404", description = "File not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    ResponseEntity<StreamingResponseBody> download(@PathVariable(required = true) String id);
+    ResponseEntity<Resource> download(@PathVariable(required = true) String id);
 
 }

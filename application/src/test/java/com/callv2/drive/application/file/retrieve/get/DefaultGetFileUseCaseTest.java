@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
@@ -37,10 +37,14 @@ public class DefaultGetFileUseCaseTest {
     void givenAValidId_whenCallsExecute_thenShouldReturnFile() {
 
         final var expectedName = "file.jpeg";
-        final var expectedContentType = "image/jpeg";
-        final var expectedContent = UUID.randomUUID().toString();
 
-        final var expectedFile = File.create(FileName.of(expectedName), expectedContentType, expectedContent);
+        final var expectedContentLocation = "location";
+        final var expectedContentType = "image/jpeg";
+        final var expectedContentSize = 10L;
+
+        final var expectedContent = Content.of(expectedContentLocation, expectedContentType, expectedContentSize);
+
+        final var expectedFile = File.create(FileName.of(expectedName), expectedContent);
 
         final var expectedId = expectedFile.getId();
 

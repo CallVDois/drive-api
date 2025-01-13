@@ -2,13 +2,14 @@ package com.callv2.drive.infrastructure.api.controller;
 
 import java.net.URI;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.callv2.drive.application.file.content.get.GetFileContentInput;
 import com.callv2.drive.application.file.content.get.GetFileContentOutput;
@@ -54,20 +55,18 @@ public class FileController implements FileAPI {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public ResponseEntity<StreamingResponseBody> download(String id) {
+    @Async
+    public ResponseEntity<Resource> download(String id) {
 
         final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id));
 
-        final StreamingResponseBody responseBody = outputStream -> {
-            output.content().transferTo(outputStream);
-        };
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.name() + "\"")
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(output.size()))
+                .contentLength(output.size())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(responseBody);
+                // .header(HttpHeaders.TRANSFER_ENCODING, "chunked")
+                // // .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(new FileSystemResource(output.location()));
     }
 
 }
