@@ -50,6 +50,7 @@ public class FileJpaEntity {
         this.name = name;
         this.contentType = contentType;
         this.contentLocation = contentLocation;
+        this.contentSize = contentSize;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
