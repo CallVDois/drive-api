@@ -1,8 +1,10 @@
 package com.callv2.drive.application.file.content.get;
 
-public record GetFileContentInput(String fileId) {
+import java.util.UUID;
 
-    public static GetFileContentInput with(final String fileId) {
+public record GetFileContentInput(UUID fileId) {
+
+    public static GetFileContentInput with(final UUID fileId) {
         return new GetFileContentInput(fileId);
     }
 

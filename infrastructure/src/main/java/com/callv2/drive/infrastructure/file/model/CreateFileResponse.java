@@ -1,6 +1,8 @@
 package com.callv2.drive.infrastructure.file.model;
 
-public record CreateFileResponse(String id) {
+import java.util.UUID;
+
+public record CreateFileResponse(UUID id) {
 
 }
 

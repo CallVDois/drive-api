@@ -1,7 +1,6 @@
 package com.callv2.drive.application.file.content.get;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.File;
@@ -19,11 +18,11 @@ public class DefaultGetFileContentUseCase extends GetFileContentUseCase {
     @Override
     public GetFileContentOutput execute(GetFileContentInput input) {
 
-        final FileID fileId = FileID.of(UUID.fromString(input.fileId()));
+        final FileID fileId = FileID.of(input.fileId());
 
         final File file = fileGateway
                 .findById(fileId)
-                .orElseThrow(() -> NotFoundException.with(File.class, input.fileId()));
+                .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
 
         return GetFileContentOutput.with(
                 file.getName().value(),

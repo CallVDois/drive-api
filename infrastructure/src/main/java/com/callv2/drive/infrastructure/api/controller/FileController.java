@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.api.controller;
 
 import java.net.URI;
+import java.util.UUID;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -50,13 +51,13 @@ public class FileController implements FileAPI {
     }
 
     @Override
-    public ResponseEntity<GetFileResponse> get(String id) {
+    public ResponseEntity<GetFileResponse> get(UUID id) {
         return ResponseEntity.ok(FilePresenter.presenter(getFileUseCase.execute(GetFileInput.from(id))));
     }
 
     @Override
     @Async
-    public ResponseEntity<Resource> download(String id) {
+    public ResponseEntity<Resource> download(UUID id) {
 
         final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id));
 

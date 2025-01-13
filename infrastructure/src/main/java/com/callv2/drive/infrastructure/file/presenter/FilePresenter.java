@@ -8,7 +8,7 @@ import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 public interface FilePresenter {
 
     static CreateFileResponse present(final CreateFileOutput output) {
-        return new CreateFileResponse(output.id().getValue().toString());
+        return new CreateFileResponse(output.id().getValue());
     }
 
     static GetFileResponse presenter(final GetFileOutput output) {

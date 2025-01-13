@@ -1,9 +1,10 @@
 package com.callv2.drive.infrastructure.file.model;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record GetFileResponse(
-        String id,
+        UUID id,
         String name,
         String contentType,
         Long contentSize,

@@ -1,8 +1,10 @@
 package com.callv2.drive.application.file.retrieve.get;
 
-public record GetFileInput(String id) {
+import java.util.UUID;
 
-    public static GetFileInput from(String id) {
+public record GetFileInput(UUID id) {
+
+    public static GetFileInput from(UUID id) {
         return new GetFileInput(id);
     }
 

@@ -1,11 +1,12 @@
 package com.callv2.drive.application.file.retrieve.get;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import com.callv2.drive.domain.file.File;
 
 public record GetFileOutput(
-        String id,
+        UUID id,
         String name,
         String contentType,
         Long contentSize,
@@ -14,7 +15,7 @@ public record GetFileOutput(
 
     public static GetFileOutput from(final File aFile) {
         return new GetFileOutput(
-                aFile.getId().getValue().toString(),
+                aFile.getId().getValue(),
                 aFile.getName().value(),
                 aFile.getContent().type(),
                 aFile.getContent().size(),

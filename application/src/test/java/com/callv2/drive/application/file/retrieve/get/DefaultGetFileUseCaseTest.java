@@ -51,7 +51,7 @@ public class DefaultGetFileUseCaseTest {
         when(fileGateway.findById(any()))
                 .thenReturn(Optional.of(File.with(expectedFile)));
 
-        final var aCommand = GetFileInput.from(expectedId.getValue().toString());
+        final var aCommand = GetFileInput.from(expectedId.getValue());
 
         final var actualOuput = assertDoesNotThrow(() -> useCase.execute(aCommand));
 
@@ -76,7 +76,7 @@ public class DefaultGetFileUseCaseTest {
         when(fileGateway.findById(any()))
                 .thenReturn(Optional.empty());
 
-        final var aCommand = GetFileInput.from(expectedId.getValue().toString());
+        final var aCommand = GetFileInput.from(expectedId.getValue());
 
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
 
