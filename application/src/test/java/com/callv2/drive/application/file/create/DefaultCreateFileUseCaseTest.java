@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.callv2.drive.domain.file.ContentGateway;
+import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileName;
 
@@ -27,7 +29,7 @@ public class DefaultCreateFileUseCaseTest {
     DefaultCreateFileUseCase useCase;
 
     @Mock
-    ContentGateway contentGateway;
+    FileContentGateway contentGateway;
 
     @Mock
     FileGateway fileGateway;
@@ -37,42 +39,38 @@ public class DefaultCreateFileUseCaseTest {
 
         final var expectedFileName = FileName.of("file");
         final var expectedContentType = "image/jpeg";
-        final var expectedContent = "content".getBytes();
+        final var contentBytes = "content".getBytes();
 
-        doNothing()
-                .when(contentGateway)
-                .store(any());
+        final var expectedContent = new ByteArrayInputStream(contentBytes);
+        final var expectedContentSize = (long) contentBytes.length;
+
+        when(contentGateway.store(any(), any()))
+                .then(returnsFirstArg());
 
         when(fileGateway.create(any()))
                 .thenAnswer(returnsFirstArg());
 
-        final var input = new CreateFileInput(
+        final var input = CreateFileInput.of(
                 expectedFileName.value(),
                 expectedContentType,
-                expectedContent);
+                expectedContent,
+                expectedContentSize);
 
         final var actualOuptut = useCase.execute(input);
 
         assertNotNull(actualOuptut.id());
 
-        verify(contentGateway, times(1)).store(any());
-        verify(contentGateway, times(1)).store(argThat(content -> {
-
-            assertEquals(expectedContent, content.bytes());
-            assertNotNull(content.getId());
-
-            return true;
-        }));
-
+        verify(contentGateway, times(1)).store(any(), any());
+        verify(contentGateway, times(1)).store(any(), eq(expectedContent));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
-            assertEquals(actualOuptut.id(), file.getId().getValue().toString());
+            assertEquals(actualOuptut.id().getValue(), file.getId().getValue());
             assertEquals(expectedFileName, file.getName());
-            assertEquals(expectedContentType, file.getContentType());
+            assertEquals(expectedContentType, file.getContent().type());
             assertNotNull(file.getCreatedAt());
             assertNotNull(file.getUpdatedAt());
-            assertNotNull(file.getContent());
+            assertNotNull(file.getContent().location());
             assertEquals(file.getCreatedAt(), file.getUpdatedAt());
 
             return true;

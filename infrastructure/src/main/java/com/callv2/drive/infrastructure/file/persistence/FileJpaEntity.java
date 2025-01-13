@@ -3,7 +3,7 @@ package com.callv2.drive.infrastructure.file.persistence;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.callv2.drive.domain.file.BinaryContentID;
+import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
@@ -26,8 +26,11 @@ public class FileJpaEntity {
     @Column(name = "content_type", nullable = false)
     private String contentType;
 
-    @Column(name = "content", nullable = false)
-    private UUID content;
+    @Column(name = "content_location", nullable = false)
+    private String contentLocation;
+
+    @Column(name = "content_size", nullable = false)
+    private Long contentSize;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -39,13 +42,15 @@ public class FileJpaEntity {
             final UUID id,
             final String name,
             final String contentType,
-            final UUID content,
+            final String contentLocation,
+            final Long contentSize,
             final Instant createdAt,
             final Instant updatedAt) {
         this.id = id;
         this.name = name;
         this.contentType = contentType;
-        this.content = content;
+        this.contentLocation = contentLocation;
+        this.contentSize = contentSize;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -53,12 +58,13 @@ public class FileJpaEntity {
     public FileJpaEntity() {
     }
 
-    public static FileJpaEntity fromDomain(final File file) {
+    public static FileJpaEntity from(final File file) {
         return new FileJpaEntity(
                 file.getId().getValue(),
                 file.getName().value(),
-                file.getContentType(),
-                file.getContent().getValue(),
+                file.getContent().type(),
+                file.getContent().location(),
+                file.getContent().size(),
                 file.getCreatedAt(),
                 file.getUpdatedAt());
     }
@@ -67,8 +73,7 @@ public class FileJpaEntity {
         return File.with(
                 FileID.of(getId()),
                 FileName.of(getName()),
-                getContentType(),
-                BinaryContentID.of(getContent()),
+                Content.of(getContentLocation(), getContentType(), getContentSize()),
                 getCreatedAt(),
                 getUpdatedAt());
     }
@@ -97,12 +102,20 @@ public class FileJpaEntity {
         this.contentType = contentType;
     }
 
-    public UUID getContent() {
-        return content;
+    public String getContentLocation() {
+        return contentLocation;
     }
 
-    public void setContent(UUID content) {
-        this.content = content;
+    public void setContentLocation(String contentLocation) {
+        this.contentLocation = contentLocation;
+    }
+
+    public Long getContentSize() {
+        return contentSize;
+    }
+
+    public void setContentSize(Long contentSize) {
+        this.contentSize = contentSize;
     }
 
     public Instant getCreatedAt() {

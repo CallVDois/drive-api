@@ -1,10 +1,10 @@
 package com.callv2.drive.infrastructure.storage;
 
+import java.io.InputStream;
+
 public interface StorageService {
 
-    void store(String name, byte[] content);
-
-    byte[] load(String name);
+    String store(String name, InputStream content);
 
     void delete(String name);
 

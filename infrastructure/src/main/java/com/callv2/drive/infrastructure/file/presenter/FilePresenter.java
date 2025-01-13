@@ -1,12 +1,24 @@
 package com.callv2.drive.infrastructure.file.presenter;
 
 import com.callv2.drive.application.file.create.CreateFileOutput;
-import com.callv2.drive.infrastructure.file.model.FileResponse;
+import com.callv2.drive.application.file.retrieve.get.GetFileOutput;
+import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
+import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 
 public interface FilePresenter {
 
-    static FileResponse present(final CreateFileOutput output) {
-        return new FileResponse(output.id().getValue().toString());
+    static CreateFileResponse present(final CreateFileOutput output) {
+        return new CreateFileResponse(output.id().getValue());
+    }
+
+    static GetFileResponse presenter(final GetFileOutput output) {
+        return new GetFileResponse(
+                output.id(),
+                output.name(),
+                output.contentType(),
+                output.contentSize(),
+                output.createdAt(),
+                output.updatedAt());
     }
 
 }

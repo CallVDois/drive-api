@@ -8,11 +8,14 @@ server:
     min-response-size: 1024
 
 spring:
+  mvc:
+    async:
+      request-timeout: 600000
   servlet:
     multipart:
       enabled: true
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 10240MB
+      max-request-size: 10240MB
   datasource:
     driver-class-name: org.h2.Driver
     username: root
@@ -20,7 +23,7 @@ spring:
     url: jdbc:h2:file:./drive;DATABASE_TO_LOWER=TRUE
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
   h2:
     console:
@@ -29,4 +32,4 @@ spring:
 
 storage:
   file-system:
-    location: C:\
+    location: C:\Users\jhona\Desktop\Workspace\teste
