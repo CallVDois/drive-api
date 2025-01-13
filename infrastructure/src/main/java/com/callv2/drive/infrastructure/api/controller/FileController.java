@@ -64,8 +64,6 @@ public class FileController implements FileAPI {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.name() + "\"")
                 .contentLength(output.size())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                // .header(HttpHeaders.TRANSFER_ENCODING, "chunked")
-                // // .header(HttpHeaders.CACHE_CONTROL, "no-cache")
                 .body(new FileSystemResource(output.location()));
     }
 
