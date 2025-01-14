@@ -12,6 +12,8 @@ import com.callv2.drive.domain.validation.handler.Notification;
 
 public class Folder extends AggregateRoot<FolderID> {
 
+    private boolean rootFolder;
+
     private FolderName name;
     private FolderID parentFolder;
     private Set<SubFolder> subFolders;
@@ -27,7 +29,8 @@ public class Folder extends AggregateRoot<FolderID> {
             final Set<SubFolder> subFolders,
             final Instant createdAt,
             final Instant updatedAt,
-            final Instant deletedAt) {
+            final Instant deletedAt,
+            final boolean rootFolder) {
         super(id);
         this.name = name;
         this.parentFolder = parentFolder;
@@ -35,6 +38,7 @@ public class Folder extends AggregateRoot<FolderID> {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.rootFolder = rootFolder;
 
         selfValidate();
     }
@@ -42,6 +46,20 @@ public class Folder extends AggregateRoot<FolderID> {
     @Override
     public void validate(ValidationHandler handler) {
         new FolderValidator(this, handler).validate();
+    }
+
+    public static Folder createRoot() {
+        Instant now = Instant.now();
+
+        return new Folder(
+                FolderID.unique(),
+                FolderName.of("Root"),
+                null,
+                Set.of(),
+                now,
+                now,
+                null,
+                true);
     }
 
     public static Folder create(
@@ -57,7 +75,8 @@ public class Folder extends AggregateRoot<FolderID> {
                 Set.of(),
                 now,
                 now,
-                null);
+                null,
+                false);
     }
 
     public Folder changeName(final FolderName name) {
@@ -106,6 +125,10 @@ public class Folder extends AggregateRoot<FolderID> {
         this.updatedAt = Instant.now();
 
         return this;
+    }
+
+    public boolean isRootFolder() {
+        return rootFolder;
     }
 
     public FolderID getParentFolder() {

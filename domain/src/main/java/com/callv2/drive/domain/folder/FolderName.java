@@ -15,6 +15,10 @@ public record FolderName(String value) implements ValueObject {
     private static final String INVALID_CHARACTERS_REGEX = "[./\\\\:*?\"<>|]";
     private static final Pattern INVALID_CHARACTERS_PATTERN = Pattern.compile(INVALID_CHARACTERS_REGEX);
 
+    public static FolderName of(final String value) {
+        return new FolderName(value);
+    }
+
     @Override
     public void validate(ValidationHandler aHandler) {
 
