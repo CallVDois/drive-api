@@ -23,6 +23,7 @@ import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
+import com.callv2.drive.domain.folder.Folder;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultGetFileUseCaseTest {
@@ -36,6 +37,8 @@ public class DefaultGetFileUseCaseTest {
     @Test
     void givenAValidId_whenCallsExecute_thenShouldReturnFile() {
 
+        final var expectedFolder = Folder.createRoot();
+
         final var expectedName = "file.jpeg";
 
         final var expectedContentLocation = "location";
@@ -44,7 +47,7 @@ public class DefaultGetFileUseCaseTest {
 
         final var expectedContent = Content.of(expectedContentLocation, expectedContentType, expectedContentSize);
 
-        final var expectedFile = File.create(FileName.of(expectedName), expectedContent);
+        final var expectedFile = File.create(expectedFolder.getId(), FileName.of(expectedName), expectedContent);
 
         final var expectedId = expectedFile.getId();
 

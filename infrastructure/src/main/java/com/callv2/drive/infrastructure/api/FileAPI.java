@@ -27,15 +27,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("files")
 public interface FileAPI {
 
-    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE }, produces = {
+    @PostMapping(value = "/folders/{folderId}/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE }, produces = {
             MediaType.APPLICATION_JSON_VALUE })
-    @Operation(summary = "Upload a file", description = "This method uploads a file")
+    @Operation(summary = "Upload a file to a specific folder", description = "This method uploads a file")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "File uploaded successfully", content = @Content(schema = @Schema(implementation = CreateFileResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = ApiError.class))),
             @ApiResponse(responseCode = "413", description = "File is too large", content = @Content(schema = @Schema(implementation = ApiError.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    ResponseEntity<CreateFileResponse> create(@RequestPart("file") MultipartFile file);
+    ResponseEntity<CreateFileResponse> create(
+            @PathVariable UUID folderId,
+            @RequestPart("file") MultipartFile file);
 
     @GetMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "Retrive a file", description = "This method retrive a file")

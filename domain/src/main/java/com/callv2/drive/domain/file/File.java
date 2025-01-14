@@ -4,10 +4,13 @@ import java.time.Instant;
 
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
 
 public class File extends AggregateRoot<FileID> {
+
+    private FolderID folder;
 
     private FileName name;
     private Content content;
@@ -17,12 +20,14 @@ public class File extends AggregateRoot<FileID> {
 
     private File(
             final FileID anId,
+            final FolderID folder,
             final FileName name,
             final Content content,
             final Instant createdAt,
             final Instant updatedAt) {
         super(anId);
 
+        this.folder = folder;
         this.name = name;
         this.content = content;
         this.createdAt = createdAt;
@@ -38,16 +43,18 @@ public class File extends AggregateRoot<FileID> {
 
     public static File with(
             final FileID id,
+            final FolderID folder,
             final FileName name,
             final Content content,
             final Instant createdAt,
             final Instant updatedAt) {
-        return new File(id, name, content, createdAt, updatedAt);
+        return new File(id, folder, name, content, createdAt, updatedAt);
     }
 
     public static File with(final File file) {
         return File.with(
                 file.getId(),
+                file.getFolder(),
                 file.getName(),
                 file.getContent(),
                 file.getCreatedAt(),
@@ -55,6 +62,7 @@ public class File extends AggregateRoot<FileID> {
     }
 
     public static File create(
+            final FolderID folder,
             final FileName name,
             final Content content) {
 
@@ -62,6 +70,7 @@ public class File extends AggregateRoot<FileID> {
 
         return new File(
                 FileID.unique(),
+                folder,
                 name,
                 content,
                 now,
@@ -69,9 +78,14 @@ public class File extends AggregateRoot<FileID> {
     }
 
     public File update(
+            final FolderID folder,
             final FileName name,
             final Content content) {
 
+        if (this.folder.equals(folder) && this.name.equals(name) && this.content.equals(content))
+            return this;
+
+        this.folder = folder;
         this.name = name;
         this.content = content;
 
@@ -95,6 +109,10 @@ public class File extends AggregateRoot<FileID> {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public FolderID getFolder() {
+        return folder;
     }
 
     private void selfValidate() {
