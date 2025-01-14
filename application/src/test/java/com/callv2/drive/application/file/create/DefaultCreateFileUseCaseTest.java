@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,9 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
+        when(fileGateway.findByFolder(any()))
+                .thenReturn(List.of());
+
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
@@ -78,6 +82,8 @@ public class DefaultCreateFileUseCaseTest {
         verify(folderGateway, times(1)).findById(eq(expectedFolderId));
         verify(contentGateway, times(1)).store(any(), any());
         verify(contentGateway, times(1)).store(any(), eq(expectedContent));
+        verify(fileGateway, times(1)).findByFolder(any());
+        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
@@ -90,7 +96,6 @@ public class DefaultCreateFileUseCaseTest {
             assertEquals(file.getCreatedAt(), file.getUpdatedAt());
 
             return true;
-
         }));
 
     }
