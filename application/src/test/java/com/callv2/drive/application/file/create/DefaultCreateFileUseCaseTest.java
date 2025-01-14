@@ -2,6 +2,7 @@ package com.callv2.drive.application.file.create;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -20,6 +21,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.file.Content;
+import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileName;
@@ -97,6 +101,56 @@ public class DefaultCreateFileUseCaseTest {
 
             return true;
         }));
+
+    }
+
+    @Test
+    void givenAValidParamsWithAlreadyExistingFileNameOnSameFolder_whenCallsExecute_thenShouldCreateFile() {
+
+        final var folder = Folder.createRoot();
+
+        final var expectedFolderId = folder.getId();
+
+        final var expectedFileName = FileName.of("file");
+        final var expectedContentType = "image/jpeg";
+        final var contentBytes = "content".getBytes();
+
+        final var expectedContent = new ByteArrayInputStream(contentBytes);
+        final var expectedContentSize = (long) contentBytes.length;
+
+        final var fileWithSameName = File.create(folder.getId(), expectedFileName, Content.of("location", "text", 10));
+
+        final var expectedExceptionMessage = "Could not create Aggregate File";
+        final var expectedErrorMessage = "File with same name already exists on this folder";
+
+        when(fileGateway.findByFolder(any()))
+                .thenReturn(List.of(fileWithSameName));
+
+        when(folderGateway.findById(any()))
+                .thenReturn(Optional.of(folder));
+
+        when(contentGateway.store(any(), any()))
+                .then(returnsFirstArg());
+
+        final var input = CreateFileInput.of(
+                expectedFolderId.getValue(),
+                expectedFileName.value(),
+                expectedContentType,
+                expectedContent,
+                expectedContentSize);
+
+        final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(input));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        verify(folderGateway, times(1)).findById(any());
+        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(contentGateway, times(1)).store(any(), any());
+        verify(contentGateway, times(1)).store(any(), eq(expectedContent));
+        verify(fileGateway, times(1)).findByFolder(any());
+        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
+        verify(fileGateway, times(0)).create(any());
 
     }
 
