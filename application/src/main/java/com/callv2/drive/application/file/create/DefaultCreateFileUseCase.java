@@ -1,6 +1,7 @@
 package com.callv2.drive.application.file.create;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.validation.Error;
 import com.callv2.drive.domain.validation.handler.Notification;
 
 public class DefaultCreateFileUseCase extends CreateFileUseCase {
@@ -51,6 +53,10 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
         final Notification notification = Notification.create();
         final File file = notification.valdiate(() -> File.create(folderId, fileName, content));
+
+        List<File> filesOnSameFolder = fileGateway.findByFolder(folderId);
+        if (filesOnSameFolder.stream().map(File::getName).anyMatch(fileName::equals))
+            notification.append(Error.with("File with same name already exists on this folder"));
 
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate File", notification);
