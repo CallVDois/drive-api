@@ -139,6 +139,22 @@ public class Folder extends AggregateRoot<FolderID> {
         return this;
     }
 
+    public Folder removeSubFolder(final Folder folder) {
+
+        if (folder == null)
+            return this;
+
+        final SubFolder subFolder = SubFolder.from(folder);
+
+        if (!this.subFolders.contains(subFolder))
+            return this;
+
+        this.subFolders.remove(subFolder);
+        this.updatedAt = Instant.now();
+
+        return this;
+    }
+
     public boolean isRootFolder() {
         return rootFolder;
     }

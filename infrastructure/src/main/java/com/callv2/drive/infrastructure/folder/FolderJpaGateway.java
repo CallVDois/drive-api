@@ -1,8 +1,10 @@
 package com.callv2.drive.infrastructure.folder;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
@@ -32,6 +34,15 @@ public class FolderJpaGateway implements FolderGateway {
     @Override
     public Folder update(Folder folder) {
         return save(folder);
+    }
+
+    @Override
+    @Transactional
+    public void updateAll(List<Folder> folders) {
+
+        System.out.println(folders);
+
+        folders.stream().map(FolderJpaEntity::fromDomain).forEach(this.folderRepository::save);
     }
 
     @Override

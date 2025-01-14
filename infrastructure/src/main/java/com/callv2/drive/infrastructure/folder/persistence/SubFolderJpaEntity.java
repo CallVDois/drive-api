@@ -46,7 +46,7 @@ public class SubFolderJpaEntity {
     }
 
     public SubFolder toDomain() {
-        return SubFolder.with(FolderID.of(getId().getParentFolderId()), FolderName.of(getName()));
+        return SubFolder.with(FolderID.of(getId().getSubFolderId()), FolderName.of(getName()));
     }
 
     public SubFolderID getId() {
