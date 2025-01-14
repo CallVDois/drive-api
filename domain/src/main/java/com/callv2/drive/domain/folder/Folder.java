@@ -1,7 +1,6 @@
 package com.callv2.drive.domain.folder;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.callv2.drive.domain.AggregateRoot;
@@ -34,7 +33,7 @@ public class Folder extends AggregateRoot<FolderID> {
         super(id);
         this.name = name;
         this.parentFolder = parentFolder;
-        this.subFolders = new HashSet<>(subFolders);
+        this.subFolders = subFolders == null ? Set.of() : Set.copyOf(subFolders);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
@@ -152,7 +151,7 @@ public class Folder extends AggregateRoot<FolderID> {
     }
 
     public Set<SubFolder> getSubFolders() {
-        return new HashSet<>(subFolders);
+        return Set.copyOf(subFolders);
     }
 
     public Instant getCreatedAt() {
