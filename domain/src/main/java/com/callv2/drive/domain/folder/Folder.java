@@ -43,9 +43,16 @@ public class Folder extends AggregateRoot<FolderID> {
         selfValidate();
     }
 
-    @Override
-    public void validate(ValidationHandler handler) {
-        new FolderValidator(this, handler).validate();
+    public static Folder with(
+            final FolderID id,
+            final FolderName name,
+            final FolderID parentFolder,
+            final Set<SubFolder> subFolders,
+            final Instant createdAt,
+            final Instant updatedAt,
+            final Instant deletedAt,
+            final boolean rootFolder) {
+        return new Folder(id, name, parentFolder, subFolders, createdAt, updatedAt, deletedAt, rootFolder);
     }
 
     public static Folder createRoot() {
@@ -77,6 +84,11 @@ public class Folder extends AggregateRoot<FolderID> {
                 now,
                 null,
                 false);
+    }
+
+    @Override
+    public void validate(ValidationHandler handler) {
+        new FolderValidator(this, handler).validate();
     }
 
     public Folder changeName(final FolderName name) {
