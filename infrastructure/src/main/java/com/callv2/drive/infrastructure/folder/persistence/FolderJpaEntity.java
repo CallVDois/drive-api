@@ -68,12 +68,15 @@ public class FolderJpaEntity {
     public FolderJpaEntity() {
     }
 
-    public static FolderJpaEntity from(final Folder folder) {
+    public static FolderJpaEntity fromDomain(final Folder folder) {
+
+        final UUID parentFolderId = folder.getParentFolder() == null ? null : folder.getParentFolder().getValue();
+
         final var entity = new FolderJpaEntity(
                 folder.getId().getValue(),
                 folder.isRootFolder(),
                 folder.getName().value(),
-                folder.getParentFolder().getValue(),
+                parentFolderId,
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
                 folder.getDeletedAt());

@@ -8,6 +8,8 @@ public interface FolderGateway {
 
     Folder create(Folder folder);
 
+    Folder update(Folder folder);
+
     Optional<Folder> findById(FolderID id);
 
 }

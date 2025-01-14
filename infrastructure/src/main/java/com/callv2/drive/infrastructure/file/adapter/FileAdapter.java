@@ -7,7 +7,7 @@ import com.callv2.drive.domain.exception.InternalErrorException;
 
 public interface FileAdapter {
 
-    static CreateFileInput adaptCreateFileInput(final MultipartFile aFile) {
+    static CreateFileInput adapt(final MultipartFile aFile) {
         try {
             return CreateFileInput.of(
                     aFile.getOriginalFilename(),

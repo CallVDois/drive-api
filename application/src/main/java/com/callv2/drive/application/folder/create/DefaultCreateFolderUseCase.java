@@ -26,14 +26,16 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
 
         Folder parentFolder;
 
-        if (parentFolderId.isEmpty())
-            parentFolder = folderGateway.findRoot().orElse(folderGateway.create(Folder.createRoot()));
-        else
+        if (parentFolderId.isEmpty()) {
+            final Optional<Folder> root = folderGateway.findRoot();
+            parentFolder = root.isPresent() ? root.get() : folderGateway.create(Folder.createRoot());
+        } else {
             parentFolder = folderGateway
                     .findById(parentFolderId.get())
                     .orElseThrow(() -> NotFoundException.with(
                             Folder.class,
                             "Parent fodler with id %s not found".formatted(input.parentFolderId().toString())));
+        }
 
         return CreateFolderOutput.from(createFolder(FolderName.of(input.name()), parentFolder));
     }
@@ -48,6 +50,7 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate Folder", notification);
 
+        folderGateway.update(parentFolder.addSubFolder(folder));
         return folderGateway.create(folder);
     }
 

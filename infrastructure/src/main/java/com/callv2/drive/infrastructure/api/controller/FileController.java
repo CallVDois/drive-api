@@ -43,7 +43,7 @@ public class FileController implements FileAPI {
     @Override
     public ResponseEntity<CreateFileResponse> create(MultipartFile file) {
 
-        final var response = FilePresenter.present(createFileUseCase.execute(FileAdapter.adaptCreateFileInput(file)));
+        final var response = FilePresenter.present(createFileUseCase.execute(FileAdapter.adapt(file)));
 
         return ResponseEntity
                 .created(URI.create("/files/" + response.id()))
