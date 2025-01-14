@@ -51,7 +51,7 @@ public class FileController implements FileAPI {
     }
 
     @Override
-    public ResponseEntity<GetFileResponse> get(UUID id) {
+    public ResponseEntity<GetFileResponse> getById(UUID id) {
         return ResponseEntity.ok(FilePresenter.presenter(getFileUseCase.execute(GetFileInput.from(id))));
     }
 

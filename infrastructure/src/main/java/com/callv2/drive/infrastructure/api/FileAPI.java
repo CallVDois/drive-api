@@ -47,7 +47,7 @@ public interface FileAPI {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    ResponseEntity<GetFileResponse> get(@PathVariable(required = true) UUID id);
+    ResponseEntity<GetFileResponse> getById(@PathVariable(required = true) UUID id);
 
     @GetMapping(value = "{id}/download", produces = { MediaType.APPLICATION_OCTET_STREAM_VALUE })
     @Operation(summary = "Download a file", description = "This method downloads a file")
