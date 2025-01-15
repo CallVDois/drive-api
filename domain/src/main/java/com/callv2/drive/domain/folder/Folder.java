@@ -75,7 +75,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
         Instant now = Instant.now();
 
-        return Folder.with(
+        final var folder = Folder.with(
                 FolderID.unique(),
                 name,
                 parentFolder.getId(),
@@ -84,6 +84,9 @@ public class Folder extends AggregateRoot<FolderID> {
                 now,
                 null,
                 false);
+
+        parentFolder.addSubFolder(folder);
+        return folder;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
     }
 
     @Override
-    public CreateFolderOutput execute(CreateFolderInput input) {
+    public CreateFolderOutput execute(final CreateFolderInput input) {
 
         final Optional<FolderID> parentFolderId = Optional.ofNullable(input.parentFolderId()).map(FolderID::of);
 
@@ -40,17 +40,17 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
         return CreateFolderOutput.from(createFolder(FolderName.of(input.name()), parentFolder));
     }
 
-    private Folder createFolder(FolderName name, Folder parentFolder) {
+    private Folder createFolder(final FolderName name, final Folder parentFolder) {
         final Notification notification = Notification.create();
-        final Folder folder = notification.valdiate(() -> Folder.create(name, parentFolder));
-
         if (parentFolder.getSubFolders().stream().anyMatch(subFolder -> subFolder.name().equals(name)))
             notification.append(Error.with("Folder with the same name already exists"));
+
+        final Folder folder = notification.valdiate(() -> Folder.create(name, parentFolder));
 
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate Folder", notification);
 
-        folderGateway.update(parentFolder.addSubFolder(folder));
+        folderGateway.update(parentFolder);
         return folderGateway.create(folder);
     }
 

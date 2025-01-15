@@ -34,17 +34,6 @@ public record GetFolderOutput(
                 folder.getDeletedAt());
     }
 
-    public static GetFolderOutput with(
-            final UUID id,
-            final String name,
-            final UUID parentFolder,
-            final List<GetFolderOutput.SubFolder> subFolders,
-            final Instant createdAt,
-            final Instant updatedAt,
-            final Instant deletedAt) {
-        return new GetFolderOutput(id, name, parentFolder, subFolders, createdAt, updatedAt, deletedAt);
-    }
-
     public static record SubFolder(UUID id, String name) {
 
         public static GetFolderOutput.SubFolder from(com.callv2.drive.domain.folder.SubFolder subFolder) {
