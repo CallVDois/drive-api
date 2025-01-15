@@ -27,35 +27,4 @@ public class DefaultFileContentGateway implements FileContentGateway {
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
-    // @Override
-    // public Content load(final File file) {
-    // return storageService.load(file.getContentLocation());
-    // }
-
-    // public FileSystemResource load2(final File file) {
-
-    // Content originalContent = storageService.load(file.getContent());
-
-    // try {
-
-    // // Comprime o conteúdo usando GZIP
-    // ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    // GZIPOutputStream gzipStream = new GZIPOutputStream(byteStream);
-
-    // byte[] buffer = new byte[8192];
-    // int bytesRead;
-    // while ((bytesRead = originalContent.inputStream().read(buffer)) != -1) {
-    // gzipStream.write(buffer, 0, bytesRead);
-    // }
-
-    // gzipStream.close();
-    // byte[] compressedData = byteStream.toByteArray();
-
-    // return Content.of(new ByteArrayInputStream(compressedData),
-    // compressedData.length);
-    // } catch (Exception e) {
-    // throw new RuntimeException("Erro ao comprimir conteúdo", e);
-    // }
-    // }
-
 }
