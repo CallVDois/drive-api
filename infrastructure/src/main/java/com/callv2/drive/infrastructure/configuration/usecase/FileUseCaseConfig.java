@@ -11,23 +11,27 @@ import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
+import com.callv2.drive.domain.folder.FolderGateway;
 
 @Configuration
 public class FileUseCaseConfig {
 
+    private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
     private final FileContentGateway contentGateway;
 
     public FileUseCaseConfig(
+            final FolderGateway folderGateway,
             final FileGateway fileGateway,
             final FileContentGateway contentGateway) {
+        this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.contentGateway = contentGateway;
     }
 
     @Bean
     CreateFileUseCase createFileUseCase() {
-        return new DefaultCreateFileUseCase(fileGateway, contentGateway);
+        return new DefaultCreateFileUseCase(folderGateway, fileGateway, contentGateway);
     }
 
     @Bean

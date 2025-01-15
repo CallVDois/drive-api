@@ -41,9 +41,9 @@ public class FileController implements FileAPI {
     }
 
     @Override
-    public ResponseEntity<CreateFileResponse> create(MultipartFile file) {
+    public ResponseEntity<CreateFileResponse> create(UUID folderId, MultipartFile file) {
 
-        final var response = FilePresenter.present(createFileUseCase.execute(FileAdapter.adaptCreateFileInput(file)));
+        final var response = FilePresenter.present(createFileUseCase.execute(FileAdapter.adapt(folderId, file)));
 
         return ResponseEntity
                 .created(URI.create("/files/" + response.id()))
@@ -51,7 +51,7 @@ public class FileController implements FileAPI {
     }
 
     @Override
-    public ResponseEntity<GetFileResponse> get(UUID id) {
+    public ResponseEntity<GetFileResponse> getById(UUID id) {
         return ResponseEntity.ok(FilePresenter.presenter(getFileUseCase.execute(GetFileInput.from(id))));
     }
 

@@ -7,6 +7,7 @@ import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
+import com.callv2.drive.domain.folder.FolderID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,9 @@ public class FileJpaEntity {
 
     @Id
     private UUID id;
+
+    @Column(name = "folder_id", nullable = false)
+    private UUID folderId;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -40,6 +44,7 @@ public class FileJpaEntity {
 
     private FileJpaEntity(
             final UUID id,
+            final UUID folderId,
             final String name,
             final String contentType,
             final String contentLocation,
@@ -47,6 +52,7 @@ public class FileJpaEntity {
             final Instant createdAt,
             final Instant updatedAt) {
         this.id = id;
+        this.folderId = folderId;
         this.name = name;
         this.contentType = contentType;
         this.contentLocation = contentLocation;
@@ -61,6 +67,7 @@ public class FileJpaEntity {
     public static FileJpaEntity from(final File file) {
         return new FileJpaEntity(
                 file.getId().getValue(),
+                file.getFolder().getValue(),
                 file.getName().value(),
                 file.getContent().type(),
                 file.getContent().location(),
@@ -72,6 +79,7 @@ public class FileJpaEntity {
     public File toDomain() {
         return File.with(
                 FileID.of(getId()),
+                FolderID.of(getFolderId()),
                 FileName.of(getName()),
                 Content.of(getContentLocation(), getContentType(), getContentSize()),
                 getCreatedAt(),
@@ -84,6 +92,14 @@ public class FileJpaEntity {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(UUID folderId) {
+        this.folderId = folderId;
     }
 
     public String getName() {

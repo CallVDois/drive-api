@@ -15,4 +15,8 @@ public class ValidationException extends DomainException {
         return new ValidationException(aMessage, List.copyOf(aNotification.getErrors()));
     }
 
+    public static ValidationException with(final String message, final Error error) {
+        return new ValidationException(message, List.of(error));
+    }
+
 }
