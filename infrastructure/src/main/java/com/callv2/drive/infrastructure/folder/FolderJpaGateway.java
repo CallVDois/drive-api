@@ -39,10 +39,7 @@ public class FolderJpaGateway implements FolderGateway {
     @Override
     @Transactional
     public void updateAll(List<Folder> folders) {
-
-        System.out.println(folders);
-
-        folders.stream().map(FolderJpaEntity::fromDomain).forEach(this.folderRepository::save);
+        this.folderRepository.saveAll(folders.stream().map(FolderJpaEntity::fromDomain).toList());
     }
 
     @Override
