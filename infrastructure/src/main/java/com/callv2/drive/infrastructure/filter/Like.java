@@ -4,9 +4,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.callv2.drive.domain.pagination.SearchQuery;
+import com.callv2.drive.infrastructure.converter.Caster;
 
 @Component
-public class Like implements SpecificationFilter {
+public class Like extends SpecificationFilter {
+
+    public Like(final Caster caster) {
+        super(caster);
+    }
 
     @Override
     public SearchQuery.Filter.Type filterType() {
@@ -14,7 +19,7 @@ public class Like implements SpecificationFilter {
     }
 
     @Override
-    public <T, V extends Comparable<V>> Specification<T> buildSpecification(final SearchQuery.Filter<V> filter) {
+    public <T> Specification<T> buildSpecification(SearchQuery.Filter filter) {
 
         validateFilter(filter);
 
@@ -22,7 +27,7 @@ public class Like implements SpecificationFilter {
                 .like(root.get(filter.field()), "%" + filter.value() + "%");
     }
 
-    private void validateFilter(final SearchQuery.Filter<?> filter) {
+    private void validateFilter(final SearchQuery.Filter filter) {
         if (filter.value() == null)
             throw new IllegalArgumentException("Value cannot be null");
 

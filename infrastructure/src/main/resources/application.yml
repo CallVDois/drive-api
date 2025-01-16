@@ -32,4 +32,4 @@ spring:
 
 storage:
   file-system:
-    location: C:\Users\jhona\Desktop\Workspace\teste
+    location: /home/jhonatapers/callv2/storage

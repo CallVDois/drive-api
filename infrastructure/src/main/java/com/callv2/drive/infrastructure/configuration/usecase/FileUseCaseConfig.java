@@ -9,6 +9,8 @@ import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.create.DefaultCreateFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
+import com.callv2.drive.application.file.retrieve.list.DefaultListFilesUseCase;
+import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
 import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
@@ -44,4 +46,8 @@ public class FileUseCaseConfig {
         return new DefaultGetFileContentUseCase(fileGateway);
     }
 
+    @Bean
+    ListFilesUseCase listFilesUseCase() {
+        return new DefaultListFilesUseCase(fileGateway);
+    }
 }

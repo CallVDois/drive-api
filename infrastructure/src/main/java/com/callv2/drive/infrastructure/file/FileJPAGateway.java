@@ -15,20 +15,20 @@ import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.file.persistence.FileJpaEntity;
 import com.callv2.drive.infrastructure.file.persistence.FileJpaRepository;
-import com.callv2.drive.infrastructure.filter.SpecificationFilterService;
+import com.callv2.drive.infrastructure.filter.FilterService;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 
 @Component
 public class FileJPAGateway implements FileGateway {
 
-    private final SpecificationFilterService specificationFilterService;
+    private final FilterService filterService;
     private final FileJpaRepository fileRepository;
 
     public FileJPAGateway(
             final FileJpaRepository fileRepository,
-            final SpecificationFilterService specificationFilterService) {
+            final FilterService specificationFilterService) {
         this.fileRepository = fileRepository;
-        this.specificationFilterService = specificationFilterService;
+        this.filterService = specificationFilterService;
     }
 
     @Override
@@ -55,12 +55,12 @@ public class FileJPAGateway implements FileGateway {
 
         final var page = QueryAdapter.of(searchQuery);
 
-        final List<Specification<FileJpaEntity>> specifications = specificationFilterService
-                .buildSpecifications(FileJpaEntity.class, searchQuery.filtersList());
+        final Specification<FileJpaEntity> specification = filterService.buildSpecification(
+                FileJpaEntity.class,
+                searchQuery.filters());
 
-        final Specification<FileJpaEntity> specification = SpecificationFilterService.orSpecifications(specifications);
-
-        Page<FileJpaEntity> pageResult = this.fileRepository.findAll(Specification.where(specification), page);
+        final Page<FileJpaEntity> pageResult = this.fileRepository.findAll(Specification.where(specification),
+                page);
 
         return new Pagination<>(
                 pageResult.getNumber(),
@@ -68,6 +68,7 @@ public class FileJPAGateway implements FileGateway {
                 pageResult.getTotalPages(),
                 pageResult.getTotalElements(),
                 pageResult.map(FileJpaEntity::toDomain).toList());
+
     }
 
 }

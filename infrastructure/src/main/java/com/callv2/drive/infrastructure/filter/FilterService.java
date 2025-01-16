@@ -9,16 +9,22 @@ import org.springframework.stereotype.Component;
 import com.callv2.drive.domain.pagination.SearchQuery;
 
 @Component
-public class SpecificationFilterService {
+public class FilterService {
 
     private final List<SpecificationFilter> filters;
 
-    public SpecificationFilterService(final List<SpecificationFilter> filters) {
+    public FilterService(final List<SpecificationFilter> filters) {
         this.filters = List.copyOf(Objects.requireNonNull(filters));
     }
 
-    public <T> List<Specification<T>> buildSpecifications(Class<T> entityClass,
-            final List<SearchQuery.Filter<?>> filters) {
+    public <T> Specification<T> buildSpecification(
+            final Class<T> entityClass,
+            final List<SearchQuery.Filter> filters) {
+        return Specification.where(orSpecifications(buildSpecifications(entityClass, filters)));
+    }
+
+    private <T> List<Specification<T>> buildSpecifications(Class<T> entityClass,
+            final List<SearchQuery.Filter> filters) {
         if (filters == null)
             return List.of();
 
@@ -27,8 +33,8 @@ public class SpecificationFilterService {
                 .toList();
     }
 
-    public <T> Specification<T> buildSpecification(Class<T> entityClass,
-            final SearchQuery.Filter<?> filter) {
+    private <T> Specification<T> buildSpecification(Class<T> entityClass,
+            final SearchQuery.Filter filter) {
         final var specification = filters.stream()
                 .filter(f -> f.filterType().equals(filter.type()))
                 .findFirst()
@@ -37,7 +43,7 @@ public class SpecificationFilterService {
         return specification.buildSpecification(filter);
     }
 
-    public static <T> Specification<T> orSpecifications(final List<Specification<T>> specifications) {
+    private static <T> Specification<T> orSpecifications(final List<Specification<T>> specifications) {
         return specifications.stream()
                 .filter(Objects::nonNull)
                 .reduce(Specification::or)
