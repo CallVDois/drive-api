@@ -84,6 +84,7 @@ public class FileController implements FileAPI {
             final int perPage,
             final String orderField,
             final Direction orderDirection,
+            final SearchQuery.FilterMethod filterMethod,
             final List<String> filters) {
 
         final List<SearchQuery.Filter> searchFilters = filters == null ? List.of()
@@ -96,6 +97,7 @@ public class FileController implements FileAPI {
                 page,
                 perPage,
                 SearchQuery.Order.of(orderField, orderDirection),
+                filterMethod,
                 searchFilters);
 
         return ResponseEntity.ok(listFilesUseCase.execute(query).map(FilePresenter::present));

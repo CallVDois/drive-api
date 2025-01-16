@@ -12,14 +12,29 @@ public record SearchQuery(
         int page,
         int perPage,
         Order order,
+        FilterMethod filterMethod,
         List<Filter> filters) {
 
     public static SearchQuery of(
             final int page,
             final int perPage,
             final Order order,
+            final FilterMethod filterMethod,
             final List<Filter> filters) {
-        return new SearchQuery(page, perPage, order, filters);
+        return new SearchQuery(page, perPage, order, filterMethod, filters);
+    }
+
+    public enum FilterMethod {
+        AND, OR;
+
+        public static Optional<FilterMethod> of(final String type) {
+            if (type == null)
+                return Optional.empty();
+
+            return Arrays.stream(FilterMethod.values())
+                    .filter(it -> it.name().equalsIgnoreCase(type))
+                    .findFirst();
+        }
     }
 
     public record Filter(String field, String value, String valueToCompare, Type type) {

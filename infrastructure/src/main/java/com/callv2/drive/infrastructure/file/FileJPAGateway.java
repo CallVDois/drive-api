@@ -57,6 +57,7 @@ public class FileJPAGateway implements FileGateway {
 
         final Specification<FileJpaEntity> specification = filterService.buildSpecification(
                 FileJpaEntity.class,
+                searchQuery.filterMethod(),
                 searchQuery.filters());
 
         final Page<FileJpaEntity> pageResult = this.fileRepository.findAll(Specification.where(specification),
