@@ -13,20 +13,25 @@ import com.callv2.drive.application.folder.retrieve.get.root.DefaultGetRootFolde
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.list.DefaultListFoldersUseCase;
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
+import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
 
 @Configuration
 public class FolderUseCaseConfig {
 
     private final FolderGateway folderGateway;
+    private final FileGateway fileGateway;
 
-    public FolderUseCaseConfig(final FolderGateway folderGateway) {
+    public FolderUseCaseConfig(
+            final FolderGateway folderGateway,
+            final FileGateway fileGateway) {
         this.folderGateway = folderGateway;
+        this.fileGateway = fileGateway;
     }
 
     @Bean
     GetRootFolderUseCase getRootFolderUseCase() {
-        return new DefaultGetRootFolderUseCase(folderGateway);
+        return new DefaultGetRootFolderUseCase(folderGateway, fileGateway);
     }
 
     @Bean
@@ -36,7 +41,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     GetFolderUseCase getFolderUseCase() {
-        return new DefaultGetFolderUseCase(folderGateway);
+        return new DefaultGetFolderUseCase(folderGateway, fileGateway);
     }
 
     @Bean
