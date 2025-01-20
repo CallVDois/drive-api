@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.api.controller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.core.io.FileSystemResource;
@@ -18,11 +19,17 @@ import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
+import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
+import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.SearchQuery;
+import com.callv2.drive.domain.pagination.SearchQuery.Order.Direction;
 import com.callv2.drive.infrastructure.api.FileAPI;
 import com.callv2.drive.infrastructure.file.adapter.FileAdapter;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
+import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 import com.callv2.drive.infrastructure.file.presenter.FilePresenter;
+import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 
 @RestController
 public class FileController implements FileAPI {
@@ -30,14 +37,17 @@ public class FileController implements FileAPI {
     private final CreateFileUseCase createFileUseCase;
     private final GetFileUseCase getFileUseCase;
     private final GetFileContentUseCase getFileContentUseCase;
+    private final ListFilesUseCase listFilesUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
             final GetFileUseCase getFileUseCase,
-            final GetFileContentUseCase getFileContentUseCase) {
+            final GetFileContentUseCase getFileContentUseCase,
+            final ListFilesUseCase listFilesUseCase) {
         this.createFileUseCase = createFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.getFileContentUseCase = getFileContentUseCase;
+        this.listFilesUseCase = listFilesUseCase;
     }
 
     @Override
@@ -52,7 +62,7 @@ public class FileController implements FileAPI {
 
     @Override
     public ResponseEntity<GetFileResponse> getById(UUID id) {
-        return ResponseEntity.ok(FilePresenter.presenter(getFileUseCase.execute(GetFileInput.from(id))));
+        return ResponseEntity.ok(FilePresenter.present(getFileUseCase.execute(GetFileInput.from(id))));
     }
 
     @Override
@@ -66,6 +76,31 @@ public class FileController implements FileAPI {
                 .contentLength(output.size())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(new FileSystemResource(output.location()));
+    }
+
+    @Override
+    public ResponseEntity<Pagination<FileListResponse>> list(
+            final int page,
+            final int perPage,
+            final String orderField,
+            final Direction orderDirection,
+            final SearchQuery.FilterMethod filterMethod,
+            final List<String> filters) {
+
+        final List<SearchQuery.Filter> searchFilters = filters == null ? List.of()
+                : filters
+                        .stream()
+                        .map(QueryAdapter::of)
+                        .toList();
+
+        final SearchQuery query = SearchQuery.of(
+                page,
+                perPage,
+                SearchQuery.Order.of(orderField, orderDirection),
+                filterMethod,
+                searchFilters);
+
+        return ResponseEntity.ok(listFilesUseCase.execute(query).map(FilePresenter::present));
     }
 
 }
