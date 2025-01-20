@@ -1,5 +1,6 @@
 package com.callv2.drive.infrastructure.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.MediaType;
@@ -10,10 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
+import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
@@ -66,5 +71,20 @@ public interface FolderAPI {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     ResponseEntity<Void> move(@PathVariable(required = true) UUID id, @RequestBody MoveFolderRequest request);
+
+    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
+    @Operation(summary = "List folders", description = "This method list folders")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Folders listed successfully", content = @Content(schema = @Schema(implementation = Pagination.class, subTypes = {
+                    FolderListResponse.class }))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    })
+    ResponseEntity<Pagination<FolderListResponse>> list(
+            @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
+            @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+            @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
+            @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") SearchQuery.Order.Direction orderDirection,
+            @RequestParam(name = "filterMethod", required = false, defaultValue = "AND") SearchQuery.FilterMethod filterMethod,
+            @RequestParam(name = "filters", required = false) List<String> filters);
 
 }

@@ -11,6 +11,8 @@ import com.callv2.drive.application.folder.retrieve.get.DefaultGetFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.GetFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.root.DefaultGetRootFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderUseCase;
+import com.callv2.drive.application.folder.retrieve.list.DefaultListFoldersUseCase;
+import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.domain.folder.FolderGateway;
 
 @Configuration
@@ -40,6 +42,11 @@ public class FolderUseCaseConfig {
     @Bean
     MoveFolderUseCase moveFolderUseCase() {
         return new DefaultMoveFolderUseCase(folderGateway);
+    }
+
+    @Bean
+    ListFoldersUseCase listFoldersUseCase() {
+        return new DefaultListFoldersUseCase(folderGateway);
     }
 
 }
