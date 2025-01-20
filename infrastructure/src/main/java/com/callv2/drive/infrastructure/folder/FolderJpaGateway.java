@@ -3,21 +3,31 @@ package com.callv2.drive.infrastructure.folder;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.SearchQuery;
+import com.callv2.drive.infrastructure.filter.FilterService;
+import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.folder.persistence.FolderJpaEntity;
 import com.callv2.drive.infrastructure.folder.persistence.FolderJpaRepository;
 
 @Component
 public class FolderJpaGateway implements FolderGateway {
 
-    private FolderJpaRepository folderRepository;
+    private final FilterService filterService;
+    private final FolderJpaRepository folderRepository;
 
-    public FolderJpaGateway(final FolderJpaRepository folderRepository) {
+    public FolderJpaGateway(
+            final FilterService filterService,
+            final FolderJpaRepository folderRepository) {
+        this.filterService = filterService;
         this.folderRepository = folderRepository;
     }
 
@@ -49,6 +59,26 @@ public class FolderJpaGateway implements FolderGateway {
 
     private Folder save(Folder folder) {
         return this.folderRepository.save(FolderJpaEntity.fromDomain(folder)).toDomain();
+    }
+
+    @Override
+    public Pagination<Folder> findAll(SearchQuery searchQuery) {
+        final var page = QueryAdapter.of(searchQuery);
+
+        final Specification<FolderJpaEntity> specification = filterService.buildSpecification(
+                FolderJpaEntity.class,
+                searchQuery.filterMethod(),
+                searchQuery.filters());
+
+        final Page<FolderJpaEntity> pageResult = this.folderRepository.findAll(Specification.where(specification),
+                page);
+
+        return new Pagination<>(
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalPages(),
+                pageResult.getTotalElements(),
+                pageResult.map(FolderJpaEntity::toDomain).toList());
     }
 
 }

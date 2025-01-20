@@ -1,7 +1,5 @@
 package com.callv2.drive.application.folder.create;
 
-import java.util.Optional;
-
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.Folder;
@@ -21,21 +19,11 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
 
     @Override
     public CreateFolderOutput execute(final CreateFolderInput input) {
-
-        final Optional<FolderID> parentFolderId = Optional.ofNullable(input.parentFolderId()).map(FolderID::of);
-
-        Folder parentFolder;
-
-        if (parentFolderId.isEmpty()) {
-            final Optional<Folder> root = folderGateway.findRoot();
-            parentFolder = root.isPresent() ? root.get() : folderGateway.create(Folder.createRoot());
-        } else {
-            parentFolder = folderGateway
-                    .findById(parentFolderId.get())
-                    .orElseThrow(() -> NotFoundException.with(
-                            Folder.class,
-                            "Parent folder with id %s not found".formatted(input.parentFolderId().toString())));
-        }
+        final Folder parentFolder = folderGateway
+                .findById(FolderID.of(input.parentFolderId()))
+                .orElseThrow(() -> NotFoundException.with(
+                        Folder.class,
+                        "Parent folder with id %s not found".formatted(input.parentFolderId().toString())));
 
         return CreateFolderOutput.from(createFolder(FolderName.of(input.name()), parentFolder));
     }

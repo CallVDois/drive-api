@@ -4,14 +4,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public record GetFolderResponse(
+public record GetRootFolderResponse(
         UUID id,
-        String name,
-        UUID parentFolder,
-        List<GetFolderResponse.SubFolder> subFolders,
-        List<GetFolderResponse.File> files,
-        Instant createdAt,
-        Instant updatedAt) {
+        List<GetRootFolderResponse.SubFolder> subFolders,
+        List<GetRootFolderResponse.File> files,
+        Instant createdAt) {
 
     public static record SubFolder(UUID id, String name) {
     }
