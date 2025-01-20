@@ -15,6 +15,7 @@ import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
+import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Folders")
 @RequestMapping("folders")
 public interface FolderAPI {
+
+    @GetMapping(value = "root", produces = { MediaType.APPLICATION_JSON_VALUE })
+    @Operation(summary = "Retrive a folder", description = "This method retrive a root folder")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Root folder retrived successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    })
+    ResponseEntity<GetRootFolderResponse> getRoot();
 
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
             MediaType.APPLICATION_JSON_VALUE })

@@ -2,8 +2,10 @@ package com.callv2.drive.infrastructure.folder.presenter;
 
 import com.callv2.drive.application.folder.create.CreateFolderOutput;
 import com.callv2.drive.application.folder.retrieve.get.GetFolderOutput;
+import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderOutput;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
+import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 
 public interface FolderPresenter {
 
@@ -22,6 +24,17 @@ public interface FolderPresenter {
                 output.createdAt(),
                 output.updatedAt(),
                 output.deletedAt());
+    }
+
+    static GetRootFolderResponse present(GetRootFolderOutput output) {
+        return new GetRootFolderResponse(
+                output.id(),
+                output.subFolders().stream().map(FolderPresenter::present).toList(),
+                output.createdAt());
+    }
+
+    static GetRootFolderResponse.SubFolder present(GetRootFolderOutput.SubFolder subFolder) {
+        return new GetRootFolderResponse.SubFolder(subFolder.id(), subFolder.name());
     }
 
 }
