@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Files")
@@ -34,7 +35,7 @@ public interface FileAPI {
 
 	@PostMapping(value = "/folders/{folderId}/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	@Operation(summary = "Upload a file to a specific folder", description = "This method uploads a file")
+	@Operation(summary = "Upload a file to a specific folder", description = "This method uploads a file", security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 			@ApiResponse(responseCode = "201", description = "File uploaded successfully", content = @Content(schema = @Schema(implementation = CreateFileResponse.class))),
 			@ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -46,7 +47,7 @@ public interface FileAPI {
 			@RequestPart("file") MultipartFile file);
 
 	@GetMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
-	@Operation(summary = "Retrive a file", description = "This method retrive a file")
+	@Operation(summary = "Retrive a file", description = "This method retrive a file", security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "File retrived successfully", content = @Content(schema = @Schema(implementation = GetFileResponse.class))),
 			@ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class))),
@@ -55,7 +56,7 @@ public interface FileAPI {
 	ResponseEntity<GetFileResponse> getById(@PathVariable(required = true) UUID id);
 
 	@GetMapping(value = "{id}/download", produces = { MediaType.APPLICATION_OCTET_STREAM_VALUE })
-	@Operation(summary = "Download a file", description = "This method downloads a file")
+	@Operation(summary = "Download a file", description = "This method downloads a file", security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "File downloaded successfully", content = @Content(schema = @Schema(implementation = Resource.class))),
 			@ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class))),
@@ -64,7 +65,7 @@ public interface FileAPI {
 	ResponseEntity<Resource> download(@PathVariable(required = true) UUID id);
 
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
-	@Operation(summary = "List files", description = "This method list files")
+	@Operation(summary = "List files", description = "This method list files", security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "Files listed successfully", content = @Content(schema = @Schema(implementation = Pagination.class, subTypes = {
 					FileListResponse.class }))),

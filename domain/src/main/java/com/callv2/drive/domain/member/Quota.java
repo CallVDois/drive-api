@@ -12,6 +12,10 @@ public record Quota(long amount, QuotaUnit unit) implements ValueObject {
         return new Quota(amount, unit);
     }
 
+    public long sizeInBytes() {
+        return this.unit != null ? this.unit.toBytes(this.amount) : 0L;
+    }
+
     @Override
     public void validate(ValidationHandler aHandler) {
         if (Objects.isNull(this.amount))

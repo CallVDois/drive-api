@@ -30,6 +30,7 @@ import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 import com.callv2.drive.infrastructure.file.presenter.FilePresenter;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
+import com.callv2.drive.infrastructure.security.SecurityContext;
 
 @RestController
 public class FileController implements FileAPI {
@@ -53,7 +54,10 @@ public class FileController implements FileAPI {
     @Override
     public ResponseEntity<CreateFileResponse> create(UUID folderId, MultipartFile file) {
 
-        final var response = FilePresenter.present(createFileUseCase.execute(FileAdapter.adapt(folderId, file)));
+        final var ownerId = SecurityContext.getAuthenticatedUser();
+
+        final var response = FilePresenter
+                .present(createFileUseCase.execute(FileAdapter.adapt(ownerId, folderId, file)));
 
         return ResponseEntity
                 .created(URI.create("/files/" + response.id()))

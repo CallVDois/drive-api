@@ -42,14 +42,18 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers(HttpMethod.GET, "/members/quotas/requests")
+                            .requestMatchers("admin**")
                             .hasAnyRole(ROLE_ADMIN)
-                            .requestMatchers(HttpMethod.POST, "/members/{id}/quotas/requests/approve")
-                            .hasAnyRole(ROLE_ADMIN)
-                            .requestMatchers(HttpMethod.POST, "/members/quotas/requests{amount}")
-                            .authenticated()
+
+                            .requestMatchers(HttpMethod.GET,
+                                    "swagger-ui.html",
+                                    "/v3/api-docs/**",
+                                    "/swagger-ui/**",
+                                    "/swagger-ui.html")
+                            .permitAll()
+
                             .anyRequest()
-                            .permitAll();
+                            .authenticated();
                 })
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new KeycloakJwtConverter())))

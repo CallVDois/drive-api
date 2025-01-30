@@ -14,4 +14,6 @@ public interface FileJpaRepository extends JpaRepository<FileJpaEntity, UUID> {
 
     List<FileJpaEntity> findByFolderId(UUID folderId);
 
+    List<FileJpaEntity> findByOwnerId(String ownerId);
+
 }

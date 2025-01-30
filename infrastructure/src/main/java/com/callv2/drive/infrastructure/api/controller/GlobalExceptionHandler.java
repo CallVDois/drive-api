@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.api.controller;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.callv2.drive.domain.exception.DomainException;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.exception.QuotaExceededException;
 import com.callv2.drive.domain.exception.ValidationException;
 
 @RestControllerAdvice
@@ -26,6 +28,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = DomainException.class)
     public ResponseEntity<ApiError> handle(final DomainException ex) {
         return ResponseEntity.unprocessableEntity().body(ApiError.from(ex));
+    }
+
+    @ExceptionHandler(value = QuotaExceededException.class)
+    public ResponseEntity<ApiError> handle(final QuotaExceededException ex) {
+        return new ResponseEntity<>(ApiError.from(ex), HttpStatus.PAYMENT_REQUIRED);
     }
 
     @ExceptionHandler(value = ValidationException.class)

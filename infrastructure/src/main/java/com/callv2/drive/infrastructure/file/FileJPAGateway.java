@@ -11,6 +11,7 @@ import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.file.persistence.FileJpaEntity;
@@ -70,6 +71,15 @@ public class FileJPAGateway implements FileGateway {
                 pageResult.getTotalElements(),
                 pageResult.map(FileJpaEntity::toDomain).toList());
 
+    }
+
+    @Override
+    public List<File> findByOwner(MemberID ownerId) {
+        return this.fileRepository
+                .findByOwnerId(ownerId.getValue())
+                .stream()
+                .map(FileJpaEntity::toDomain)
+                .toList();
     }
 
 }

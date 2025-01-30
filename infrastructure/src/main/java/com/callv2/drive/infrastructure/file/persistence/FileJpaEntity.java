@@ -8,6 +8,7 @@ import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +21,9 @@ public class FileJpaEntity {
 
     @Id
     private UUID id;
+
+    @Column(name = "owner_id", nullable = false)
+    private String ownerId;
 
     @Column(name = "folder_id", nullable = false)
     private UUID folderId;
@@ -44,6 +48,7 @@ public class FileJpaEntity {
 
     private FileJpaEntity(
             final UUID id,
+            final String ownerId,
             final UUID folderId,
             final String name,
             final String contentType,
@@ -52,6 +57,7 @@ public class FileJpaEntity {
             final Instant createdAt,
             final Instant updatedAt) {
         this.id = id;
+        this.ownerId = ownerId;
         this.folderId = folderId;
         this.name = name;
         this.contentType = contentType;
@@ -67,6 +73,7 @@ public class FileJpaEntity {
     public static FileJpaEntity from(final File file) {
         return new FileJpaEntity(
                 file.getId().getValue(),
+                file.getOwner().getValue(),
                 file.getFolder().getValue(),
                 file.getName().value(),
                 file.getContent().type(),
@@ -79,6 +86,7 @@ public class FileJpaEntity {
     public File toDomain() {
         return File.with(
                 FileID.of(getId()),
+                MemberID.of(getOwnerId()),
                 FolderID.of(getFolderId()),
                 FileName.of(getName()),
                 Content.of(getContentLocation(), getContentType(), getContentSize()),
@@ -92,6 +100,14 @@ public class FileJpaEntity {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
     public UUID getFolderId() {

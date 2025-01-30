@@ -9,9 +9,10 @@ import com.callv2.drive.domain.exception.InternalErrorException;
 
 public interface FileAdapter {
 
-    static CreateFileInput adapt(UUID folderId, final MultipartFile aFile) {
+    static CreateFileInput adapt(String ownerId, UUID folderId, final MultipartFile aFile) {
         try {
             return CreateFileInput.of(
+                    ownerId,
                     folderId,
                     aFile.getOriginalFilename(),
                     aFile.getContentType(),
