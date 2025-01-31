@@ -67,7 +67,7 @@ public interface FolderAPI {
     @Operation(summary = "Move a folder", description = "This method moves a folder to a new location", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Folder moved successfully", content = @Content(schema = @Schema(implementation = Void.class))),
-            @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })

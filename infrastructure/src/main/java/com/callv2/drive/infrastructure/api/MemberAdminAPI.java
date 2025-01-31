@@ -26,11 +26,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("admin/members")
 public interface MemberAdminAPI {
 
-    @PostMapping("{id}/quotas")
+    @GetMapping("{id}/quotas")
     @Operation(summary = "Request drive quota", description = "This method request a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Retrieve successfuly"),
-            @ApiResponse(responseCode = "404", description = "Member not found")
+            @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     })
     ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable(value = "id", required = true) String id);
 
@@ -38,7 +38,7 @@ public interface MemberAdminAPI {
     @Operation(summary = "Approve drive quota request", description = "This method approve a drive ammount quota request", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Approved successfuly"),
-            @ApiResponse(responseCode = "404", description = "Member not found")
+            @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     })
     ResponseEntity<Void> approveQuotaRequest(
             @PathVariable(value = "id", required = true) String id,

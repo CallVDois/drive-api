@@ -38,7 +38,7 @@ public interface FileAPI {
 	@Operation(summary = "Upload a file to a specific folder", description = "This method uploads a file", security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 			@ApiResponse(responseCode = "201", description = "File uploaded successfully", content = @Content(schema = @Schema(implementation = CreateFileResponse.class))),
-			@ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = ApiError.class))),
+			@ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class))),
 			@ApiResponse(responseCode = "413", description = "File is too large", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
 	})
