@@ -9,15 +9,20 @@ import com.callv2.drive.application.member.quota.request.create.CreateRequestQuo
 import com.callv2.drive.application.member.quota.request.create.DefaultCreateRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.request.list.DefaultListRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaUseCase;
+import com.callv2.drive.application.member.quota.retrieve.get.DefaultGetQuotaUseCase;
+import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaUseCase;
+import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.member.MemberGateway;
 
 @Configuration
 public class MemberUseCaseConfig {
 
     private final MemberGateway memberGateway;
+    private final FileGateway fileGateway;
 
-    public MemberUseCaseConfig(final MemberGateway memberGateway) {
+    public MemberUseCaseConfig(final MemberGateway memberGateway, final FileGateway fileGateway) {
         this.memberGateway = memberGateway;
+        this.fileGateway = fileGateway;
     }
 
     @Bean
@@ -33,6 +38,11 @@ public class MemberUseCaseConfig {
     @Bean
     ListRequestQuotaUseCase listRequestQuotaUseCase() {
         return new DefaultListRequestQuotaUseCase(memberGateway);
+    }
+
+    @Bean
+    GetQuotaUseCase getQuotaUseCase() {
+        return new DefaultGetQuotaUseCase(memberGateway, fileGateway);
     }
 
 }

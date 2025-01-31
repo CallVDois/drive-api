@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.callv2.drive.domain.member.QuotaUnit;
+import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,5 +28,13 @@ public interface MemberAPI {
     ResponseEntity<Void> requestQuota(
             @PathVariable(value = "amount", required = true) long amount,
             @RequestParam(value = "unit", defaultValue = "GIGABYTE") QuotaUnit unit);
+
+    @PostMapping("quotas")
+    @Operation(summary = "Retrieve actual drive quota", description = "This method retrieve a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Requested successfuly"),
+            @ApiResponse(responseCode = "404", description = "Member not found")
+    })
+    ResponseEntity<MemberQuotaResponse> getQuota();
 
 }
