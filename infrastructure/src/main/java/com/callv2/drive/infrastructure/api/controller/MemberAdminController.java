@@ -10,9 +10,9 @@ import com.callv2.drive.application.member.quota.request.approve.ApproveRequestQ
 import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaInput;
 import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaUseCase;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.domain.pagination.SearchQuery;
-import com.callv2.drive.domain.pagination.SearchQuery.Order.Direction;
 import com.callv2.drive.infrastructure.api.MemberAdminAPI;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
@@ -46,16 +46,14 @@ public class MemberAdminController implements MemberAdminAPI {
     }
 
     @Override
-    public ResponseEntity<Pagination<QuotaRequestListResponse>> listQuotaRequests(
+    public ResponseEntity<Page<QuotaRequestListResponse>> listQuotaRequests(
             final int page,
             final int perPage,
             final String orderField,
-            final Direction orderDirection) {
+            final Pagination.Order.Direction orderDirection) {
 
         final SearchQuery query = SearchQuery.of(
-                page,
-                perPage,
-                SearchQuery.Order.of(orderField, orderDirection),
+                Pagination.of(page, perPage, Pagination.Order.of(orderField, orderDirection)),
                 null,
                 List.of());
 

@@ -3,7 +3,7 @@ package com.callv2.drive.application.member.quota.request.list;
 import java.util.Objects;
 
 import com.callv2.drive.domain.member.MemberGateway;
-import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 
 public class DefaultListRequestQuotaUseCase extends ListRequestQuotaUseCase {
@@ -15,7 +15,7 @@ public class DefaultListRequestQuotaUseCase extends ListRequestQuotaUseCase {
     }
 
     @Override
-    public Pagination<RequestQuotaListOutput> execute(final SearchQuery searchQuery) {
+    public Page<RequestQuotaListOutput> execute(final SearchQuery searchQuery) {
         return memberGateway
                 .findAllQuotaRequests(searchQuery)
                 .map(RequestQuotaListOutput::from);

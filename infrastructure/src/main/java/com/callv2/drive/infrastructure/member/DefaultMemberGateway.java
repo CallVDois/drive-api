@@ -2,14 +2,13 @@ package com.callv2.drive.infrastructure.member;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.member.QuotaRequestPreview;
-import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.member.persistence.MemberJpaEntity;
@@ -48,12 +47,12 @@ public class DefaultMemberGateway implements MemberGateway {
     }
 
     @Override
-    public Pagination<QuotaRequestPreview> findAllQuotaRequests(SearchQuery searchQuery) {
+    public Page<QuotaRequestPreview> findAllQuotaRequests(SearchQuery searchQuery) {
 
-        final Page<QuotaRequestPreview> pageResult = this.memberJpaRepository
-                .findAllQuotaRequests(QueryAdapter.of(searchQuery));
+        final org.springframework.data.domain.Page<QuotaRequestPreview> pageResult = this.memberJpaRepository
+                .findAllQuotaRequests(QueryAdapter.of(searchQuery.pagination()));
 
-        return new Pagination<>(
+        return new Page<>(
                 pageResult.getNumber(),
                 pageResult.getSize(),
                 pageResult.getTotalPages(),

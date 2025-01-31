@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
-import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
@@ -47,14 +47,14 @@ public interface MemberAdminAPI {
     @GetMapping(value = "quotas/requests", produces = { MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "List quotas requests", description = "This method list quotas requests", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Quotas requests listed successfully", content = @Content(schema = @Schema(implementation = Pagination.class, subTypes = {
+            @ApiResponse(responseCode = "200", description = "Quotas requests listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
                     QuotaRequestListResponse.class }))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    ResponseEntity<Pagination<QuotaRequestListResponse>> listQuotaRequests(
+    ResponseEntity<Page<QuotaRequestListResponse>> listQuotaRequests(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
             @RequestParam(name = "orderField", required = false, defaultValue = "requestedAt") String orderField,
-            @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") SearchQuery.Order.Direction orderDirection);
+            @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection);
 
 }

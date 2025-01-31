@@ -2,7 +2,7 @@ package com.callv2.drive.domain.member;
 
 import java.util.Optional;
 
-import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 
 public interface MemberGateway {
@@ -13,6 +13,6 @@ public interface MemberGateway {
 
     Member update(Member member);
 
-    Pagination<QuotaRequestPreview> findAllQuotaRequests(final SearchQuery searchQuery);
+    Page<QuotaRequestPreview> findAllQuotaRequests(final SearchQuery searchQuery);
 
 }

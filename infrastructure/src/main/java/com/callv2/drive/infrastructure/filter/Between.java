@@ -3,7 +3,7 @@ package com.callv2.drive.infrastructure.filter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import com.callv2.drive.domain.pagination.SearchQuery;
+import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.infrastructure.converter.Caster;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -18,13 +18,13 @@ public class Between extends SpecificationFilter {
     }
 
     @Override
-    public SearchQuery.Filter.Type filterType() {
-        return SearchQuery.Filter.Type.BETWEEN;
+    public Filter.Type filterType() {
+        return Filter.Type.BETWEEN;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public <T> Specification<T> buildSpecification(SearchQuery.Filter filter) {
+    public <T> Specification<T> buildSpecification(Filter filter) {
 
         validateFilter(filter);
 
@@ -39,18 +39,18 @@ public class Between extends SpecificationFilter {
             final Class<T> type,
             final Root<R> root,
             final CriteriaBuilder criteriaBuilder,
-            final SearchQuery.Filter filter) {
+            final Filter filter) {
         return criteriaBuilder.between(
                 root.get(filter.field()).as(type),
                 cast(filter.value(), type),
                 cast(filter.valueToCompare(), type));
     }
 
-    private void validateFilter(final SearchQuery.Filter filter) {
+    private void validateFilter(final Filter filter) {
         if (filter.value() == null || filter.valueToCompare() == null)
             throw new IllegalArgumentException("Value cannot be null");
 
-        if (!SearchQuery.Filter.Type.BETWEEN.equals(filter.type()))
+        if (!Filter.Type.BETWEEN.equals(filter.type()))
             throw new IllegalArgumentException("Filter type must be BETWEEN");
     }
 

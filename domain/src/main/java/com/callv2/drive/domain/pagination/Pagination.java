@@ -1,20 +1,23 @@
 package com.callv2.drive.domain.pagination;
 
-import java.util.List;
-import java.util.function.Function;
-
-public record Pagination<T>(
-        int currentPage,
+public record Pagination(
+        int page,
         int perPage,
-        int totalPages,
-        long total,
-        List<T> items) {
+        Order order) {
 
-    public <R> Pagination<R> map(final Function<T, R> mapper) {
-        final List<R> aNewList = this.items.stream()
-                .map(mapper)
-                .toList();
-
-        return new Pagination<>(currentPage(), perPage(), totalPages(), total(), aNewList);
+    public static Pagination of(final int page, final int perPage, final Order order) {
+        return new Pagination(page, perPage, order);
     }
+
+    public record Order(String field, Direction direction) {
+
+        public static Order of(final String field, final Direction direction) {
+            return new Order(field, direction);
+        }
+
+        public enum Direction {
+            ASC, DESC
+        }
+    }
+
 }

@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.callv2.drive.domain.pagination.Filter;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
-import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
@@ -67,16 +68,16 @@ public interface FileAPI {
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	@Operation(summary = "List files", description = "This method list files", security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Files listed successfully", content = @Content(schema = @Schema(implementation = Pagination.class, subTypes = {
+			@ApiResponse(responseCode = "200", description = "Files listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
 					FileListResponse.class }))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
 	})
-	ResponseEntity<Pagination<FileListResponse>> list(
+	ResponseEntity<Page<FileListResponse>> list(
 			@RequestParam(name = "page", required = false, defaultValue = "0") final int page,
 			@RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
 			@RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
-			@RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") SearchQuery.Order.Direction orderDirection,
-			@RequestParam(name = "filterMethod", required = false, defaultValue = "AND") SearchQuery.FilterMethod filterMethod,
+			@RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
+			@RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
 			@RequestParam(name = "filters", required = false) List<String> filters);
 
 }

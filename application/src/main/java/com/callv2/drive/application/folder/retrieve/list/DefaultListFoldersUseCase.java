@@ -3,7 +3,7 @@ package com.callv2.drive.application.folder.retrieve.list;
 import java.util.Objects;
 
 import com.callv2.drive.domain.folder.FolderGateway;
-import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 
 public class DefaultListFoldersUseCase extends ListFoldersUseCase {
@@ -15,7 +15,7 @@ public class DefaultListFoldersUseCase extends ListFoldersUseCase {
     }
 
     @Override
-    public Pagination<FolderListOutput> execute(final SearchQuery input) {
+    public Page<FolderListOutput> execute(final SearchQuery input) {
         return folderGateway
                 .findAll(input)
                 .map(FolderListOutput::from);
