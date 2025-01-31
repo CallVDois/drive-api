@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
+import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +25,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Members Admin")
 @RequestMapping("admin/members")
 public interface MemberAdminAPI {
+
+    @PostMapping("{id}/quotas")
+    @Operation(summary = "Request drive quota", description = "This method request a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Retrieve successfuly"),
+            @ApiResponse(responseCode = "404", description = "Member not found")
+    })
+    ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable(value = "id", required = true) String id);
 
     @PostMapping("{id}/quotas/requests/approve")
     @Operation(summary = "Approve drive quota request", description = "This method approve a drive ammount quota request", security = @SecurityRequirement(name = "bearerAuth"))

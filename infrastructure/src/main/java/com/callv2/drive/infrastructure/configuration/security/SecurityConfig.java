@@ -42,7 +42,7 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers("admin**")
+                            .requestMatchers("admin/**")
                             .hasAnyRole(ROLE_ADMIN)
 
                             .requestMatchers(HttpMethod.GET,

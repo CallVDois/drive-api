@@ -32,7 +32,7 @@ public interface MemberAPI {
     @PostMapping("quotas")
     @Operation(summary = "Retrieve actual drive quota", description = "This method retrieve a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Requested successfuly"),
+            @ApiResponse(responseCode = "200", description = "Retrieve successfuly"),
             @ApiResponse(responseCode = "404", description = "Member not found")
     })
     ResponseEntity<MemberQuotaResponse> getQuota();
