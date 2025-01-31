@@ -7,16 +7,22 @@ import com.callv2.drive.domain.file.File;
 
 public record FileListOutput(
         UUID id,
+        String ownerId,
+        UUID folderId,
         String name,
-        UUID folder,
+        String contentType,
+        Long contentSize,
         Instant createdAt,
         Instant updatedAt) {
 
     public static FileListOutput from(final File file) {
         return new FileListOutput(
                 file.getId().getValue(),
-                file.getName().value(),
+                file.getOwner().getValue(),
                 file.getFolder().getValue(),
+                file.getName().value(),
+                file.getContent().type(),
+                file.getContent().size(),
                 file.getCreatedAt(),
                 file.getUpdatedAt());
     }

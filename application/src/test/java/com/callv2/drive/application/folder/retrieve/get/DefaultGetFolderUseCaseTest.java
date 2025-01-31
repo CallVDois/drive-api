@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
@@ -31,6 +32,9 @@ public class DefaultGetFolderUseCaseTest {
 
     @Mock
     FolderGateway folderGateway;
+
+    @Mock
+    FileGateway fileGateway;
 
     @Test
     void givenAValidFolderId_whenCallsExecute_thenShouldReturnFolder() {

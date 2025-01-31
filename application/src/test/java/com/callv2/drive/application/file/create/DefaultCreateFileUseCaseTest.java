@@ -33,12 +33,20 @@ import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
+import com.callv2.drive.domain.member.Member;
+import com.callv2.drive.domain.member.MemberGateway;
+import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.member.Quota;
+import com.callv2.drive.domain.member.QuotaUnit;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultCreateFileUseCaseTest {
 
     @InjectMocks
     DefaultCreateFileUseCase useCase;
+
+    @Mock
+    MemberGateway memberGateway;
 
     @Mock
     FolderGateway folderGateway;
@@ -52,8 +60,13 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecute_thenShouldCreateFile() {
 
-        final var folder = Folder.createRoot();
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
 
+        final var ownerId = owner.getId();
+
+        final var folder = Folder.createRoot();
         final var expectedFolderId = folder.getId();
 
         final var expectedFileName = FileName.of("file");
@@ -62,6 +75,9 @@ public class DefaultCreateFileUseCaseTest {
 
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
+
+        when(memberGateway.findById(any()))
+                .thenReturn(Optional.of(owner));
 
         when(fileGateway.findByFolder(any()))
                 .thenReturn(List.of());
@@ -76,6 +92,7 @@ public class DefaultCreateFileUseCaseTest {
                 .thenAnswer(returnsFirstArg());
 
         final var input = CreateFileInput.of(
+                ownerId.getValue(),
                 expectedFolderId.getValue(),
                 expectedFileName.value(),
                 expectedContentType,
@@ -112,6 +129,12 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAnInvalidId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
+
+        final var ownerId = owner.getId();
+
         final var folder = Folder.createRoot();
 
         final var expectedFolderId = folder.getId();
@@ -123,12 +146,17 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
-        final var expectedExceptionMessage = "Folder with id '%s' not found".formatted(expectedFolderId.getValue());
+        final var expectedExceptionMessage = "Folder with id '%s' not found"
+                .formatted(expectedFolderId.getValue());
+
+        when(memberGateway.findById(any()))
+                .thenReturn(Optional.of(owner));
 
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.empty());
 
         final var input = CreateFileInput.of(
+                ownerId.getValue(),
                 expectedFolderId.getValue(),
                 expectedFileName.value(),
                 expectedContentType,
@@ -152,6 +180,12 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParamsWithAlreadyExistingFileNameOnSameFolder_whenCallsExecute_thenShouldThrowValidationException() {
 
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
+
+        final var ownerId = owner.getId();
+
         final var folder = Folder.createRoot();
 
         final var expectedFolderId = folder.getId();
@@ -163,10 +197,14 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
-        final var fileWithSameName = File.create(folder.getId(), expectedFileName, Content.of("location", "text", 10));
+        final var fileWithSameName = File.create(ownerId, folder.getId(), expectedFileName,
+                Content.of("location", "text", 10));
 
         final var expectedExceptionMessage = "Could not create Aggregate File";
         final var expectedErrorMessage = "File with same name already exists on this folder";
+
+        when(memberGateway.findById(ownerId))
+                .thenReturn(Optional.of(owner));
 
         when(fileGateway.findByFolder(any()))
                 .thenReturn(List.of(fileWithSameName));
@@ -178,6 +216,7 @@ public class DefaultCreateFileUseCaseTest {
                 .then(returnsFirstArg());
 
         final var input = CreateFileInput.of(
+                ownerId.getValue(),
                 expectedFolderId.getValue(),
                 expectedFileName.value(),
                 expectedContentType,
@@ -203,8 +242,13 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateThrowsRandomException_thenShouldThrowInternalErrorException() {
 
-        final var folder = Folder.createRoot();
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
 
+        final var ownerId = owner.getId();
+
+        final var folder = Folder.createRoot();
         final var expectedFolderId = folder.getId();
 
         final var expectedFileName = FileName.of("file");
@@ -215,6 +259,9 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContentSize = (long) contentBytes.length;
 
         final var expectedExceptionMessage = "Could not store File";
+
+        when(memberGateway.findById(ownerId))
+                .thenReturn(Optional.of(owner));
 
         when(fileGateway.findByFolder(any()))
                 .thenReturn(List.of());
@@ -233,6 +280,7 @@ public class DefaultCreateFileUseCaseTest {
                 .delete(any());
 
         final var input = CreateFileInput.of(
+                ownerId.getValue(),
                 expectedFolderId.getValue(),
                 expectedFileName.value(),
                 expectedContentType,
@@ -270,8 +318,13 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateAndContentGatewayDeleteThrowsRandomException_thenShouldThrowInternalErrorException() {
 
-        final var folder = Folder.createRoot();
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
 
+        final var ownerId = owner.getId();
+
+        final var folder = Folder.createRoot();
         final var expectedFolderId = folder.getId();
 
         final var expectedFileName = FileName.of("file");
@@ -282,6 +335,9 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContentSize = (long) contentBytes.length;
 
         final var expectedExceptionMessage = "Could not delete BinaryContent";
+
+        when(memberGateway.findById(ownerId))
+                .thenReturn(Optional.of(owner));
 
         when(fileGateway.findByFolder(any()))
                 .thenReturn(List.of());
@@ -300,6 +356,7 @@ public class DefaultCreateFileUseCaseTest {
                 .delete(any());
 
         final var input = CreateFileInput.of(
+                ownerId.getValue(),
                 expectedFolderId.getValue(),
                 expectedFileName.value(),
                 expectedContentType,
@@ -337,8 +394,13 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecuteAndContentGatewayStoreThrowsRandomException_thenShouldThrowInternalErrorException() {
 
-        final var folder = Folder.createRoot();
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
 
+        final var ownerId = owner.getId();
+
+        final var folder = Folder.createRoot();
         final var expectedFolderId = folder.getId();
 
         final var expectedFileName = FileName.of("file");
@@ -350,6 +412,9 @@ public class DefaultCreateFileUseCaseTest {
 
         final var expectedExceptionMessage = "Could not store BinaryContent";
 
+        when(memberGateway.findById(ownerId))
+                .thenReturn(Optional.of(owner));
+
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
@@ -357,6 +422,7 @@ public class DefaultCreateFileUseCaseTest {
                 .thenThrow(new IllegalStateException("ContentGateway Exception"));
 
         final var input = CreateFileInput.of(
+                ownerId.getValue(),
                 expectedFolderId.getValue(),
                 expectedFileName.value(),
                 expectedContentType,

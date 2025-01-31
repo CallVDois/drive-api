@@ -6,8 +6,7 @@ import java.util.Objects;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import com.callv2.drive.domain.pagination.SearchQuery;
-import com.callv2.drive.domain.pagination.SearchQuery.FilterMethod;
+import com.callv2.drive.domain.pagination.Filter;
 
 @Component
 public class FilterService {
@@ -20,20 +19,20 @@ public class FilterService {
 
     public <T> Specification<T> buildSpecification(
             final Class<T> entityClass,
-            final SearchQuery.FilterMethod filterMethod,
-            final List<SearchQuery.Filter> filters) {
+            final Filter.Operator filterMethod,
+            final List<Filter> filters) {
 
-        if (filterMethod.equals(FilterMethod.AND))
+        if (filterMethod.equals(Filter.Operator.AND))
             return Specification.where(andSpecifications(buildSpecifications(entityClass, filters)));
 
-        if (filterMethod.equals(FilterMethod.OR))
+        if (filterMethod.equals(Filter.Operator.OR))
             return Specification.where(orSpecifications(buildSpecifications(entityClass, filters)));
 
         return Specification.where(andSpecifications(buildSpecifications(entityClass, filters)));
     }
 
     private <T> List<Specification<T>> buildSpecifications(Class<T> entityClass,
-            final List<SearchQuery.Filter> filters) {
+            final List<Filter> filters) {
         if (filters == null)
             return List.of();
 
@@ -43,7 +42,7 @@ public class FilterService {
     }
 
     private <T> Specification<T> buildSpecification(Class<T> entityClass,
-            final SearchQuery.Filter filter) {
+            final Filter filter) {
         final var specification = filters.stream()
                 .filter(f -> f.filterType().equals(filter.type()))
                 .findFirst()

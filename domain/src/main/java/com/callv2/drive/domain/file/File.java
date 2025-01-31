@@ -5,10 +5,13 @@ import java.time.Instant;
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
 
 public class File extends AggregateRoot<FileID> {
+
+    private MemberID owner;
 
     private FolderID folder;
 
@@ -20,6 +23,7 @@ public class File extends AggregateRoot<FileID> {
 
     private File(
             final FileID anId,
+            final MemberID owner,
             final FolderID folder,
             final FileName name,
             final Content content,
@@ -28,6 +32,7 @@ public class File extends AggregateRoot<FileID> {
         super(anId);
 
         this.folder = folder;
+        this.owner = owner;
         this.name = name;
         this.content = content;
         this.createdAt = createdAt;
@@ -43,17 +48,19 @@ public class File extends AggregateRoot<FileID> {
 
     public static File with(
             final FileID id,
+            final MemberID owner,
             final FolderID folder,
             final FileName name,
             final Content content,
             final Instant createdAt,
             final Instant updatedAt) {
-        return new File(id, folder, name, content, createdAt, updatedAt);
+        return new File(id, owner, folder, name, content, createdAt, updatedAt);
     }
 
     public static File with(final File file) {
         return File.with(
                 file.getId(),
+                file.getOwner(),
                 file.getFolder(),
                 file.getName(),
                 file.getContent(),
@@ -62,6 +69,7 @@ public class File extends AggregateRoot<FileID> {
     }
 
     public static File create(
+            final MemberID owner,
             final FolderID folder,
             final FileName name,
             final Content content) {
@@ -70,6 +78,7 @@ public class File extends AggregateRoot<FileID> {
 
         return new File(
                 FileID.unique(),
+                owner,
                 folder,
                 name,
                 content,
@@ -95,6 +104,14 @@ public class File extends AggregateRoot<FileID> {
         return this;
     }
 
+    public MemberID getOwner() {
+        return owner;
+    }
+
+    public FolderID getFolder() {
+        return folder;
+    }
+
     public FileName getName() {
         return name;
     }
@@ -109,10 +126,6 @@ public class File extends AggregateRoot<FileID> {
 
     public Instant getUpdatedAt() {
         return updatedAt;
-    }
-
-    public FolderID getFolder() {
-        return folder;
     }
 
     private void selfValidate() {

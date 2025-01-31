@@ -16,6 +16,8 @@ public interface FilePresenter {
     static GetFileResponse present(final GetFileOutput output) {
         return new GetFileResponse(
                 output.id(),
+                output.ownerId(),
+                output.folderId(),
                 output.name(),
                 output.contentType(),
                 output.contentSize(),
@@ -26,8 +28,11 @@ public interface FilePresenter {
     static FileListResponse present(final FileListOutput output) {
         return new FileListResponse(
                 output.id(),
+                output.ownerId(),
+                output.folderId(),
                 output.name(),
-                output.folder(),
+                output.contentType(),
+                output.contentSize(),
                 output.createdAt(),
                 output.updatedAt());
     }

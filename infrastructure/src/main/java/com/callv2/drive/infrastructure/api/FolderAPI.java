@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.callv2.drive.domain.pagination.Filter;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
-import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
@@ -28,6 +29,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Folders")
@@ -35,7 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface FolderAPI {
 
     @GetMapping(value = "root", produces = { MediaType.APPLICATION_JSON_VALUE })
-    @Operation(summary = "Retrive a folder", description = "This method retrive a root folder")
+    @Operation(summary = "Retrive a folder", description = "This method retrive a root folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Root folder retrived successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -44,7 +46,7 @@ public interface FolderAPI {
 
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
             MediaType.APPLICATION_JSON_VALUE })
-    @Operation(summary = "Create a folder", description = "This method creates a folder")
+    @Operation(summary = "Create a folder", description = "This method creates a folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Folder created successfully", content = @Content(schema = @Schema(implementation = CreateFolderResponse.class))),
             @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -53,7 +55,7 @@ public interface FolderAPI {
     ResponseEntity<CreateFolderResponse> create(@RequestBody CreateFolderRequest request);
 
     @GetMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
-    @Operation(summary = "Retrive a folder", description = "This method retrive a folder")
+    @Operation(summary = "Retrive a folder", description = "This method retrive a folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Folder retrived successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class))),
             @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class))),
@@ -63,28 +65,28 @@ public interface FolderAPI {
 
     @PatchMapping(value = "{id}/move", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
             MediaType.APPLICATION_JSON_VALUE })
-    @Operation(summary = "Move a folder", description = "This method moves a folder to a new location")
+    @Operation(summary = "Move a folder", description = "This method moves a folder to a new location", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Folder moved successfully", content = @Content(schema = @Schema(implementation = Void.class))),
-            @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     ResponseEntity<Void> move(@PathVariable(required = true) UUID id, @RequestBody MoveFolderRequest request);
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
-    @Operation(summary = "List folders", description = "This method list folders")
+    @Operation(summary = "List folders", description = "This method list folders", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Folders listed successfully", content = @Content(schema = @Schema(implementation = Pagination.class, subTypes = {
+            @ApiResponse(responseCode = "200", description = "Folders listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
                     FolderListResponse.class }))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    ResponseEntity<Pagination<FolderListResponse>> list(
+    ResponseEntity<Page<FolderListResponse>> list(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
             @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
-            @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") SearchQuery.Order.Direction orderDirection,
-            @RequestParam(name = "filterMethod", required = false, defaultValue = "AND") SearchQuery.FilterMethod filterMethod,
+            @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
+            @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
             @RequestParam(name = "filters", required = false) List<String> filters);
 
 }

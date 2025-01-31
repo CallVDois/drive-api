@@ -13,10 +13,10 @@ import com.callv2.drive.application.folder.move.MoveFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.GetFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
+import com.callv2.drive.domain.pagination.Filter;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.domain.pagination.SearchQuery;
-import com.callv2.drive.domain.pagination.SearchQuery.FilterMethod;
-import com.callv2.drive.domain.pagination.SearchQuery.Order.Direction;
 import com.callv2.drive.infrastructure.api.FolderAPI;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.folder.adapter.FolderAdapter;
@@ -77,25 +77,23 @@ public class FolderController implements FolderAPI {
     }
 
     @Override
-    public ResponseEntity<Pagination<FolderListResponse>> list(
+    public ResponseEntity<Page<FolderListResponse>> list(
             final int page,
             final int perPage,
             final String orderField,
-            final Direction orderDirection,
-            final FilterMethod filterMethod,
+            final Pagination.Order.Direction orderDirection,
+            final Filter.Operator filterOperator,
             final List<String> filters) {
 
-        final List<SearchQuery.Filter> searchFilters = filters == null ? List.of()
+        final List<Filter> searchFilters = filters == null ? List.of()
                 : filters
                         .stream()
                         .map(QueryAdapter::of)
                         .toList();
 
         final SearchQuery query = SearchQuery.of(
-                page,
-                perPage,
-                SearchQuery.Order.of(orderField, orderDirection),
-                filterMethod,
+                Pagination.of(page, perPage, Pagination.Order.of(orderField, orderDirection)),
+                filterOperator,
                 searchFilters);
 
         return ResponseEntity.ok(listFoldersUseCase.execute(query).map(FolderPresenter::present));

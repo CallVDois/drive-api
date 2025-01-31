@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 
 public interface FileGateway {
@@ -15,6 +16,8 @@ public interface FileGateway {
 
     List<File> findByFolder(FolderID folderId);
 
-    Pagination<File> findAll(final SearchQuery searchQuery);
+    List<File> findByOwner(MemberID ownerId);
+
+    Page<File> findAll(SearchQuery searchQuery);
 
 }

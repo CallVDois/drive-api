@@ -5,6 +5,8 @@ import java.util.UUID;
 
 public record GetFileResponse(
         UUID id,
+        String ownerId,
+        UUID folderId,
         String name,
         String contentType,
         Long contentSize,

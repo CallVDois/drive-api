@@ -23,6 +23,7 @@ import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultGetFileContentUseCaseTest {
@@ -36,10 +37,11 @@ public class DefaultGetFileContentUseCaseTest {
     @Test
     void givenAValidParam_whenCallsExecute_shouldReturnContent() {
 
+        final var ownerId = MemberID.of("owner");
         final var expectedFolder = FolderID.unique();
         final var expectedFileName = FileName.of("file.txt");
         final var expectedContent = Content.of("location", "text", 10);
-        final var expectedFile = File.create(expectedFolder, expectedFileName, expectedContent);
+        final var expectedFile = File.create(ownerId, expectedFolder, expectedFileName, expectedContent);
         final var expectedFileId = expectedFile.getId();
 
         when(fileGateway.findById(any()))

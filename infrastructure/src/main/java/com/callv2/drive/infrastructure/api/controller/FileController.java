@@ -20,9 +20,10 @@ import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
+import com.callv2.drive.domain.pagination.Filter;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.domain.pagination.SearchQuery;
-import com.callv2.drive.domain.pagination.SearchQuery.Order.Direction;
 import com.callv2.drive.infrastructure.api.FileAPI;
 import com.callv2.drive.infrastructure.file.adapter.FileAdapter;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
@@ -30,6 +31,7 @@ import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 import com.callv2.drive.infrastructure.file.presenter.FilePresenter;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
+import com.callv2.drive.infrastructure.security.SecurityContext;
 
 @RestController
 public class FileController implements FileAPI {
@@ -53,7 +55,10 @@ public class FileController implements FileAPI {
     @Override
     public ResponseEntity<CreateFileResponse> create(UUID folderId, MultipartFile file) {
 
-        final var response = FilePresenter.present(createFileUseCase.execute(FileAdapter.adapt(folderId, file)));
+        final var ownerId = SecurityContext.getAuthenticatedUser();
+
+        final var response = FilePresenter
+                .present(createFileUseCase.execute(FileAdapter.adapt(ownerId, folderId, file)));
 
         return ResponseEntity
                 .created(URI.create("/files/" + response.id()))
@@ -79,25 +84,23 @@ public class FileController implements FileAPI {
     }
 
     @Override
-    public ResponseEntity<Pagination<FileListResponse>> list(
+    public ResponseEntity<Page<FileListResponse>> list(
             final int page,
             final int perPage,
             final String orderField,
-            final Direction orderDirection,
-            final SearchQuery.FilterMethod filterMethod,
+            final Pagination.Order.Direction orderDirection,
+            final Filter.Operator filterOperator,
             final List<String> filters) {
 
-        final List<SearchQuery.Filter> searchFilters = filters == null ? List.of()
+        final List<Filter> searchFilters = filters == null ? List.of()
                 : filters
                         .stream()
                         .map(QueryAdapter::of)
                         .toList();
 
         final SearchQuery query = SearchQuery.of(
-                page,
-                perPage,
-                SearchQuery.Order.of(orderField, orderDirection),
-                filterMethod,
+                Pagination.of(page, perPage, Pagination.Order.of(orderField, orderDirection)),
+                filterOperator,
                 searchFilters);
 
         return ResponseEntity.ok(listFilesUseCase.execute(query).map(FilePresenter::present));

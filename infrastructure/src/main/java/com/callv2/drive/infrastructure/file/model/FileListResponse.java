@@ -5,8 +5,11 @@ import java.util.UUID;
 
 public record FileListResponse(
         UUID id,
+        String ownerId,
+        UUID folderId,
         String name,
-        UUID folder,
+        String contentType,
+        Long contentSize,
         Instant createdAt,
         Instant updatedAt) {
 

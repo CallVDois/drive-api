@@ -3,7 +3,6 @@ package com.callv2.drive.infrastructure.folder;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.filter.FilterService;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
@@ -62,18 +61,19 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     @Override
-    public Pagination<Folder> findAll(SearchQuery searchQuery) {
-        final var page = QueryAdapter.of(searchQuery);
+    public Page<Folder> findAll(SearchQuery searchQuery) {
+        final var page = QueryAdapter.of(searchQuery.pagination());
 
         final Specification<FolderJpaEntity> specification = filterService.buildSpecification(
                 FolderJpaEntity.class,
                 searchQuery.filterMethod(),
                 searchQuery.filters());
 
-        final Page<FolderJpaEntity> pageResult = this.folderRepository.findAll(Specification.where(specification),
+        final org.springframework.data.domain.Page<FolderJpaEntity> pageResult = this.folderRepository.findAll(
+                Specification.where(specification),
                 page);
 
-        return new Pagination<>(
+        return new Page<>(
                 pageResult.getNumber(),
                 pageResult.getSize(),
                 pageResult.getTotalPages(),

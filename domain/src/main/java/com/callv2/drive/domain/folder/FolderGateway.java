@@ -3,7 +3,7 @@ package com.callv2.drive.domain.folder;
 import java.util.List;
 import java.util.Optional;
 
-import com.callv2.drive.domain.pagination.Pagination;
+import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 
 public interface FolderGateway {
@@ -18,6 +18,6 @@ public interface FolderGateway {
 
     Optional<Folder> findById(FolderID id);
 
-    Pagination<Folder> findAll(final SearchQuery searchQuery);
+    Page<Folder> findAll(final SearchQuery searchQuery);
 
 }
