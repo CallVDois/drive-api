@@ -7,6 +7,8 @@ import com.callv2.drive.domain.file.File;
 
 public record GetFileOutput(
         UUID id,
+        String ownerId,
+        UUID folderId,
         String name,
         String contentType,
         Long contentSize,
@@ -16,6 +18,8 @@ public record GetFileOutput(
     public static GetFileOutput from(final File aFile) {
         return new GetFileOutput(
                 aFile.getId().getValue(),
+                aFile.getOwner().getValue(),
+                aFile.getFolder().getValue(),
                 aFile.getName().value(),
                 aFile.getContent().type(),
                 aFile.getContent().size(),
