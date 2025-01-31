@@ -18,6 +18,6 @@ public interface FileGateway {
 
     List<File> findByOwner(MemberID ownerId);
 
-    Page<File> findAll(final SearchQuery searchQuery);
+    Page<File> findAll(SearchQuery searchQuery);
 
 }
