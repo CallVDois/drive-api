@@ -11,10 +11,10 @@ import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.DefaultListFilesUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
-import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.member.MemberGateway;
+import com.callv2.drive.domain.storage.StorageService;
 
 @Configuration
 public class FileUseCaseConfig {
@@ -22,22 +22,22 @@ public class FileUseCaseConfig {
     private final MemberGateway memberGateway;
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
-    private final FileContentGateway contentGateway;
+    private final StorageService storageService;
 
     public FileUseCaseConfig(
             final MemberGateway memberGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
-            final FileContentGateway contentGateway) {
+            final StorageService storageService) {
         this.memberGateway = memberGateway;
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
-        this.contentGateway = contentGateway;
+        this.storageService = storageService;
     }
 
     @Bean
     CreateFileUseCase createFileUseCase() {
-        return new DefaultCreateFileUseCase(memberGateway, folderGateway, fileGateway, contentGateway);
+        return new DefaultCreateFileUseCase(memberGateway, folderGateway, fileGateway, storageService);
     }
 
     @Bean

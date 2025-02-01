@@ -8,6 +8,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
+import com.callv2.drive.domain.exception.InternalErrorException;
+import com.callv2.drive.domain.storage.StorageService;
+
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
@@ -19,13 +22,14 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public String store(final String name, final InputStream content) {
         try {
+
             if (content == null)
-                throw new StorageException("Failed to store empty file.");
+                throw new IllegalArgumentException("Failed to store empty file.");
 
             Path destinationFile = this.rootLocation.resolve(Paths.get(name)).normalize().toAbsolutePath();
 
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath()))
-                throw new StorageException("Cannot store file outside current directory.");
+                throw new IllegalArgumentException("Cannot store file outside current directory.");
 
             try (InputStream inputStream = content) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
@@ -34,7 +38,7 @@ public class FileSystemStorageService implements StorageService {
             return destinationFile.toString();
 
         } catch (IOException e) {
-            throw new StorageException("Failed to store file.", e);
+            throw InternalErrorException.with("Failed to store file.", e);
         }
     }
 
@@ -51,25 +55,9 @@ public class FileSystemStorageService implements StorageService {
             Files.deleteIfExists(filePath);
 
         } catch (IOException e) {
-            throw new StorageException("Failed to delete file.", e);
+            throw InternalErrorException.with("Failed to delete file.", e);
         }
 
     }
-
-    // @Override
-    // public Content load(String name) {
-    // final Path filePath = this.rootLocation.resolve(name).normalize();
-
-    // if (!Files.exists(filePath))
-    // throw NotFoundException.with(File.class);
-
-    // final var size = filePath.toFile().length();
-
-    // try {
-    // return Content.of(new FileInputStream(filePath.toFile()), size);
-    // } catch (Exception e) {
-    // throw InternalErrorException.with("Error on process File Content", e);
-    // }
-    // }
 
 }

@@ -11,7 +11,6 @@ import com.callv2.drive.domain.exception.QuotaExceededException;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
-import com.callv2.drive.domain.file.FileContentGateway;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.Folder;
@@ -20,6 +19,7 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.storage.StorageService;
 import com.callv2.drive.domain.validation.Error;
 import com.callv2.drive.domain.validation.handler.Notification;
 
@@ -28,17 +28,17 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
     private final MemberGateway memberGateway;
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
-    private final FileContentGateway contentGateway;
+    private final StorageService storageService;
 
     public DefaultCreateFileUseCase(
             final MemberGateway memberGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
-            final FileContentGateway contentGateway) {
+            final StorageService storageService) {
         this.memberGateway = Objects.requireNonNull(memberGateway);
         this.folderGateway = Objects.requireNonNull(folderGateway);
         this.fileGateway = Objects.requireNonNull(fileGateway);
-        this.contentGateway = Objects.requireNonNull(contentGateway);
+        this.storageService = Objects.requireNonNull(storageService);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
     private String storeContentFile(final String contentName, final InputStream inputStream) {
         try {
-            return contentGateway.store(contentName, inputStream);
+            return storageService.store(contentName, inputStream);
         } catch (Exception e) {
             throw InternalErrorException.with("Could not store BinaryContent", e);
         }
@@ -109,7 +109,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
     private void deleteContentFile(final String contentLocation) {
         try {
-            contentGateway.delete(contentLocation);
+            storageService.delete(contentLocation);
         } catch (Exception e) {
             throw InternalErrorException.with("Could not delete BinaryContent", e);
         }

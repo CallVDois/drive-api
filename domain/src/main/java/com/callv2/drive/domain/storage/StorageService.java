@@ -1,4 +1,4 @@
-package com.callv2.drive.infrastructure.storage;
+package com.callv2.drive.domain.storage;
 
 import java.io.InputStream;
 
