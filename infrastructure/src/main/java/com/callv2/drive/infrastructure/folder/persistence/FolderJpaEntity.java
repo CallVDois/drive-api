@@ -10,6 +10,7 @@ import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.folder.FolderName;
 import com.callv2.drive.domain.folder.SubFolder;
+import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,6 +32,9 @@ public class FolderJpaEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "owner_id")
+    private String ownerId;
+
     @Column(name = "parent_folder_id")
     private UUID parentFolderId;
 
@@ -50,6 +54,7 @@ public class FolderJpaEntity {
             final UUID id,
             final Boolean rootFolder,
             final String name,
+            final String ownerId,
             final UUID parentFolderId,
             final Instant createdAt,
             final Instant updatedAt,
@@ -57,6 +62,7 @@ public class FolderJpaEntity {
         this.id = id;
         this.rootFolder = rootFolder;
         this.name = name;
+        this.ownerId = ownerId;
         this.parentFolderId = parentFolderId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -69,13 +75,14 @@ public class FolderJpaEntity {
     }
 
     public static FolderJpaEntity fromDomain(final Folder folder) {
-
         final UUID parentFolderId = folder.getParentFolder() == null ? null : folder.getParentFolder().getValue();
+        final String ownerId = folder.getOwner() == null ? null : folder.getOwner().getValue();
 
         final var entity = new FolderJpaEntity(
                 folder.getId().getValue(),
                 folder.isRootFolder(),
                 folder.getName().value(),
+                ownerId,
                 parentFolderId,
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
@@ -90,6 +97,7 @@ public class FolderJpaEntity {
     public Folder toDomain() {
         return Folder.with(
                 FolderID.of(id),
+                ownerId != null ? MemberID.of(ownerId) : null,
                 FolderName.of(name),
                 FolderID.of(parentFolderId),
                 subFolders.stream()
@@ -99,7 +107,6 @@ public class FolderJpaEntity {
                 updatedAt,
                 deletedAt,
                 rootFolder);
-
     }
 
     public void addSubFolder(final SubFolder anId) {
@@ -128,6 +135,14 @@ public class FolderJpaEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
     public UUID getParentFolderId() {
@@ -169,5 +184,4 @@ public class FolderJpaEntity {
     public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
     }
-
 }
