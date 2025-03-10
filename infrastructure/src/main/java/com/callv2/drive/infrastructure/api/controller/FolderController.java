@@ -27,6 +27,7 @@ import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
 import com.callv2.drive.infrastructure.folder.presenter.FolderPresenter;
+import com.callv2.drive.infrastructure.security.SecurityContext;
 
 @RestController
 public class FolderController implements FolderAPI {
@@ -57,8 +58,9 @@ public class FolderController implements FolderAPI {
 
     @Override
     public ResponseEntity<CreateFolderResponse> create(final CreateFolderRequest request) {
-        final var response = FolderPresenter.present(createFolderUseCase.execute(FolderAdapter.adapt(request)));
-
+        final String ownerId = SecurityContext.getAuthenticatedUser();
+        final var response = FolderPresenter.present(createFolderUseCase.execute(FolderAdapter.adapt(request, ownerId)));
+    
         return ResponseEntity
                 .created(URI.create("/folders/" + response.id()))
                 .body(response);
