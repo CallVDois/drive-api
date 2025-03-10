@@ -36,7 +36,7 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
                         Folder.class,
                         "Parent folder with id %s not found".formatted(input.parentFolderId().toString())));
 
-        return CreateFolderOutput.from(createFolder(ownerId, FolderName.of(input.name()), parentFolder));
+        return CreateFolderOutput.from(createFolder(owner.getId(), FolderName.of(input.name()), parentFolder));
     }
 
     private Folder createFolder(final MemberID ownerId, FolderName name, final Folder parentFolder) {
