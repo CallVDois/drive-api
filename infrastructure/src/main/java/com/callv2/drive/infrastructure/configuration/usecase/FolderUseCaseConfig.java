@@ -15,18 +15,22 @@ import com.callv2.drive.application.folder.retrieve.list.DefaultListFoldersUseCa
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
+import com.callv2.drive.domain.member.MemberGateway;
 
 @Configuration
 public class FolderUseCaseConfig {
 
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
+    private final MemberGateway memberGateway;
 
     public FolderUseCaseConfig(
             final FolderGateway folderGateway,
-            final FileGateway fileGateway) {
+            final FileGateway fileGateway,
+            final MemberGateway memberGateway) {
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
+        this.memberGateway = memberGateway;
     }
 
     @Bean
@@ -36,7 +40,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     CreateFolderUseCase createFolderUseCase() {
-        return new DefaultCreateFolderUseCase(folderGateway);
+        return new DefaultCreateFolderUseCase(memberGateway, folderGateway);
     }
 
     @Bean
