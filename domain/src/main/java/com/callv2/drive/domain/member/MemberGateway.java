@@ -15,4 +15,6 @@ public interface MemberGateway {
 
     Page<QuotaRequestPreview> findAllQuotaRequests(final SearchQuery searchQuery);
 
+    Boolean existsById(MemberID id);
+
 }

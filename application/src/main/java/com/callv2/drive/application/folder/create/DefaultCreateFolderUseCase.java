@@ -26,9 +26,8 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
     public CreateFolderOutput execute(final CreateFolderInput input) {
         final MemberID ownerId = MemberID.of(input.ownerId());
 
-        final Member owner = memberGateway
-                .findById(ownerId)
-                .orElseThrow(() -> NotFoundException.with(Member.class, input.ownerId().toString()));
+        if (!memberGateway.existsById(ownerId))
+            throw NotFoundException.with(Member.class, input.ownerId().toString());
 
         final Folder parentFolder = folderGateway
                 .findById(FolderID.of(input.parentFolderId()))
@@ -36,7 +35,7 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
                         Folder.class,
                         "Parent folder with id %s not found".formatted(input.parentFolderId().toString())));
 
-        return CreateFolderOutput.from(createFolder(owner.getId(), FolderName.of(input.name()), parentFolder));
+        return CreateFolderOutput.from(createFolder(ownerId, FolderName.of(input.name()), parentFolder));
     }
 
     private Folder createFolder(final MemberID ownerId, FolderName name, final Folder parentFolder) {
