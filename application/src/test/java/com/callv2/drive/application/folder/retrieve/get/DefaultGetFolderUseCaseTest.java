@@ -23,6 +23,7 @@ import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.member.MemberID;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultGetFolderUseCaseTest {
@@ -39,8 +40,14 @@ public class DefaultGetFolderUseCaseTest {
     @Test
     void givenAValidFolderId_whenCallsExecute_thenShouldReturnFolder() {
 
+        final var ownerId = MemberID.of("owner");
+
         final var expectedFolderName = "folder";
-        final var expectedFolder = Folder.create(FolderName.of(expectedFolderName), Folder.createRoot());
+        final var expectedFolder = Folder.create(
+                ownerId,
+                FolderName.of(expectedFolderName),
+                Folder.createRoot(ownerId));
+
         final var expectedFolderId = expectedFolder.getId();
         final var expectedSubFolders = expectedFolder.getSubFolders();
         final var expectedCreatedAt = expectedFolder.getCreatedAt();

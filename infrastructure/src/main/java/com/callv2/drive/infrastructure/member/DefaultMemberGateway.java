@@ -60,4 +60,9 @@ public class DefaultMemberGateway implements MemberGateway {
                 pageResult.toList());
     }
 
+    @Override
+    public Boolean existsById(MemberID id) {
+        return this.memberJpaRepository.existsById(id.getValue());
+    }
+
 }
