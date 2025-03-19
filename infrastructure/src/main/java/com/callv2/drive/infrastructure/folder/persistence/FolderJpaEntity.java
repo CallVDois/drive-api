@@ -32,7 +32,7 @@ public class FolderJpaEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "owner_id")
+    @Column(name = "owner_id", nullable = false)
     private String ownerId;
 
     @Column(name = "parent_folder_id")
@@ -76,13 +76,12 @@ public class FolderJpaEntity {
 
     public static FolderJpaEntity fromDomain(final Folder folder) {
         final UUID parentFolderId = folder.getParentFolder() == null ? null : folder.getParentFolder().getValue();
-        final String ownerId = folder.getOwner() == null ? null : folder.getOwner().getValue();
 
         final var entity = new FolderJpaEntity(
                 folder.getId().getValue(),
                 folder.isRootFolder(),
                 folder.getName().value(),
-                ownerId,
+                folder.getOwner().getValue(),
                 parentFolderId,
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
@@ -97,7 +96,7 @@ public class FolderJpaEntity {
     public Folder toDomain() {
         return Folder.with(
                 FolderID.of(id),
-                ownerId != null ? MemberID.of(ownerId) : null,
+                MemberID.of(ownerId),
                 FolderName.of(name),
                 FolderID.of(parentFolderId),
                 subFolders.stream()

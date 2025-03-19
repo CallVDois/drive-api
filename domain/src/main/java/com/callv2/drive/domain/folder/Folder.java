@@ -62,12 +62,12 @@ public class Folder extends AggregateRoot<FolderID> {
         return new Folder(id, owner, name, parentFolder, subFolders, createdAt, updatedAt, deletedAt, rootFolder);
     }
 
-    public static Folder createRoot() {
+    public static Folder createRoot(final MemberID owner) {
         Instant now = Instant.now();
 
         return Folder.with(
                 FolderID.unique(),
-                null, // When root folder is created, there is no owner
+                owner,
                 FolderName.of("Root"),
                 null,
                 new HashSet<>(),
@@ -78,7 +78,7 @@ public class Folder extends AggregateRoot<FolderID> {
     }
 
     public static Folder create(
-            final MemberID owner, 
+            final MemberID owner,
             final FolderName name,
             final Folder parentFolder) {
 

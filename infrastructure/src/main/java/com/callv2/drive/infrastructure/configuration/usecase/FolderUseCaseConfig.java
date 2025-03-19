@@ -35,7 +35,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     GetRootFolderUseCase getRootFolderUseCase() {
-        return new DefaultGetRootFolderUseCase(folderGateway, fileGateway);
+        return new DefaultGetRootFolderUseCase(memberGateway, folderGateway, fileGateway);
     }
 
     @Bean

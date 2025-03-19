@@ -11,6 +11,7 @@ import com.callv2.drive.application.folder.create.CreateFolderUseCase;
 import com.callv2.drive.application.folder.move.MoveFolderInput;
 import com.callv2.drive.application.folder.move.MoveFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.GetFolderUseCase;
+import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderInput;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.domain.pagination.Filter;
@@ -53,14 +54,16 @@ public class FolderController implements FolderAPI {
 
     @Override
     public ResponseEntity<GetRootFolderResponse> getRoot() {
-        return ResponseEntity.ok(FolderPresenter.present(getRootFolderUseCase.execute()));
+        return ResponseEntity.ok(FolderPresenter.present(
+                getRootFolderUseCase.execute(GetRootFolderInput.from(SecurityContext.getAuthenticatedUser()))));
     }
 
     @Override
     public ResponseEntity<CreateFolderResponse> create(final CreateFolderRequest request) {
         final String ownerId = SecurityContext.getAuthenticatedUser();
-        final var response = FolderPresenter.present(createFolderUseCase.execute(FolderAdapter.adapt(request, ownerId)));
-    
+        final var response = FolderPresenter
+                .present(createFolderUseCase.execute(FolderAdapter.adapt(request, ownerId)));
+
         return ResponseEntity
                 .created(URI.create("/folders/" + response.id()))
                 .body(response);
