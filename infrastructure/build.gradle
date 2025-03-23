@@ -6,7 +6,11 @@ plugins {
 }
 
 group = 'com.callv2'
-version = '1.0-SNAPSHOT'
+
+bootJar {
+    archiveFileName = 'application.jar'
+    destinationDirectory = file("${rootProject.buildDir}/libs")
+}
 
 repositories {
     mavenCentral()

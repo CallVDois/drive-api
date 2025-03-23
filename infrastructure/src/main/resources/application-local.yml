@@ -1,10 +1,6 @@
 keycloak:
   realm: callv2
   host: http://localhost:8090
-  client:
-    user-api:
-      client-id: user-api
-      client-secret: local-client-secret
 
 postgres:
   host: localhost
