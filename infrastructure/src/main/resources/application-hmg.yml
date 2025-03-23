@@ -1,0 +1,14 @@
+keycloak:
+  realm: ${KEYCLOAK_REALM}
+  host: ${KEYCLOAK_HOST}
+
+postgres:
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  database: ${POSTGRES_DATABASE}
+  username: ${POSTGRES_USERNAME}
+  password: ${POSTGRES_PASSWORD}
+
+storage:
+  file-system:
+    location: ${STORAGE_LOCATION}
