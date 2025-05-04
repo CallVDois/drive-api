@@ -8,8 +8,8 @@ import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 
 public interface FolderAdapter {
 
-    static CreateFolderInput adapt(CreateFolderRequest request) {
-        return CreateFolderInput.from(request.name(), request.parentFolderId());
+    static CreateFolderInput adapt(CreateFolderRequest request, String ownerId) {
+        return CreateFolderInput.from(ownerId, request.name(), request.parentFolderId());
     }
 
     static GetFolderInput adapt(UUID id) {

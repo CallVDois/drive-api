@@ -1,0 +1,12 @@
+.git
+.github
+.gradle
+**/build
+**/out
+**/target
+.idea
+.vscode
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.DS_Store

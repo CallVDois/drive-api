@@ -17,28 +17,32 @@ import com.callv2.drive.application.folder.update.name.DefaultUpdateFolderNameUs
 import com.callv2.drive.application.folder.update.name.UpdateFolderNameUseCase;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
+import com.callv2.drive.domain.member.MemberGateway;
 
 @Configuration
 public class FolderUseCaseConfig {
 
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
+    private final MemberGateway memberGateway;
 
     public FolderUseCaseConfig(
             final FolderGateway folderGateway,
-            final FileGateway fileGateway) {
+            final FileGateway fileGateway,
+            final MemberGateway memberGateway) {
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
+        this.memberGateway = memberGateway;
     }
 
     @Bean
     GetRootFolderUseCase getRootFolderUseCase() {
-        return new DefaultGetRootFolderUseCase(folderGateway, fileGateway);
+        return new DefaultGetRootFolderUseCase(memberGateway, folderGateway, fileGateway);
     }
 
     @Bean
     CreateFolderUseCase createFolderUseCase() {
-        return new DefaultCreateFolderUseCase(folderGateway);
+        return new DefaultCreateFolderUseCase(memberGateway, folderGateway);
     }
 
     @Bean
