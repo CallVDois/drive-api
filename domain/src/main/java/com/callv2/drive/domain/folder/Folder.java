@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.Error;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
@@ -13,6 +14,8 @@ import com.callv2.drive.domain.validation.handler.Notification;
 public class Folder extends AggregateRoot<FolderID> {
 
     private boolean rootFolder;
+
+    private MemberID owner;
 
     private FolderName name;
     private FolderID parentFolder;
@@ -24,6 +27,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
     private Folder(
             final FolderID id,
+            final MemberID owner,
             final FolderName name,
             final FolderID parentFolder,
             final Set<SubFolder> subFolders,
@@ -32,6 +36,8 @@ public class Folder extends AggregateRoot<FolderID> {
             final Instant deletedAt,
             final boolean rootFolder) {
         super(id);
+
+        this.owner = owner;
         this.name = name;
         this.parentFolder = parentFolder;
         this.subFolders = subFolders == null ? new HashSet<>() : new HashSet<>(subFolders);
@@ -45,6 +51,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
     public static Folder with(
             final FolderID id,
+            final MemberID owner,
             final FolderName name,
             final FolderID parentFolder,
             final Set<SubFolder> subFolders,
@@ -52,14 +59,15 @@ public class Folder extends AggregateRoot<FolderID> {
             final Instant updatedAt,
             final Instant deletedAt,
             final boolean rootFolder) {
-        return new Folder(id, name, parentFolder, subFolders, createdAt, updatedAt, deletedAt, rootFolder);
+        return new Folder(id, owner, name, parentFolder, subFolders, createdAt, updatedAt, deletedAt, rootFolder);
     }
 
-    public static Folder createRoot() {
+    public static Folder createRoot(final MemberID owner) {
         Instant now = Instant.now();
 
         return Folder.with(
                 FolderID.unique(),
+                owner,
                 FolderName.of("Root"),
                 null,
                 new HashSet<>(),
@@ -70,6 +78,7 @@ public class Folder extends AggregateRoot<FolderID> {
     }
 
     public static Folder create(
+            final MemberID owner,
             final FolderName name,
             final Folder parentFolder) {
 
@@ -77,6 +86,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
         final var folder = Folder.with(
                 FolderID.unique(),
+                owner,
                 name,
                 parentFolder.getId(),
                 new HashSet<>(),
@@ -160,6 +170,10 @@ public class Folder extends AggregateRoot<FolderID> {
 
     public boolean isRootFolder() {
         return rootFolder;
+    }
+
+    public MemberID getOwner() {
+        return owner;
     }
 
     public FolderID getParentFolder() {

@@ -40,7 +40,7 @@ public class DefaultGetFileUseCaseTest {
 
         final var ownerId = MemberID.of("owner");
 
-        final var expectedFolder = Folder.createRoot();
+        final var expectedFolder = Folder.createRoot(ownerId);
 
         final var expectedName = "file.jpeg";
 
@@ -50,7 +50,8 @@ public class DefaultGetFileUseCaseTest {
 
         final var expectedContent = Content.of(expectedContentLocation, expectedContentType, expectedContentSize);
 
-        final var expectedFile = File.create(ownerId, expectedFolder.getId(), FileName.of(expectedName), expectedContent);
+        final var expectedFile = File.create(ownerId, expectedFolder.getId(), FileName.of(expectedName),
+                expectedContent);
 
         final var expectedId = expectedFile.getId();
 

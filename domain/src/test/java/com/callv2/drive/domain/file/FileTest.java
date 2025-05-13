@@ -17,8 +17,10 @@ public class FileTest {
     @Test
     void givenAValidParams_whenCallsCreate_thenShouldCreateFile() {
 
+        final var ownerId = MemberID.of("owner");
+
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(ownerId).getId();
 
         final var expectedName = "file";
 
@@ -44,7 +46,7 @@ public class FileTest {
     void givenEmptyName_whenCallsCreate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final var expectedName = "";
 
@@ -70,7 +72,7 @@ public class FileTest {
     void givenNullName_whenCallsCreate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final String expectedName = null;
 
@@ -100,7 +102,7 @@ public class FileTest {
     void givenNameWithMoreThan64Chars_whenCallsCreate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final var expectedName = """
                 filefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefile
@@ -133,7 +135,7 @@ public class FileTest {
     void givenReservedName_whenCallsCreate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final var expectedName = "nul";
 
@@ -164,7 +166,7 @@ public class FileTest {
     void givenMultipleInvalidParams_whenCallsCreate_thenShouldThrowsValidationExceptionWithMultipleErrors() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final String expectedName = "nul";
 
@@ -196,7 +198,7 @@ public class FileTest {
     void givenAValidParams_whenCallsUpdate_thenShouldCreateFile() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final var expectedName = FileName.of("File");
 
@@ -227,7 +229,7 @@ public class FileTest {
     void givenEmptyName_whenCallsUpdate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final var expectedName = "";
 
@@ -254,7 +256,7 @@ public class FileTest {
     void givenNullName_whenCallsUpdate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final String expectedName = null;
 
@@ -282,7 +284,7 @@ public class FileTest {
     void givenNameWithMoreThan64Chars_whenCallsUpdate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final var expectedName = """
                 filefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefile
@@ -312,7 +314,7 @@ public class FileTest {
     void givenReservedName_whenCallsUpdate_thenShouldThrowsValidationException() {
 
         final var expectedOwner = MemberID.of("owner");
-        final var expectedFolder = Folder.createRoot().getId();
+        final var expectedFolder = Folder.createRoot(expectedOwner).getId();
 
         final var expectedName = "nul";
 
