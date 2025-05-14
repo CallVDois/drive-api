@@ -4,6 +4,10 @@ server:
 keycloak:
   realm: callv2
   host: http://localhost:8090
+  client:
+    user-api:
+      client-id: user-api
+      client-secret: local-client-secret
 
 postgres:
   host: localhost
@@ -12,6 +16,13 @@ postgres:
   username: postgres
   password: postgres
 
+db:
+  ddl-auto: none
+
+reuqest-timeout: 600000
+
 storage:
+  max-file-size: 1024MB
+  max-request-size: 1024MB
   file-system:
-    location: /home/jhonatapers/callv2/storage
+    location: /
