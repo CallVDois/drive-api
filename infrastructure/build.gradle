@@ -43,6 +43,15 @@ dependencies {
     implementation 'com.h2database:h2:2.3.232'
 
     implementation libs.guava
+
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+}
+
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 }
 
 java {
