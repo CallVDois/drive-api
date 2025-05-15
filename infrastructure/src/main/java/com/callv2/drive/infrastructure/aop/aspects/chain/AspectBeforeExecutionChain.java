@@ -1,20 +1,20 @@
-package com.callv2.drive.infrastructure.aop.context.aspects.chain.execution;
+package com.callv2.drive.infrastructure.aop.aspects.chain;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
-import com.callv2.drive.infrastructure.aop.context.ExecutionContext;
+import com.callv2.drive.infrastructure.aop.aspects.context.BeforeExecutionContext;
 
-public abstract class AspectExecutionChain {
+public abstract class AspectBeforeExecutionChain {
 
-    private AspectExecutionChain next;
+    private AspectBeforeExecutionChain next;
 
-    protected AspectExecutionChain() {
+    protected AspectBeforeExecutionChain() {
     }
 
-    public final Object proceed(final ExecutionContext context) throws Throwable {
+    public final Object proceed(final BeforeExecutionContext context) throws Throwable {
         execute(context);
 
         if (next != null)
@@ -26,15 +26,15 @@ public abstract class AspectExecutionChain {
         return null;
     }
 
-    protected abstract void execute(final ExecutionContext context) throws Throwable;
+    protected abstract void execute(final BeforeExecutionContext context) throws Throwable;
 
-    private AspectExecutionChain setNext(final AspectExecutionChain next) {
+    private AspectBeforeExecutionChain setNext(final AspectBeforeExecutionChain next) {
         return this.next = next;
     }
 
     public static final class Builder {
 
-        private final Queue<AspectExecutionChain> chains;
+        private final Queue<AspectBeforeExecutionChain> chains;
 
         private Builder() {
             this.chains = new ArrayDeque<>();
@@ -44,12 +44,12 @@ public abstract class AspectExecutionChain {
             return new Builder();
         }
 
-        public Builder add(final AspectExecutionChain chain) {
+        public Builder add(final AspectBeforeExecutionChain chain) {
             this.chains.add(chain);
             return this;
         }
 
-        public AspectExecutionChain build() {
+        public AspectBeforeExecutionChain build() {
             if (chains.isEmpty())
                 return null;
 

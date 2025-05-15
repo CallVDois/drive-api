@@ -1,10 +1,10 @@
-package com.callv2.drive.infrastructure.aop.context.aspects.error;
+package com.callv2.drive.infrastructure.aop.aspects.execution.error;
 
 import org.apache.logging.log4j.Level;
 
-import com.callv2.drive.infrastructure.aop.context.ExecutionErrorContext;
+import com.callv2.drive.infrastructure.aop.aspects.context.ExecutionErrorContext;
 
-public class StackTraceLogAspect extends LogErrorAspect {
+public class StackTraceLogAspect extends LogExecutionErrorAspect {
 
     public StackTraceLogAspect(final Level logLevel) {
         super(logLevel, StackTraceLogAspect.class);

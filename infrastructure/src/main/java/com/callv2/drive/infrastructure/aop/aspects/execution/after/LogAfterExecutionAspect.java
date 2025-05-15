@@ -1,19 +1,19 @@
-package com.callv2.drive.infrastructure.aop.context.aspects.error;
+package com.callv2.drive.infrastructure.aop.aspects.execution.after;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.Message;
 
-import com.callv2.drive.infrastructure.aop.context.aspects.chain.error.AspectErrorChain;
+import com.callv2.drive.infrastructure.aop.aspects.chain.AspectAfterExecutionChain;
 
-public abstract class LogErrorAspect extends AspectErrorChain {
+public abstract class LogAfterExecutionAspect extends AspectAfterExecutionChain {
 
     private final Logger logger;
 
     private final Level logLevel;
 
-    public LogErrorAspect(final Level logLevel, Class<?> clazz) {
+    public LogAfterExecutionAspect(final Level logLevel, Class<?> clazz) {
         super();
         this.logLevel = logLevel;
         this.logger = LogManager.getLogger(clazz);
@@ -38,4 +38,5 @@ public abstract class LogErrorAspect extends AspectErrorChain {
     protected Message createMessage(final String message, final Object... params) {
         return logger.getMessageFactory().newMessage(message, params);
     }
+
 }

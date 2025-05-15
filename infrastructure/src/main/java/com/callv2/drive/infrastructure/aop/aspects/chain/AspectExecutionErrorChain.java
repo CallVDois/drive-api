@@ -1,15 +1,15 @@
-package com.callv2.drive.infrastructure.aop.context.aspects.chain.error;
+package com.callv2.drive.infrastructure.aop.aspects.chain;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import com.callv2.drive.infrastructure.aop.context.ExecutionErrorContext;
+import com.callv2.drive.infrastructure.aop.aspects.context.ExecutionErrorContext;
 
-public abstract class AspectErrorChain {
+public abstract class AspectExecutionErrorChain {
 
-    private AspectErrorChain next;
+    private AspectExecutionErrorChain next;
 
-    protected AspectErrorChain() {
+    protected AspectExecutionErrorChain() {
     }
 
     public final Throwable proceed(final ExecutionErrorContext context) throws Throwable {
@@ -25,13 +25,13 @@ public abstract class AspectErrorChain {
 
     protected abstract void execute(final ExecutionErrorContext context) throws Throwable;
 
-    private AspectErrorChain setNext(final AspectErrorChain next) {
+    private AspectExecutionErrorChain setNext(final AspectExecutionErrorChain next) {
         return this.next = next;
     }
 
     public static final class Builder {
 
-        private final Queue<AspectErrorChain> chains;
+        private final Queue<AspectExecutionErrorChain> chains;
 
         private Builder() {
             this.chains = new ArrayDeque<>();
@@ -41,12 +41,12 @@ public abstract class AspectErrorChain {
             return new Builder();
         }
 
-        public Builder add(final AspectErrorChain chain) {
+        public Builder add(final AspectExecutionErrorChain chain) {
             this.chains.add(chain);
             return this;
         }
 
-        public AspectErrorChain build() {
+        public AspectExecutionErrorChain build() {
             if (chains.isEmpty())
                 return null;
 
