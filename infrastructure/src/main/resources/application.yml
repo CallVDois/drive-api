@@ -32,4 +32,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${db.ddl-auto}
-    show-sql: true
+    show-sql: false
+
+logging:
+  level:
+    root: INFO
+    com.callv2: DEBUG
+    org.springframework.web: WARN
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %highlight(%-5level) [%thread] %logger{36} - %msg%n"
+
+  file:
+    name: logs/app.log
