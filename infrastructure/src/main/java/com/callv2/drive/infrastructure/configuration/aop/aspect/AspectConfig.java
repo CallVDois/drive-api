@@ -25,17 +25,19 @@ public class AspectConfig {
         final var beforeChain = AspectExecutorChain.Builder
                 .create(MethodInvocationAspectExecutorChain.class)
                 .add(MethodInvocationAspectExecutorChain
-                        .with(new MethodSignatureLogExecutor(Level.INFO, MethodSignatureLogExecutor.class)))
+                        .with(new MethodSignatureLogExecutor(Level.DEBUG, MethodSignatureLogExecutor.class)))
                 .build();
 
         final var afterChain = AspectExecutorChain.Builder
                 .create(PostInvocationAspectExecutorChain.class)
                 .add(PostInvocationAspectExecutorChain
-                        .with(new PostTelemetryLogExecutor(Level.INFO, PostTelemetryLogExecutor.class)))
+                        .with(new PostTelemetryLogExecutor(Level.DEBUG, PostTelemetryLogExecutor.class)))
                 .build();
 
         final var errorChain = AspectExecutorChain.Builder
                 .create(PostInvocationAspectExecutorChain.class)
+                .add(PostInvocationAspectExecutorChain
+                        .with(new PostTelemetryLogExecutor(Level.ERROR, PostTelemetryLogExecutor.class)))
                 .add(PostInvocationAspectExecutorChain
                         .with(ThrowableLogExecutor.defaultCreate(ThrowableLogExecutor.class)))
                 .build();
