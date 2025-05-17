@@ -1,4 +1,4 @@
-package com.callv2.drive.infrastructure.logging.aspect.executor;
+package com.callv2.drive.infrastructure.aop.aspects.executor;
 
 import org.apache.logging.log4j.Level;
 
