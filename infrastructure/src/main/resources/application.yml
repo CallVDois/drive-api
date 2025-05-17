@@ -37,8 +37,8 @@ spring:
 logging:
   level:
     root: INFO
-    com.callv2: DEBUG
-    org.springframework.web: WARN
+    '[com.callv2.drive]': DEBUG
+    '[org.springframework.web]': WARN
 
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %highlight(%-5level) [%thread] %logger{36} - %msg%n"

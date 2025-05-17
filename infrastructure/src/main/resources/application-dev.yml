@@ -26,3 +26,5 @@ storage:
   max-request-size: ${MAX_REQUEST_SIZE}
   file-system:
     location: ${STORAGE_LOCATION}
+
+log.level: ${LOG_LEVEL:INFO}
