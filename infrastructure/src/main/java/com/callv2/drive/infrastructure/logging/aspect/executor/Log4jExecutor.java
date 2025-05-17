@@ -1,11 +1,14 @@
 package com.callv2.drive.infrastructure.logging.aspect.executor;
 
+import org.aopalliance.intercept.Joinpoint;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.Message;
 
-public abstract class Log4jExecutor {
+import com.callv2.drive.infrastructure.aop.aspects.executor.IdentifiableAspectExecutor;
+
+public abstract class Log4jExecutor<J extends Joinpoint> implements IdentifiableAspectExecutor<J> {
 
     private final Logger logger;
     private final Level logLevel;

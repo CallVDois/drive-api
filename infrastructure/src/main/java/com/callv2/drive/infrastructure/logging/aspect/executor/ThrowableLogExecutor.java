@@ -9,7 +9,7 @@ public class ThrowableLogExecutor extends Log4jPostExecutor {
         super(level, clazz);
     }
 
-    public static ThrowableLogExecutor defaultExecutor(final Class<?> clazz) {
+    public static ThrowableLogExecutor defaultCreate(final Class<?> clazz) {
         return new ThrowableLogExecutor(Level.ERROR, clazz);
     }
 

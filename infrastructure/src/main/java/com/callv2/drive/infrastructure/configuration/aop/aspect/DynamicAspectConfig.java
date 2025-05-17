@@ -13,7 +13,7 @@ import com.callv2.drive.infrastructure.aop.aspects.chain.PostInvocationAspectExe
 
 public class DynamicAspectConfig {
 
-    @Bean
+    // @Bean
     public List<Advisor> dynamicAdvisors(
             MethodInvocationAspectExecutorChain beforeChain,
             PostInvocationAspectExecutorChain afterChain,
