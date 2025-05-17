@@ -7,8 +7,12 @@ import com.callv2.drive.infrastructure.aop.aspects.executor.AspectExecutor;
 public final class MethodInvocationAspectExecutorChain extends
         AspectExecutorChain<PostInvocationContext, MethodInvocationContext, AspectExecutor<MethodInvocationContext>> {
 
-    protected MethodInvocationAspectExecutorChain(final AspectExecutor<MethodInvocationContext> executor) {
+    private MethodInvocationAspectExecutorChain(final AspectExecutor<MethodInvocationContext> executor) {
         super(executor);
+    }
+
+    public static MethodInvocationAspectExecutorChain with(final AspectExecutor<MethodInvocationContext> executor) {
+        return new MethodInvocationAspectExecutorChain(executor);
     }
 
     @Override

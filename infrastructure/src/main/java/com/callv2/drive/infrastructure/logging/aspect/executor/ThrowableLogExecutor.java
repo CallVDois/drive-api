@@ -3,7 +3,7 @@ package com.callv2.drive.infrastructure.logging.aspect.executor;
 import com.callv2.drive.infrastructure.aop.aspects.context.PostInvocationContext;
 import org.apache.logging.log4j.Level;
 
-public class ThrowableLogExecutor extends Log4jPostExecutor {
+public class ThrowableLogExecutor extends Log4jExecutor<PostInvocationContext> {
 
     private ThrowableLogExecutor(final Level level, final Class<?> clazz) {
         super(level, clazz);
@@ -19,8 +19,20 @@ public class ThrowableLogExecutor extends Log4jPostExecutor {
 
     @Override
     public void execute(final PostInvocationContext context) {
-        if (context.getThrowable() != null)
-            log(context.getThrowable());
+        if (context.getThrowable() == null)
+            return;
+
+        final String message = """
+                <<EXCEPTION>> [%s]
+                <<EXCEPTION-MESSAGE>> [%s]
+                <<METHOD>> [%s]
+                """
+                .formatted(
+                        context.getThrowable().getClass().getName(),
+                        context.getThrowable().getMessage(),
+                        context.getMethod().toString());
+
+        log(message, context.getThrowable());
     }
 
 }

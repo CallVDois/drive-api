@@ -40,7 +40,7 @@ public final class SimplePostInvocationContext extends AbstractPostInvocationCon
         } catch (Throwable e) {
             result = null;
             throwable = e;
-            successful = true;
+            successful = false;
         } finally {
             proceededAt = Instant.now();
         }
@@ -61,7 +61,7 @@ public final class SimplePostInvocationContext extends AbstractPostInvocationCon
 
     @Override
     public boolean proceeded() {
-        return true;
+        return methodInvocationContext.proceeded();
     }
 
     @Override
