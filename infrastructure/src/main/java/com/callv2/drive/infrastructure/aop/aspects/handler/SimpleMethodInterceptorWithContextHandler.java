@@ -40,7 +40,11 @@ public final class SimpleMethodInterceptorWithContextHandler implements MethodIn
         else
             errorChain.execute(postInvocationResult);
 
-        throw postInvocationResult.getThrowable();
+        final Throwable throwable = postInvocationResult.getThrowable();
+        if (throwable != null)
+            throw throwable;
+
+        throw new IllegalStateException("Invocation failed but no throwable was provided.");
     }
 
 }
