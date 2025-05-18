@@ -2,18 +2,14 @@ server:
   port: ${SERVER_PORT}
 
 keycloak:
-  realm: callv2
+  realm: ${KEYCLOAK_REALM}
   host: ${KEYCLOAK_HOST}
-  client:
-    user-api:
-      client-id: ${KEYCLOAK_CLIENT_ID}
-      client-secret: ${KEYCLOAK_CLIENT_SECRET}
 
 postgres:
   host: ${POSTGRES_HOST}
   port: ${POSTGRES_PORT}
-  database: drive
-  username: ${POSTGRES_USER}
+  database: ${POSTGRES_DATABASE}
+  username: ${POSTGRES_USERNAME}
   password: ${POSTGRES_PASSWORD}
 
 db:
@@ -26,5 +22,3 @@ storage:
   max-request-size: ${MAX_REQUEST_SIZE}
   file-system:
     location: ${STORAGE_LOCATION}
-
-log.level: ${LOG_LEVEL:INFO}
