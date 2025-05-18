@@ -33,14 +33,14 @@ public final class SimpleMethodInterceptorWithContextHandler implements MethodIn
 
         final MethodInvocationContext context = SimpleMethodInvocationContext.of(invocation);
 
-        final PostInvocationContext postInvaotionResult = beforeChain.execute(context);
+        final PostInvocationContext postInvocationResult = beforeChain.execute(context);
 
-        if (postInvaotionResult.wasSuccessful())
-            return afterChain.execute(postInvaotionResult);
+        if (postInvocationResult.wasSuccessful())
+            return afterChain.execute(postInvocationResult);
         else
-            errorChain.execute(postInvaotionResult);
+            errorChain.execute(postInvocationResult);
 
-        throw postInvaotionResult.getThrowable();
+        throw postInvocationResult.getThrowable();
     }
 
 }
