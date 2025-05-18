@@ -16,8 +16,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: ${storage.max-file-size:10240MB} 
-      max-request-size:  ${storage.max-request-size:10240MB}
+      max-file-size: ${storage.max-file-size} 
+      max-request-size:  ${storage.max-request-size}
   security:
     oauth2:
       resourceserver:
@@ -32,4 +32,4 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${db.ddl-auto}
-    show-sql: true
+    show-sql: false

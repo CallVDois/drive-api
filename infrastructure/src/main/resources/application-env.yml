@@ -4,20 +4,16 @@ server:
 keycloak:
   realm: ${KEYCLOAK_REALM}
   host: ${KEYCLOAK_HOST}
-  client:
-    user-api:
-      client-id: ${KEYCLOAK_CLIENT_ID}
-      client-secret: ${KEYCLOAK_CLIENT_SECRET}
 
 postgres:
   host: ${POSTGRES_HOST}
   port: ${POSTGRES_PORT}
   database: ${POSTGRES_DATABASE}
-  username: ${POSTGRES_USER}
+  username: ${POSTGRES_USERNAME}
   password: ${POSTGRES_PASSWORD}
 
 db:
-  ddl-auto: none
+  ddl-auto: ${DB_DDL_AUTO}
 
 reuqest-timeout: ${REQUEST_TIMEOUT}
 
