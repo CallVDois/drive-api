@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import com.callv2.drive.infrastructure.aop.aspects.chain.AspectExecutorChain;
 import com.callv2.drive.infrastructure.aop.aspects.chain.MethodInvocationAspectExecutorChain;
 import com.callv2.drive.infrastructure.aop.aspects.chain.PostInvocationAspectExecutorChain;
+import com.callv2.drive.infrastructure.aop.aspects.executor.ArgsLogExecutor;
 import com.callv2.drive.infrastructure.aop.aspects.executor.MethodSignatureLogExecutor;
 import com.callv2.drive.infrastructure.aop.aspects.executor.PostTelemetryLogExecutor;
 import com.callv2.drive.infrastructure.aop.aspects.executor.ThrowableLogExecutor;
@@ -26,6 +27,8 @@ public class AspectConfig {
                 .create(MethodInvocationAspectExecutorChain.class)
                 .add(MethodInvocationAspectExecutorChain
                         .with(new MethodSignatureLogExecutor(Level.DEBUG, MethodSignatureLogExecutor.class)))
+                .add(MethodInvocationAspectExecutorChain
+                        .with(new ArgsLogExecutor(Level.DEBUG, ArgsLogExecutor.class)))
                 .build();
 
         final var afterChain = AspectExecutorChain.Builder
