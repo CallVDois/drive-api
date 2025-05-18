@@ -33,8 +33,11 @@
             name="JsonLog"
             fileName="${LOG_PATH}/drive-api.log.json"
             filePattern="${LOG_PATH}/drive-api-%d{yyyy-MM-dd}.log.json.gz">
-            <PatternLayout pattern="${LOG_JSON_PATTERN}" />
-            <JsonLayout compact="true" eventEol="true" properties="true" />
+            <JsonLayout
+                compact="true"
+                eventEol="true"
+                properties="true"
+                stacktraceAsString="true" />
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
