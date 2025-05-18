@@ -21,7 +21,7 @@ public abstract class AspectExecutorChain<O, J extends Joinpoint, E extends Aspe
         executor.execute(joinpoint);
 
         if (next != null)
-            next.execute(joinpoint);
+            return next.execute(joinpoint);
 
         return callsProceed(joinpoint);
     }
