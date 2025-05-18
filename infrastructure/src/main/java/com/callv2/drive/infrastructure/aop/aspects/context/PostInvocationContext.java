@@ -2,8 +2,7 @@ package com.callv2.drive.infrastructure.aop.aspects.context;
 
 import java.time.Instant;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 public interface PostInvocationContext extends MethodInvocationContext {
 
@@ -16,7 +15,6 @@ public interface PostInvocationContext extends MethodInvocationContext {
     @Nullable
     Throwable getThrowable();
 
-    @Nonnull
     boolean wasSuccessful();
 
 }
