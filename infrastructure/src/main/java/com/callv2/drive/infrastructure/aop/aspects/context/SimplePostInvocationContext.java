@@ -55,6 +55,7 @@ public final class SimplePostInvocationContext extends AbstractPostInvocationCon
     }
 
     @Override
+    @Nonnull
     public Instant getContextedAt() {
         return methodInvocationContext.getContextedAt();
     }
@@ -65,6 +66,7 @@ public final class SimplePostInvocationContext extends AbstractPostInvocationCon
     }
 
     @Override
+    @Nonnull
     public PostInvocationContext proceedWithContext() {
         return this;
     }
