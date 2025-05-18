@@ -12,7 +12,7 @@ public class MethodSignatureLogExecutor extends Log4jExecutor<MethodInvocationCo
 
     @Override
     public void execute(final MethodInvocationContext context) {
-        log("<<METHOD-CALLED>>: [" + context.getMethod().toString() + "]");
+        log("<<METHOD-CALLED>>: [{}]", context.getMethod().toString());
     }
 
 }

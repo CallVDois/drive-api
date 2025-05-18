@@ -14,9 +14,9 @@ public class PostTelemetryLogExecutor extends Log4jExecutor<PostInvocationContex
 
     @Override
     public void execute(final PostInvocationContext context) {
-        log("<<EXECUTION-TIME>> " +
-                Duration.between(context.getContextedAt(), context.getProceededAt()).toMillis() + " ms " +
-                "<<METHOD>> " + "[" + context.getMethod().toString() + "]");
+        log("<<EXECUTION-TIME>> [{}] ms <<METHOD>> [{}]",
+                Duration.between(context.getContextedAt(), context.getProceededAt()).toMillis(),
+                context.getMethod().toString());
     }
 
 }

@@ -17,22 +17,15 @@ public class ThrowableLogExecutor extends Log4jExecutor<PostInvocationContext> {
         return new ThrowableLogExecutor(level, clazz);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void execute(final PostInvocationContext context) {
-        if (context.getThrowable() == null)
-            return;
-
-        final String message = """
-                <<EXCEPTION>> [%s]
-                <<EXCEPTION-MESSAGE>> [%s]
-                <<METHOD>> [%s]
-                """
-                .formatted(
-                        context.getThrowable().getClass().getName(),
-                        context.getThrowable().getMessage(),
-                        context.getMethod().toString());
-
-        log(message, context.getThrowable());
+        if (context.getThrowable() != null)
+            log("<<EXCEPTION>> [{}] <<EXCEPTION-MESSAGE>> [{}] <<METHOD-CALLED>> [{}]",
+                    context.getThrowable().getClass().getName(),
+                    context.getThrowable().getMessage(),
+                    context.getMethod().toString(),
+                    context.getThrowable());
     }
 
 }
