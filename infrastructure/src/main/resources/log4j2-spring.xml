@@ -13,7 +13,6 @@
         
         <Property name="LOG_PATH">${env:LOG_PATH:-log}</Property>
         <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %X{traceId} %-5level %logger{36}.%M(%F:%L) - %msg%n</Property>
-        <Property name="LOG_JSON_PATTERN">{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}","level":"%p","thread":"%t","logger":"%c{1}","message":"%enc{%m}{JSON}"}%n</Property>
     </Properties>
 
     <Appenders>
