@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> {
                     authorize
 
-                            .requestMatchers(HttpMethod.OPTIONS)
+                            .requestMatchers(HttpMethod.OPTIONS, "/**")
                             .permitAll()
 
                             .requestMatchers("admin/**")
