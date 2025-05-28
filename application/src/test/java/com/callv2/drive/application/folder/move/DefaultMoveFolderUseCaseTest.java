@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.member.MemberID;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultMoveFolderUseCaseTest {
@@ -30,10 +31,12 @@ public class DefaultMoveFolderUseCaseTest {
     @Test
     void givenVAlidInput_whenCallsExecute_thenMoveFolder() {
 
-        final var expectedRootFolder = Folder.createRoot();
+        final var ownerId = MemberID.of("owner");
 
-        final var expectedFolderToMove = Folder.create(FolderName.of("folder1"), expectedRootFolder);
-        final var expectedFolderTarget = Folder.create(FolderName.of("folder2"), expectedRootFolder);
+        final var expectedRootFolder = Folder.createRoot(ownerId);
+
+        final var expectedFolderToMove = Folder.create(ownerId, FolderName.of("folder1"), expectedRootFolder);
+        final var expectedFolderTarget = Folder.create(ownerId, FolderName.of("folder2"), expectedRootFolder);
 
         when(folderGateway.findById(expectedFolderToMove.getId()))
                 .thenReturn(Optional.of(expectedFolderToMove));

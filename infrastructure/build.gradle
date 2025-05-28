@@ -1,12 +1,16 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.springframework.boot' version '3.4.1'
+    id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.callv2'
-version = '1.0-SNAPSHOT'
+
+bootJar {
+    archiveFileName = 'application.jar'
+    destinationDirectory = file("${rootProject.buildDir}/libs")
+}
 
 repositories {
     mavenCentral()
@@ -39,6 +43,16 @@ dependencies {
     implementation 'com.h2database:h2:2.3.232'
 
     implementation libs.guava
+
+    implementation 'org.springframework:spring-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+}
+
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 }
 
 java {

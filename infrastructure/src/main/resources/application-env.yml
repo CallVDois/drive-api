@@ -1,0 +1,33 @@
+server:
+  port: ${SERVER_PORT}
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
+
+security:
+  cors:
+    pattern: ${CORS_PATTERN}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}
+    allowed-methods: ${CORS_ALLOWED_METHODS}
+    allowed-headers: ${CORS_ALLOWED_HEADERS}
+    allow-credentials: ${CORS_ALLOW_CREDENTIALS}
+
+keycloak:
+  realm: ${KEYCLOAK_REALM}
+  host: ${KEYCLOAK_HOST}
+
+postgres:
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  database: ${POSTGRES_DATABASE}
+  username: ${POSTGRES_USERNAME}
+  password: ${POSTGRES_PASSWORD}
+
+db:
+  ddl-auto: ${DB_DDL_AUTO}
+
+reuqest-timeout: ${REQUEST_TIMEOUT}
+
+storage:
+  max-file-size: ${MAX_FILE_SIZE}
+  max-request-size: ${MAX_REQUEST_SIZE}
+  file-system:
+    location: ${STORAGE_LOCATION}

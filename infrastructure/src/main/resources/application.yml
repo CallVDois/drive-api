@@ -1,5 +1,6 @@
 server:
-  port: 8080
+  port: 80
+  forward-headers-strategy: none
   servlet:
     context-path: /api
   compression:
@@ -8,14 +9,16 @@ server:
     min-response-size: 1024
 
 spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:prd}
   mvc:
     async:
-      request-timeout: 600000
+      request-timeout: ${reuqest-timeout:30000}
   servlet:
     multipart:
       enabled: true
-      max-file-size: 10240MB
-      max-request-size: 10240MB
+      max-file-size: ${storage.max-file-size} 
+      max-request-size:  ${storage.max-request-size}
   security:
     oauth2:
       resourceserver:
@@ -29,5 +32,5 @@ spring:
     url: jdbc:postgresql://${postgres.host}:${postgres.port}/${postgres.database}
   jpa:
     hibernate:
-      ddl-auto: none
-    show-sql: true
+      ddl-auto: ${db.ddl-auto}
+    show-sql: false
