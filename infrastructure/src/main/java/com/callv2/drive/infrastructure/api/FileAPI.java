@@ -44,7 +44,7 @@ public interface FileAPI {
 			@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
 	})
 	ResponseEntity<CreateFileResponse> create(
-			@PathVariable UUID folderId,
+			@PathVariable(required = true, name = "folderId") UUID folderId,
 			@RequestPart("file") MultipartFile file);
 
 	@GetMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
