@@ -5,7 +5,7 @@ import java.util.List;
 public class CorsConfigurationProperties {
 
     private String pattern;
-    private List<String> allowedOriginsPatterns;
+    private List<String> allowedOrigins;
     private List<String> allowedMethods;
     private List<String> allowedHeaders;
     private boolean allowCredentials;
@@ -18,12 +18,12 @@ public class CorsConfigurationProperties {
         this.pattern = pattern;
     }
 
-    public List<String> getAllowedOriginsPatterns() {
-        return allowedOriginsPatterns;
+    public List<String> getAllowedOrigins() {
+        return allowedOrigins;
     }
 
-    public void setAllowedOriginsPatterns(List<String> allowedOriginsPatterns) {
-        this.allowedOriginsPatterns = allowedOriginsPatterns;
+    public void setAllowedOrigins(List<String> allowedOriginsPatterns) {
+        this.allowedOrigins = allowedOriginsPatterns;
     }
 
     public List<String> getAllowedMethods() {
