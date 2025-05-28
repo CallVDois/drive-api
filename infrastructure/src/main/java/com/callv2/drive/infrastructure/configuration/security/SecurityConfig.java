@@ -33,6 +33,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> {
                     authorize
+
+                            .requestMatchers(HttpMethod.OPTIONS)
+                            .permitAll()
+
                             .requestMatchers("admin/**")
                             .hasAnyRole(ROLE_ADMIN)
 
@@ -48,9 +52,7 @@ public class SecurityConfig {
                 })
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new KeycloakJwtConverter())))
-                .sessionManagement(session -> {
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                })
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
 
