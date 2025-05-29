@@ -20,4 +20,5 @@ public interface FileGateway {
 
     Page<File> findAll(SearchQuery searchQuery);
 
+    void deleteById(FileID id);
 }
