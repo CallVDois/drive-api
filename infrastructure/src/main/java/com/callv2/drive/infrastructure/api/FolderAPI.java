@@ -89,4 +89,7 @@ public interface FolderAPI {
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
             @RequestParam(name = "filters", required = false) List<String> filters);
 
+    @PatchMapping(value = "{id}/change-name", consumes = { MediaType.APPLICATION_JSON_VALUE })
+    ResponseEntity<Void> changeName(@PathVariable(required = true) UUID id, @RequestBody String request);
+
 }
