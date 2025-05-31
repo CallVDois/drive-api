@@ -1,29 +1,24 @@
-FROM amazoncorretto:21-alpine AS builder
+FROM eclipse-temurin:21.0.7_6-jdk-alpine AS builder
 
-WORKDIR /app
+WORKDIR /usr/app
 
 COPY . .
 
-RUN ./gradlew clean :infrastructure:bootJar --no-daemon
+RUN ./gradlew clean bootJar --no-daemon
 
-FROM amazoncorretto:21-alpine
+FROM eclipse-temurin:21.0.7_6-jdk-alpine
 
-WORKDIR /app
+COPY --from=builder /usr/app/build/libs/application.jar /opt/app/application.jar
 
-RUN mkdir -p /app/storage && chmod -R 777 /app/storage
+ENV STORAGE_LOCATION=/srv/drive/storage
 
-COPY --from=builder /app/build/libs/application.jar app.jar
+RUN mkdir -p $STORAGE_LOCATION
+RUN addgroup -S app && adduser -S app -G app
+RUN chown -R app:app /srv/drive/storage/
+USER app:app
 
-ENV SPRING_PROFILES_ACTIVE=local
-ENV KEYCLOAK_REALM=callv2
-ENV KEYCLOAK_HOST=http://localhost:8090
-ENV POSTGRES_HOST=localhost
-ENV POSTGRES_PORT=5432
-ENV POSTGRES_DATABASE=callv2
-ENV POSTGRES_USERNAME=callv2
-ENV POSTGRES_PASSWORD=callv2
-ENV STORAGE_LOCATION=/app/storage
 
-EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java -jar /app/app.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
+EXPOSE 80
+
+CMD ["sh", "-c", "java -jar /opt/app/application.jar"]
