@@ -25,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.exception.QuotaExceededException;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
@@ -32,6 +33,7 @@ import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
+import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
@@ -127,7 +129,7 @@ public class DefaultCreateFileUseCaseTest {
     }
 
     @Test
-    void givenAnInvalidId_whenCallsExecute_thenShouldThrowNotFoundException() {
+    void givenAnInvalidFolderId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
         final var owner = Member.create(MemberID.of("owner"))
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
@@ -178,6 +180,48 @@ public class DefaultCreateFileUseCaseTest {
     }
 
     @Test
+    void givenAnInvalidMemberId_whenCallsExecute_thenShouldThrowNotFoundException() {
+
+        final var expectedOwnerId = MemberID.of("inexistent");
+        final var expectedFolderId = FolderID.unique();
+
+        final var expectedFileName = FileName.of("file");
+        final var expectedContentType = "image/jpeg";
+        final var contentBytes = "content".getBytes();
+
+        final var expectedContent = new ByteArrayInputStream(contentBytes);
+        final var expectedContentSize = (long) contentBytes.length;
+
+        final var expectedExceptionMessage = "Member with id '%s' not found"
+                .formatted(expectedOwnerId.getValue());
+
+        when(memberGateway.findById(any()))
+                .thenReturn(Optional.empty());
+
+        final var input = CreateFileInput.of(
+                expectedOwnerId.getValue(),
+                expectedFolderId.getValue(),
+                expectedFileName.value(),
+                expectedContentType,
+                expectedContent,
+                expectedContentSize);
+
+        final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+
+        verify(memberGateway, times(1)).findById(any());
+        verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
+        verify(folderGateway, times(0)).findById(any());
+        verify(storageService, times(0)).store(any(), any());
+        verify(storageService, times(0)).store(any(), eq(expectedContent));
+        verify(storageService, times(0)).delete(any());
+        verify(fileGateway, times(0)).findByFolder(any());
+        verify(fileGateway, times(0)).create(any());
+
+    }
+
+    @Test
     void givenAValidParamsWithAlreadyExistingFileNameOnSameFolder_whenCallsExecute_thenShouldThrowValidationException() {
 
         final var owner = Member.create(MemberID.of("owner"))
@@ -212,9 +256,6 @@ public class DefaultCreateFileUseCaseTest {
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
-        when(storageService.store(any(), any()))
-                .then(returnsFirstArg());
-
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
                 expectedFolderId.getValue(),
@@ -230,8 +271,7 @@ public class DefaultCreateFileUseCaseTest {
 
         verify(folderGateway, times(1)).findById(any());
         verify(folderGateway, times(1)).findById(eq(expectedFolderId));
-        verify(storageService, times(1)).store(any(), any());
-        verify(storageService, times(1)).store(any(), eq(expectedContent));
+        verify(storageService, times(0)).store(any(), any());
         verify(storageService, times(0)).delete(any());
         verify(fileGateway, times(1)).findByFolder(any());
         verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
@@ -438,8 +478,169 @@ public class DefaultCreateFileUseCaseTest {
         verify(folderGateway, times(1)).findById(eq(expectedFolderId));
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
+        verify(fileGateway, times(1)).findByFolder(any());
+        verify(fileGateway, times(1)).findByFolder(eq(expectedFolderId));
         verify(storageService, times(0)).delete(any());
+        verify(fileGateway, times(0)).create(any());
+
+    }
+
+    @Test
+    void givenAnInvalidFileName_whenCallsExecute_thenShouldThrowValidationException() {
+
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
+
+        final var ownerId = owner.getId();
+
+        final var folder = Folder.createRoot(ownerId);
+        final var expectedFolderId = folder.getId();
+
+        final var expectedFileName = FileName.of("NUL");
+        final var expectedContentType = "image/jpeg";
+        final var contentBytes = "content".getBytes();
+
+        final var expectedContent = new ByteArrayInputStream(contentBytes);
+        final var expectedContentSize = (long) contentBytes.length;
+
+        final var expectedExceptionMessage = "Could not create Aggregate File";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'name' cannot be a reserved name: NUL";
+
+        when(memberGateway.findById(ownerId))
+                .thenReturn(Optional.of(owner));
+
+        when(folderGateway.findById(expectedFolderId))
+                .thenReturn(Optional.of(folder));
+
+        final var input = CreateFileInput.of(
+                ownerId.getValue(),
+                expectedFolderId.getValue(),
+                expectedFileName.value(),
+                expectedContentType,
+                expectedContent,
+                expectedContentSize);
+
+        final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(input));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        verify(folderGateway, times(1)).findById(any());
+        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(storageService, times(0)).store(any(), any());
         verify(fileGateway, times(0)).findByFolder(any());
+        verify(storageService, times(0)).delete(any());
+        verify(fileGateway, times(0)).create(any());
+
+    }
+
+    @Test
+    void givenAValidParams_whenCallsExecuteAndMemberQuotaIsExceeded_thenShouldThrowsQuotaExceededException() {
+
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.BYTE))
+                .approveQuotaRequest();
+
+        final var ownerId = owner.getId();
+
+        final var folder = Folder.createRoot(ownerId);
+        final var expectedFolderId = folder.getId();
+
+        final var expectedFileName = FileName.of("NUL");
+        final var expectedContentType = "image/jpeg";
+        final var contentBytes = "content".getBytes();
+
+        final var expectedContent = new ByteArrayInputStream(contentBytes);
+        final var expectedContentSize = (long) contentBytes.length;
+
+        final var expectedExceptionMessage = "Quota exceeded";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "You have exceeded your actual quota of 1 bytes";
+
+        when(memberGateway.findById(ownerId))
+                .thenReturn(Optional.of(owner));
+
+        final var input = CreateFileInput.of(
+                ownerId.getValue(),
+                expectedFolderId.getValue(),
+                expectedFileName.value(),
+                expectedContentType,
+                expectedContent,
+                expectedContentSize);
+
+        final var actualException = assertThrows(QuotaExceededException.class, () -> useCase.execute(input));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        verify(folderGateway, times(0)).findById(any());
+        verify(storageService, times(0)).store(any(), any());
+        verify(fileGateway, times(0)).findByFolder(any());
+        verify(storageService, times(0)).delete(any());
+        verify(fileGateway, times(0)).create(any());
+
+    }
+
+    @Test
+    void givenAnInvalidParamsWithContentTypeNull_whenCallsExecute_thenShouldThrowsValidationException() {
+
+        final var owner = Member.create(MemberID.of("owner"))
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
+
+        final var ownerId = owner.getId();
+
+        final var folder = Folder.createRoot(ownerId);
+        final var expectedFolderId = folder.getId();
+
+        final var expectedFileName = FileName.of("file");
+        final String expectedContentType = null;
+        final var contentBytes = "content".getBytes();
+
+        final var expectedContent = new ByteArrayInputStream(contentBytes);
+        final var expectedContentSize = (long) contentBytes.length;
+
+        final var expectedExceptionMessage = "Could not create Aggregate File";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'type' cannot be null.";
+
+        when(memberGateway.findById(any()))
+                .thenReturn(Optional.of(owner));
+
+        when(fileGateway.findByFolder(any()))
+                .thenReturn(List.of());
+
+        when(folderGateway.findById(any()))
+                .thenReturn(Optional.of(folder));
+
+        when(storageService.store(any(), any()))
+                .then(returnsFirstArg());
+
+        final var input = CreateFileInput.of(
+                ownerId.getValue(),
+                expectedFolderId.getValue(),
+                expectedFileName.value(),
+                expectedContentType,
+                expectedContent,
+                expectedContentSize);
+
+        final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(input));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        verify(folderGateway, times(1)).findById(any());
+        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(storageService, times(1)).store(any(), any());
+        verify(storageService, times(1)).store(any(), eq(expectedContent));
+        verify(storageService, times(0)).delete(any());
+        verify(fileGateway, times(1)).findByFolder(any());
+        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
         verify(fileGateway, times(0)).create(any());
 
     }
