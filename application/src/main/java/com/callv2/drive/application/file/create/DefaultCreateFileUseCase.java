@@ -59,14 +59,24 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
         if (actualUsedQuota + input.size() > owner.getQuota().sizeInBytes())
             throw QuotaExceededException.with("Quota exceeded",
-                    new Error("You have exceeded your actual quota of " + owner.getQuota().sizeInBytes() + " bytes"));
+                    Error.with("You have exceeded your actual quota of " + owner.getQuota().sizeInBytes() + " bytes"));
 
         final FolderID folderId = folderGateway
                 .findById(FolderID.of(input.folderId()))
                 .map(Folder::getId)
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
+        final Notification notification = Notification.create();
+
         final FileName fileName = FileName.of(input.name());
+        fileName.validate(notification);
+        if (notification.hasError())
+            throw ValidationException.with("Could not create Aggregate File", notification);
+
+        final List<File> filesOnSameFolder = fileGateway.findByFolder(folderId);
+        if (filesOnSameFolder.stream().map(File::getName).anyMatch(fileName::equals))
+            throw ValidationException.with("Could not create Aggregate File",
+                    Error.with("File with same name already exists on this folder"));
 
         final String randomContentName = UUID.randomUUID().toString();
         final String contentLocation = storeContentFile(randomContentName, input.content());
@@ -75,13 +85,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
         final Content content = Content.of(contentLocation, contentType, contentSize);
 
-        final Notification notification = Notification.create();
         final File file = notification.valdiate(() -> File.create(ownerId, folderId, fileName, content));
-
-        List<File> filesOnSameFolder = fileGateway.findByFolder(folderId);
-        if (filesOnSameFolder.stream().map(File::getName).anyMatch(fileName::equals))
-            notification.append(Error.with("File with same name already exists on this folder"));
-
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate File", notification);
 
