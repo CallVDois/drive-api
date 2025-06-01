@@ -24,7 +24,7 @@ postgres:
 db:
   ddl-auto: ${DB_DDL_AUTO}
 
-reuqest-timeout: ${REQUEST_TIMEOUT}
+request-timeout: ${REQUEST_TIMEOUT}
 
 storage:
   max-file-size: ${MAX_FILE_SIZE}
