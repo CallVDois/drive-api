@@ -17,4 +17,4 @@ bin
 .env
 
 *.log
-*.log.json
+*log.json

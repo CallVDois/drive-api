@@ -1,37 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="debug">
     <Properties>
-        <Property name="ROOT_LOG_LEVEL">${env:ROOT_LOG_LEVEL:-info}</Property>
-        <Property name="ROOT_LOG_LEVEL_CONSOLE">${env:ROOT_LOG_LEVEL_CONSOLE:-info}</Property>
-        <Property name="ROOT_LOG_LEVEL_FILE">${env:ROOT_LOG_LEVEL_FILE:-info}</Property>
-        <Property name="ROOT_LOG_LEVEL_JSON">${env:ROOT_LOG_LEVEL_JSON:-info}</Property>
+        <Property name="rootLogLevelConsole">${env:ROOT_LOG_LEVEL_CONSOLE:-info}</Property>
+        <Property name="rootLogLevelFile">${env:ROOT_LOG_LEVEL_FILE:-info}</Property>
+        <Property name="rootLogLevelJson">${env:ROOT_LOG_LEVEL_JSON:-info}</Property>
 
-        <Property name="CALLV2_LOG_LEVEL">${env:CALLV2_LOG_LEVEL:-info}</Property>
-        <Property name="CALLV2_LOG_LEVEL_CONSOLE">${env:CALLV2_LOG_LEVEL_CONSOLE:-info}</Property>
-        <Property name="CALLV2_LOG_LEVEL_FILE">${env:CALLV2_LOG_LEVEL_FILE:-info}</Property>
-        <Property name="CALLV2_LOG_LEVEL_JSON">${env:CALLV2_LOG_LEVEL_JSON:-info}</Property>
-        
-        <Property name="LOG_PATH">${env:LOG_PATH:-log}</Property>
-        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %X{traceId} %-5level %logger{36}.%M(%F:%L) - %msg%n</Property>
+        <Property name="callv2LogLevelConsole">${env:CALLV2_LOG_LEVEL_CONSOLE:-info}</Property>
+        <Property name="callv2LogLevelFile">${env:CALLV2_LOG_LEVEL_FILE:-info}</Property>
+        <Property name="callv2LogLevelJson">${env:CALLV2_LOG_LEVEL_JSON:-info}</Property>
+
+        <Property name="logPath">${env:LOG_PATH:-/var/log/drive-api}</Property>
+        <Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %X{traceId} %-5level %logger{36}.%M(%F:%L) - %msg%n</Property>
     </Properties>
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="${LOG_PATTERN}" />
+            <PatternLayout pattern="${logPattern}" />
         </Console>
         <RollingFile
             name="FileLog"
-            fileName="${LOG_PATH}/drive-api.log"
-            filePattern="${LOG_PATH}/drive-api-%d{yyyy-MM-dd}.log.gz">
-            <PatternLayout pattern="${LOG_PATTERN}" />
+            fileName="${logPath}/log.log"
+            filePattern="${logPath}/log-%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${logPattern}" />
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
         </RollingFile>
         <RollingFile
             name="JsonLog"
-            fileName="${LOG_PATH}/drive-api.log.json"
-            filePattern="${LOG_PATH}/drive-api-%d{yyyy-MM-dd}.log.json.gz">
+            fileName="${logPath}/log.json"
+            filePattern="${logPath}/log-%d{yyyy-MM-dd}.log.json.gz">
             <JsonLayout
                 compact="true"
                 eventEol="true"
@@ -44,42 +42,42 @@
     </Appenders>
 
     <Loggers>
-        <Root level="${ROOT_LOG_LEVEL}">
+        <Root level="all">
             <AppenderRef ref="Console">
                 <Filters>
-                    <ThresholdFilter level="${ROOT_LOG_LEVEL_CONSOLE}" onMatch="ACCEPT"
+                    <ThresholdFilter level="${rootLogLevelConsole}" onMatch="ACCEPT"
                         onMismatch="DENY" />
                 </Filters>
             </AppenderRef>
             <AppenderRef ref="FileLog">
                 <Filters>
-                    <ThresholdFilter level="${ROOT_LOG_LEVEL_FILE}" onMatch="ACCEPT"
+                    <ThresholdFilter level="${rootLogLevelFile}" onMatch="ACCEPT"
                         onMismatch="DENY" />
                 </Filters>
             </AppenderRef>
             <AppenderRef ref="JsonLog">
                 <Filters>
-                    <ThresholdFilter level="${ROOT_LOG_LEVEL_JSON}" onMatch="ACCEPT"
+                    <ThresholdFilter level="${rootLogLevelJson}" onMatch="ACCEPT"
                         onMismatch="DENY" />
                 </Filters>
             </AppenderRef>
         </Root>
-        <Logger name="com.callv2" level="${CALLV2_LOG_LEVEL}" additivity="false">
+        <Logger name="com.callv2" level="all" additivity="false">
             <AppenderRef ref="Console">
                 <Filters>
-                    <ThresholdFilter level="${CALLV2_LOG_LEVEL_CONSOLE}" onMatch="ACCEPT"
+                    <ThresholdFilter level="${callv2LogLevelConsole}" onMatch="ACCEPT"
                         onMismatch="DENY" />
                 </Filters>
             </AppenderRef>
             <AppenderRef ref="FileLog">
                 <Filters>
-                    <ThresholdFilter level="${CALLV2_LOG_LEVEL_FILE}" onMatch="ACCEPT"
+                    <ThresholdFilter level="${callv2LogLevelFile}" onMatch="ACCEPT"
                         onMismatch="DENY" />
                 </Filters>
             </AppenderRef>
             <AppenderRef ref="JsonLog">
                 <Filters>
-                    <ThresholdFilter level="${CALLV2_LOG_LEVEL_JSON}" onMatch="ACCEPT"
+                    <ThresholdFilter level="${callv2LogLevelJson}" onMatch="ACCEPT"
                         onMismatch="DENY" />
                 </Filters>
             </AppenderRef>
