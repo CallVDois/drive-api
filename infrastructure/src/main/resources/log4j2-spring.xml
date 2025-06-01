@@ -2,12 +2,12 @@
 <Configuration status="debug">
     <Properties>
         <Property name="rootLogLevelConsole">${env:ROOT_LOG_LEVEL_CONSOLE:-info}</Property>
-        <Property name="rootLogLevelFile">${env:ROOT_LOG_LEVEL_FILE:-info}</Property>
-        <Property name="rootLogLevelJson">${env:ROOT_LOG_LEVEL_JSON:-info}</Property>
+        <Property name="rootLogLevelFile">${env:ROOT_LOG_LEVEL_FILE:-off}</Property>
+        <Property name="rootLogLevelJson">${env:ROOT_LOG_LEVEL_JSON:-off}</Property>
 
         <Property name="callv2LogLevelConsole">${env:CALLV2_LOG_LEVEL_CONSOLE:-info}</Property>
-        <Property name="callv2LogLevelFile">${env:CALLV2_LOG_LEVEL_FILE:-info}</Property>
-        <Property name="callv2LogLevelJson">${env:CALLV2_LOG_LEVEL_JSON:-info}</Property>
+        <Property name="callv2LogLevelFile">${env:CALLV2_LOG_LEVEL_FILE:-off}</Property>
+        <Property name="callv2LogLevelJson">${env:CALLV2_LOG_LEVEL_JSON:-off}</Property>
 
         <Property name="logPath">${env:LOG_PATH:-/var/log/drive-api}</Property>
         <Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %X{traceId} %-5level %logger{36}.%M(%F:%L) - %msg%n</Property>
