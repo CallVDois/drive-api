@@ -10,10 +10,10 @@ server:
 
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:prd}
+    active: ${SPRING_PROFILES_ACTIVE:env}
   mvc:
     async:
-      request-timeout: ${reuqest-timeout:30000}
+      request-timeout: ${request-timeout:30000}
   servlet:
     multipart:
       enabled: true
