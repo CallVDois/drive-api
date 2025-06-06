@@ -1,11 +1,11 @@
 package com.callv2.drive.domain.member;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.validation.Error;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
 
@@ -20,6 +20,8 @@ public class Member extends AggregateRoot<MemberID> {
     private Instant createdAt;
     private Instant updatedAt;
 
+    private Long synchronizedVersion;
+
     private Member(
             final MemberID id,
             final Username username,
@@ -27,7 +29,8 @@ public class Member extends AggregateRoot<MemberID> {
             final Quota quota,
             final QuotaRequest quotaRequest,
             final Instant createdAt,
-            final Instant updatedAt) {
+            final Instant updatedAt,
+            final Long version) {
         super(id);
         this.username = username;
         this.nickname = nickname;
@@ -35,14 +38,21 @@ public class Member extends AggregateRoot<MemberID> {
         this.quotaRequest = Optional.ofNullable(quotaRequest);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+
+        this.synchronizedVersion = version == null ? 0L : version;
     }
 
-    public static Member create(final MemberID id, final Nickname nickname, final Username username) {
+    public static Member create(
+            final MemberID id,
+            final Username username,
+            final Nickname nickname,
+            final Instant createdAt,
+            final Instant updatedAt,
+            final Long synchronizedVersion) {
 
-        final Instant now = Instant.now();
         final Quota quota = Quota.of(0, QuotaUnit.BYTE);
 
-        return new Member(id, username, nickname, quota, null, now, now);
+        return new Member(id, username, nickname, quota, null, createdAt, updatedAt, synchronizedVersion);
     }
 
     public static Member with(
@@ -52,13 +62,34 @@ public class Member extends AggregateRoot<MemberID> {
             final Quota quota,
             final QuotaRequest quotaRequest,
             final Instant createdAt,
-            final Instant updatedAt) {
-        return new Member(id, username, nickname, quota, quotaRequest, createdAt, updatedAt);
+            final Instant updatedAt,
+            final Long synchronizedVersion) {
+        return new Member(id, username, nickname, quota, quotaRequest, createdAt, updatedAt, synchronizedVersion);
     }
 
     @Override
     public void validate(final ValidationHandler handler) {
         new MemberValidator(this, handler).validate();
+    }
+
+    public Member synchronize(final Member member) {
+
+        if (!this.id.equals(member.id))
+            throw ValidationException
+                    .with("Member ID mismatch", Error.with("Member ID does not match"));
+
+        if (this.synchronizedVersion > member.synchronizedVersion)
+            throw ValidationException
+                    .with("Member synchronizedVersion mismatch", Error.with("Member synchronizedVersion is outdated"));
+
+        this.nickname = member.nickname;
+        this.username = member.username;
+
+        this.createdAt = member.createdAt;
+        this.updatedAt = member.updatedAt;
+        this.synchronizedVersion = member.synchronizedVersion;
+
+        return this;
     }
 
     public Member requestQuota(final Quota quota) {
@@ -103,33 +134,33 @@ public class Member extends AggregateRoot<MemberID> {
         return this;
     }
 
-    public Member changeNickname(final Nickname nickname) {
-        final Notification notification = Notification.create();
-        Objects.requireNonNull(nickname).validate(notification);
-        if (notification.hasError())
-            throw ValidationException.with("Change Nickname Error", notification);
+    // public Member changeNickname(final Nickname nickname) {
+    // final Notification notification = Notification.create();
+    // Objects.requireNonNull(nickname).validate(notification);
+    // if (notification.hasError())
+    // throw ValidationException.with("Change Nickname Error", notification);
 
-        if (this.nickname.equals(nickname))
-            return this;
+    // if (this.nickname.equals(nickname))
+    // return this;
 
-        this.nickname = nickname;
-        this.updatedAt = Instant.now();
-        return this;
-    }
+    // this.nickname = nickname;
+    // this.updatedAt = Instant.now();
+    // return this;
+    // }
 
-    public Member changeUsername(final Username username) {
-        final Notification notification = Notification.create();
-        Objects.requireNonNull(username).validate(notification);
-        if (notification.hasError())
-            throw ValidationException.with("Change Username Error", notification);
+    // public Member changeUsername(final Username username) {
+    // final Notification notification = Notification.create();
+    // Objects.requireNonNull(username).validate(notification);
+    // if (notification.hasError())
+    // throw ValidationException.with("Change Username Error", notification);
 
-        if (this.username.equals(username))
-            return this;
+    // if (this.username.equals(username))
+    // return this;
 
-        this.username = username;
-        this.updatedAt = Instant.now();
-        return this;
-    }
+    // this.username = username;
+    // this.updatedAt = Instant.now();
+    // return this;
+    // }
 
     public Username getUsername() {
         return username;
@@ -153,6 +184,10 @@ public class Member extends AggregateRoot<MemberID> {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Long getSynchronizedVersion() {
+        return synchronizedVersion;
     }
 
 }

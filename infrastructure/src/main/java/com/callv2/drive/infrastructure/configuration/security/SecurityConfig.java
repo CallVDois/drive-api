@@ -22,7 +22,8 @@ import com.callv2.drive.infrastructure.configuration.properties.cors.CorsConfigu
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String ROLE_ADMIN = "ADMINISTRADOR";
+    private static final String ROLE_ADMIN = "CALLV2_ADMIN";
+    private static final String ROLE_MEMBER = "CALLV2_DRIVE_MEMBER";
 
     @Bean
     SecurityFilterChain securityFilterChain(
@@ -48,7 +49,7 @@ public class SecurityConfig {
                             .permitAll()
 
                             .anyRequest()
-                            .authenticated();
+                            .hasAnyRole(ROLE_MEMBER);
                 })
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new KeycloakJwtConverter())))

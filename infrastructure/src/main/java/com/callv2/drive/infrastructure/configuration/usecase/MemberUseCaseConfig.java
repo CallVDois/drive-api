@@ -3,8 +3,6 @@ package com.callv2.drive.infrastructure.configuration.usecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.callv2.drive.application.member.create.CreateMemberUseCase;
-import com.callv2.drive.application.member.create.DefaultCreateMemberUseCase;
 import com.callv2.drive.application.member.quota.request.approve.ApproveRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.request.approve.DefaultApproveRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.request.create.CreateRequestQuotaUseCase;
@@ -13,8 +11,8 @@ import com.callv2.drive.application.member.quota.request.list.DefaultListRequest
 import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.retrieve.get.DefaultGetQuotaUseCase;
 import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaUseCase;
-import com.callv2.drive.application.member.update.DefaultUpdateMemberUseCase;
-import com.callv2.drive.application.member.update.UpdateMemberUseCase;
+import com.callv2.drive.application.member.synchronize.DefaultSynchronizeMemberUseCase;
+import com.callv2.drive.application.member.synchronize.SynchronizeMemberUseCase;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.member.MemberGateway;
 
@@ -50,13 +48,8 @@ public class MemberUseCaseConfig {
     }
 
     @Bean
-    CreateMemberUseCase createMemberUseCase() {
-        return new DefaultCreateMemberUseCase(memberGateway);
-    }
-
-    @Bean
-    UpdateMemberUseCase updateMemberUseCase() {
-        return new DefaultUpdateMemberUseCase(memberGateway);
+    SynchronizeMemberUseCase synchronizeMemberUseCase() {
+        return new DefaultSynchronizeMemberUseCase(memberGateway);
     }
 
 }

@@ -5,55 +5,34 @@ import java.util.Objects;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import com.callv2.drive.application.member.create.CreateMemberInput;
-import com.callv2.drive.application.member.create.CreateMemberUseCase;
-import com.callv2.drive.application.member.update.UpdateMemberInput;
-import com.callv2.drive.application.member.update.UpdateMemberUseCase;
-import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.application.member.synchronize.SynchronizeMemberInput;
+import com.callv2.drive.application.member.synchronize.SynchronizeMemberUseCase;
 import com.callv2.drive.infrastructure.messaging.listener.Listener;
 
 @Component
 public class MemberUpdatedListener implements Listener<MemberUpdatedEvent> {
 
-    private final UpdateMemberUseCase updateMemberUseCase;
-    private final CreateMemberUseCase createMemberUseCase;
+    private final SynchronizeMemberUseCase synchronizeMemberUseCase;
 
-    public MemberUpdatedListener(
-            final UpdateMemberUseCase updateMemberUseCase,
-            final CreateMemberUseCase createMemberUseCase) {
-        this.updateMemberUseCase = Objects.requireNonNull(updateMemberUseCase);
-        this.createMemberUseCase = Objects.requireNonNull(createMemberUseCase);
+    public MemberUpdatedListener(final SynchronizeMemberUseCase synchronizeMemberUseCase) {
+        this.synchronizeMemberUseCase = Objects.requireNonNull(synchronizeMemberUseCase);
     }
 
     @Override
-    @RabbitListener(queues = "drive.member.updated")
+    @RabbitListener(queues = "drive.member.created")
     public void handle(final MemberUpdatedEvent data) {
 
         final MemberUpdatedEvent.Data eventData = data.data();
 
-        try {
-            updateMember(eventData);
-        } catch (final NotFoundException e) {
-            createMember(eventData);
-        }
-    }
-
-    private void updateMember(final MemberUpdatedEvent.Data eventData) {
-        final UpdateMemberInput updateMemberInput = UpdateMemberInput.from(
+        final SynchronizeMemberInput createMemberInput = SynchronizeMemberInput.from(
                 eventData.id(),
                 eventData.username(),
-                eventData.nickname());
+                eventData.nickname(),
+                eventData.createdAt(),
+                eventData.updatedAt(),
+                eventData.version());
 
-        this.updateMemberUseCase.execute(updateMemberInput);
-    }
-
-    private void createMember(final MemberUpdatedEvent.Data eventData) {
-        final CreateMemberInput updateMemberInput = CreateMemberInput.from(
-                eventData.id(),
-                eventData.username(),
-                eventData.nickname());
-
-        this.createMemberUseCase.execute(updateMemberInput);
+        synchronizeMemberUseCase.execute(createMemberInput);
     }
 
 }

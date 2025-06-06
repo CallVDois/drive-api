@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.callv2.drive.domain.exception.AlreadyExistsException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
@@ -26,11 +25,7 @@ public class DefaultMemberGateway implements MemberGateway {
     }
 
     @Override
-    public Member create(final Member member) {
-
-        if (this.memberJpaRepository.existsById(member.getId().getValue()))
-            throw AlreadyExistsException.with(Member.class, member.getId().getValue());
-
+    public Member synchronize(final Member member) {
         return save(member);
     }
 
