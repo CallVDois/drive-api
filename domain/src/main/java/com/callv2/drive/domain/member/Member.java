@@ -63,21 +63,15 @@ public class Member extends AggregateRoot<MemberID> {
 
     public Member requestQuota(final Quota quota) {
 
-        if (quota == null)
-            return this;
-
-        final QuotaRequest actualQuotaRequest = this.quotaRequest.orElse(null);
         final QuotaRequest newQuotaRequest = QuotaRequest.of(quota, Instant.now());
-        this.quotaRequest = Optional.ofNullable(newQuotaRequest);
 
         final Notification notification = Notification.create();
-        this.validate(notification);
+        newQuotaRequest.validate(notification);
 
-        if (notification.hasError()) {
-            this.quotaRequest = Optional.ofNullable(actualQuotaRequest);
+        if (notification.hasError())
             throw ValidationException.with("Request Quota Error", notification);
-        }
 
+        this.quotaRequest = Optional.ofNullable(newQuotaRequest);
         this.updatedAt = Instant.now();
         return this;
     }
