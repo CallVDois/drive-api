@@ -1,7 +1,5 @@
 package com.callv2.drive.infrastructure.messaging.listener.member;
 
-import java.io.Serializable;
-import java.time.Instant;
 import java.util.Objects;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -12,7 +10,7 @@ import com.callv2.drive.application.member.create.CreateMemberUseCase;
 import com.callv2.drive.infrastructure.messaging.listener.Listener;
 
 @Component
-public class MemberCreatedListener implements Listener<MemberCreatedListener.Event> {
+public class MemberCreatedListener implements Listener<MemberCreatedEvent> {
 
     private final CreateMemberUseCase createMemberUseCase;
 
@@ -22,35 +20,16 @@ public class MemberCreatedListener implements Listener<MemberCreatedListener.Eve
 
     @Override
     @RabbitListener(queues = "drive.member.created")
-    public void handle(final MemberCreatedListener.Event data) {
+    public void handle(final MemberCreatedEvent data) {
 
-        final Event.Data eventData = data.data();
+        final MemberCreatedEvent.Data eventData = data.data();
 
         final CreateMemberInput createMemberInput = CreateMemberInput.from(
-                eventData.id,
-                eventData.username,
-                eventData.nickname);
+                eventData.id(),
+                eventData.username(),
+                eventData.nickname());
 
         createMemberUseCase.execute(createMemberInput);
-    }
-
-    public record Event(
-            String id,
-            String source,
-            Event.Data data,
-            Instant occurredAt) {
-
-        public record Data(
-                String id,
-                String username,
-                String email,
-                String nickname,
-                boolean isActive,
-                Instant createdAt,
-                Instant updatedAt) implements Serializable {
-
-        }
-
     }
 
 }

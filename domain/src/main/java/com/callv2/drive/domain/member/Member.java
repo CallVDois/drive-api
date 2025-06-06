@@ -109,6 +109,9 @@ public class Member extends AggregateRoot<MemberID> {
         if (notification.hasError())
             throw ValidationException.with("Change Nickname Error", notification);
 
+        if (this.nickname.equals(nickname))
+            return this;
+
         this.nickname = nickname;
         this.updatedAt = Instant.now();
         return this;
@@ -119,6 +122,9 @@ public class Member extends AggregateRoot<MemberID> {
         Objects.requireNonNull(username).validate(notification);
         if (notification.hasError())
             throw ValidationException.with("Change Username Error", notification);
+
+        if (this.username.equals(username))
+            return this;
 
         this.username = username;
         this.updatedAt = Instant.now();

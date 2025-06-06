@@ -18,7 +18,7 @@ public class DefaultUpdateMemberUseCase extends UpdateMemberUseCase {
     }
 
     @Override
-    public void execute(final UpdateUserInput input) {
+    public void execute(final UpdateMemberInput input) {
 
         MemberID memberId = MemberID.of(input.id());
         Username username = Username.of(input.username());
