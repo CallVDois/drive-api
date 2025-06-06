@@ -16,6 +16,8 @@ public class MemberValidator extends Validator {
     @Override
     public void validate() {
         validateId();
+        validateUsername();
+        validateNickname();
         validateQuota();
         validateQuotaRequest();
     }
@@ -27,6 +29,24 @@ public class MemberValidator extends Validator {
         }
 
         this.member.getId().validate(this.validationHandler());
+    }
+
+    private void validateUsername() {
+        if (this.member.getUsername() == null) {
+            this.validationHandler().append(Error.with("'username' is required"));
+            return;
+        }
+
+        this.member.getUsername().validate(this.validationHandler());
+    }
+
+    private void validateNickname() {
+        if (this.member.getNickname() == null) {
+            this.validationHandler().append(Error.with("'nickname' is required"));
+            return;
+        }
+
+        this.member.getNickname().validate(this.validationHandler());
     }
 
     private void validateQuota() {

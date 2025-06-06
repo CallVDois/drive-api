@@ -4,9 +4,11 @@ import java.time.Instant;
 
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.member.Nickname;
 import com.callv2.drive.domain.member.Quota;
 import com.callv2.drive.domain.member.QuotaRequest;
 import com.callv2.drive.domain.member.QuotaUnit;
+import com.callv2.drive.domain.member.Username;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +23,10 @@ public class MemberJpaEntity {
 
     @Id
     private String id;
+
+    private String username;
+
+    private String nickname;
 
     @Column(nullable = false)
     private Long quotaAmmount;
@@ -42,6 +48,8 @@ public class MemberJpaEntity {
 
     public MemberJpaEntity(
             final String id,
+            final String username,
+            final String nickname,
             final Long quotaAmmount,
             final QuotaUnit quotaUnit,
             final Long quotaRequestAmmount,
@@ -50,6 +58,8 @@ public class MemberJpaEntity {
             final Instant createdAt,
             final Instant updatedAt) {
         this.id = id;
+        this.username = username;
+        this.nickname = nickname;
         this.quotaAmmount = quotaAmmount;
         this.quotaUnit = quotaUnit;
         this.quotaRequestAmmount = quotaRequestAmmount;
@@ -72,6 +82,8 @@ public class MemberJpaEntity {
 
         return Member.with(
                 MemberID.of(getId()),
+                Username.of(getUsername()),
+                Nickname.of(getNickname()),
                 Quota.of(getQuotaAmmount(), getQuotaUnit()),
                 quotaRequest,
                 getCreatedAt(),
@@ -81,6 +93,8 @@ public class MemberJpaEntity {
     public static MemberJpaEntity fromDomain(final Member member) {
         return new MemberJpaEntity(
                 member.getId().getValue(),
+                member.getUsername().value(),
+                member.getNickname().value(),
                 member.getQuota().amount(),
                 member.getQuota().unit(),
                 member.getQuotaRequest().map(QuotaRequest::quota).map(Quota::amount).orElse(null),
@@ -96,6 +110,22 @@ public class MemberJpaEntity {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public Long getQuotaAmmount() {

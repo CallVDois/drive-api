@@ -10,6 +10,9 @@ import com.callv2.drive.domain.validation.handler.Notification;
 
 public class Member extends AggregateRoot<MemberID> {
 
+    private Username username;
+    private Nickname nickname;
+
     private Quota quota;
     private Optional<QuotaRequest> quotaRequest;
 
@@ -18,32 +21,38 @@ public class Member extends AggregateRoot<MemberID> {
 
     private Member(
             final MemberID id,
+            final Username username,
+            final Nickname nickname,
             final Quota quota,
             final QuotaRequest quotaRequest,
             final Instant createdAt,
             final Instant updatedAt) {
         super(id);
+        this.username = username;
+        this.nickname = nickname;
         this.quota = quota;
         this.quotaRequest = Optional.ofNullable(quotaRequest);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public static Member create(final MemberID id) {
+    public static Member create(final MemberID id, final Nickname nickname, final Username username) {
 
         final Instant now = Instant.now();
         final Quota quota = Quota.of(0, QuotaUnit.BYTE);
 
-        return new Member(id, quota, null, now, now);
+        return new Member(id, username, nickname, quota, null, now, now);
     }
 
     public static Member with(
             final MemberID id,
+            final Username username,
+            final Nickname nickname,
             final Quota quota,
             final QuotaRequest quotaRequest,
             final Instant createdAt,
             final Instant updatedAt) {
-        return new Member(id, quota, quotaRequest, createdAt, updatedAt);
+        return new Member(id, username, nickname, quota, quotaRequest, createdAt, updatedAt);
     }
 
     @Override
@@ -97,6 +106,14 @@ public class Member extends AggregateRoot<MemberID> {
         this.updatedAt = Instant.now();
 
         return this;
+    }
+
+    public Username getUsername() {
+        return username;
+    }
+
+    public Nickname getNickname() {
+        return nickname;
     }
 
     public Quota getQuota() {
