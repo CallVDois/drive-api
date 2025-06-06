@@ -3,6 +3,8 @@ package com.callv2.drive.infrastructure.configuration.usecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.callv2.drive.application.member.create.CreateMemberUseCase;
+import com.callv2.drive.application.member.create.DefaultCreateMemberUseCase;
 import com.callv2.drive.application.member.quota.request.approve.ApproveRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.request.approve.DefaultApproveRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.request.create.CreateRequestQuotaUseCase;
@@ -43,6 +45,11 @@ public class MemberUseCaseConfig {
     @Bean
     GetQuotaUseCase getQuotaUseCase() {
         return new DefaultGetQuotaUseCase(memberGateway, fileGateway);
+    }
+
+    @Bean
+    CreateMemberUseCase createMemberUseCase() {
+        return new DefaultCreateMemberUseCase(memberGateway);
     }
 
 }
