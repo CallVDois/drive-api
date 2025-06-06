@@ -34,3 +34,8 @@ spring:
     hibernate:
       ddl-auto: ${db.ddl-auto}
     show-sql: false
+  rabbitmq:
+    host: ${rabbitmq.host}
+    port: ${rabbitmq.port}
+    username: ${rabbitmq.username}
+    password: ${rabbitmq.password}

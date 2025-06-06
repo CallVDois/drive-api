@@ -26,6 +26,12 @@ db:
 
 request-timeout: ${REQUEST_TIMEOUT}
 
+rabbitmq:
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USERNAME}
+  password: ${RABBITMQ_PASSWORD}
+
 storage:
   max-file-size: ${MAX_FILE_SIZE}
   max-request-size: ${MAX_REQUEST_SIZE}
