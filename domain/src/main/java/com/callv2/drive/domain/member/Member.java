@@ -1,6 +1,7 @@
 package com.callv2.drive.domain.member;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.callv2.drive.domain.AggregateRoot;
@@ -105,6 +106,28 @@ public class Member extends AggregateRoot<MemberID> {
         this.quotaRequest = Optional.empty();
         this.updatedAt = Instant.now();
 
+        return this;
+    }
+
+    public Member changeNickname(final Nickname nickname) {
+        final Notification notification = Notification.create();
+        Objects.requireNonNull(nickname).validate(notification);
+        if (notification.hasError())
+            throw ValidationException.with("Change Nickname Error", notification);
+
+        this.nickname = nickname;
+        this.updatedAt = Instant.now();
+        return this;
+    }
+
+    public Member changeUsername(final Username username) {
+        final Notification notification = Notification.create();
+        Objects.requireNonNull(username).validate(notification);
+        if (notification.hasError())
+            throw ValidationException.with("Change Username Error", notification);
+
+        this.username = username;
+        this.updatedAt = Instant.now();
         return this;
     }
 
