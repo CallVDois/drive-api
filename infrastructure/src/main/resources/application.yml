@@ -35,7 +35,15 @@ spring:
       ddl-auto: ${db.ddl-auto}
     show-sql: false
   rabbitmq:
+    dynamic: ${rabbitmq.auto-create}
     host: ${rabbitmq.host}
     port: ${rabbitmq.port}
     username: ${rabbitmq.username}
     password: ${rabbitmq.password}
+
+rabbitmq:
+  queue:
+    member-sync:
+      exchange: member.exchange
+      routing-key: member.sync.drive
+      queue: member.member.sync.drive.queue

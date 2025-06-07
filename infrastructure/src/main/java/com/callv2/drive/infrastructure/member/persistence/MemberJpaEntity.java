@@ -46,6 +46,8 @@ public class MemberJpaEntity {
 
     private Instant updatedAt;
 
+    private Long synchronizedVersion;
+
     public MemberJpaEntity(
             final String id,
             final String username,
@@ -56,7 +58,8 @@ public class MemberJpaEntity {
             final QuotaUnit quotaRequestUnit,
             final Instant quotaRequestedAt,
             final Instant createdAt,
-            final Instant updatedAt) {
+            final Instant updatedAt,
+            final Long synchronizedVersion) {
         this.id = id;
         this.username = username;
         this.nickname = nickname;
@@ -67,6 +70,7 @@ public class MemberJpaEntity {
         this.quotaRequestedAt = quotaRequestedAt;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.synchronizedVersion = synchronizedVersion;
     }
 
     public MemberJpaEntity() {
@@ -87,7 +91,8 @@ public class MemberJpaEntity {
                 Quota.of(getQuotaAmmount(), getQuotaUnit()),
                 quotaRequest,
                 getCreatedAt(),
-                getUpdatedAt());
+                getUpdatedAt(),
+                getSynchronizedVersion());
     }
 
     public static MemberJpaEntity fromDomain(final Member member) {
@@ -101,7 +106,8 @@ public class MemberJpaEntity {
                 member.getQuotaRequest().map(QuotaRequest::quota).map(Quota::unit).orElse(null),
                 member.getQuotaRequest().map(QuotaRequest::requesteddAt).orElse(null),
                 member.getCreatedAt(),
-                member.getUpdatedAt());
+                member.getUpdatedAt(),
+                member.getSynchronizedVersion());
     }
 
     public String getId() {
@@ -182,6 +188,14 @@ public class MemberJpaEntity {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getSynchronizedVersion() {
+        return synchronizedVersion;
+    }
+
+    public void setSynchronizedVersion(Long synchronizedVersion) {
+        this.synchronizedVersion = synchronizedVersion;
     }
 
 }

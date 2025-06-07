@@ -10,19 +10,19 @@ import com.callv2.drive.application.member.synchronize.SynchronizeMemberUseCase;
 import com.callv2.drive.infrastructure.messaging.listener.Listener;
 
 @Component
-public class MemberUpdatedListener implements Listener<MemberUpdatedEvent> {
+public class MemberSyncListener implements Listener<MemberSyncEvent> {
 
     private final SynchronizeMemberUseCase synchronizeMemberUseCase;
 
-    public MemberUpdatedListener(final SynchronizeMemberUseCase synchronizeMemberUseCase) {
+    public MemberSyncListener(final SynchronizeMemberUseCase synchronizeMemberUseCase) {
         this.synchronizeMemberUseCase = Objects.requireNonNull(synchronizeMemberUseCase);
     }
 
     @Override
-    @RabbitListener(queues = "drive.member.created")
-    public void handle(final MemberUpdatedEvent data) {
+    @RabbitListener(queues = "member.member.sync.drive.queue")
+    public void handle(final MemberSyncEvent data) {
 
-        final MemberUpdatedEvent.Data eventData = data.data();
+        final MemberSyncEvent.Data eventData = data.data();
 
         final SynchronizeMemberInput createMemberInput = SynchronizeMemberInput.from(
                 eventData.id(),
