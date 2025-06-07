@@ -2,7 +2,9 @@ package com.callv2.drive.infrastructure.member;
 
 import java.util.Optional;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.member.Member;
@@ -25,30 +27,38 @@ public class DefaultMemberGateway implements MemberGateway {
     }
 
     @Override
-    public Member synchronize(final Member member) {
-        return save(member);
-    }
-
-    @Override
     public Optional<Member> findById(final MemberID id) {
         return this.memberJpaRepository
                 .findById(id.getValue())
                 .map(MemberJpaEntity::toDomain);
     }
 
+    @Transactional
     @Override
     public Member update(final Member member) {
 
         if (!this.memberJpaRepository.existsById(member.getId().getValue()))
             throw NotFoundException.with(Member.class, member.getId().getValue());
 
-        return save(member);
-    }
+        final MemberJpaEntity memberJpa = MemberJpaEntity.fromDomain(member);
+        final Integer rowsUpdated = memberJpaRepository.update(
+                memberJpa.getId(),
+                memberJpa.getUsername(),
+                memberJpa.getNickname(),
+                memberJpa.getQuotaAmmount(),
+                memberJpa.getQuotaUnit(),
+                memberJpa.getQuotaRequestAmmount(),
+                memberJpa.getQuotaRequestUnit(),
+                memberJpa.getQuotaRequestedAt(),
+                memberJpa.getCreatedAt(),
+                memberJpa.getUpdatedAt(),
+                memberJpa.getSynchronizedVersion());
 
-    private Member save(final Member member) {
-        return memberJpaRepository
-                .save(MemberJpaEntity.fromDomain(member))
-                .toDomain();
+        if (rowsUpdated != 1)
+            throw new OptimisticLockingFailureException(
+                    "Member update failed due to version conflict for id: " + member.getId().getValue());
+
+        return member;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class DefaultSynchronizeMemberUseCase extends SynchronizeMemberUseCase {
                         input.updatedAt(),
                         input.synchronizedVersion()));
 
-        memberGateway.synchronize(member.synchronize(member));
+        memberGateway.update(member.synchronize(member));
     }
 
 }
