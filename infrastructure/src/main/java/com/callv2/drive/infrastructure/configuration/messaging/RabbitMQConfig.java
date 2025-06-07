@@ -2,7 +2,6 @@ package com.callv2.drive.infrastructure.configuration.messaging;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.Queue;
@@ -32,19 +31,19 @@ public class RabbitMQConfig {
     @Configuration
     static class Admin {
 
-        @Bean
+        @Bean("memberSyncExchange")
         Exchange memberSyncExchange(@Qualifier("memberSyncProperties") final RabbitMQQueueProperties props) {
             return new TopicExchange(props.getExchange());
         }
 
-        @Bean
+        @Bean("memberSyncQueue")
         Queue memberSyncQueue(@Qualifier("memberSyncProperties") final RabbitMQQueueProperties props) {
             return new Queue(props.getQueue());
         }
 
-        @Bean
-        Binding videoCreatedBinding(
-                @Qualifier("memberSyncExchange") final DirectExchange exchange,
+        @Bean("memberSyncBinding")
+        Binding memberSyncBinding(
+                @Qualifier("memberSyncExchange") final TopicExchange exchange,
                 @Qualifier("memberSyncQueue") final Queue queue,
                 @Qualifier("memberSyncProperties") final RabbitMQQueueProperties props) {
             return BindingBuilder.bind(queue).to(exchange).with(props.getRoutingKey());
