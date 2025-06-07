@@ -41,9 +41,10 @@ spring:
     username: ${rabbitmq.username}
     password: ${rabbitmq.password}
 
-rabbitmq:
-  queue:
-    member-sync:
-      exchange: member.exchange
-      routing-key: member.sync.drive
-      queue: member.member.sync.drive.queue
+messaging:
+  rabbitmq:
+    queue:
+      member-sync:
+        exchange: member.exchange
+        routing-key: member.sync.drive
+        queue: member.member.sync.drive.queue

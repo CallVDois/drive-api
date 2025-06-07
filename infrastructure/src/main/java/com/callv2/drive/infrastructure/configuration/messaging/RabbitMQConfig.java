@@ -23,7 +23,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    @ConfigurationProperties("rabbitmq.queue.member-sync")
+    @ConfigurationProperties("messaging.rabbitmq.queue.member-sync")
     RabbitMQQueueProperties memberSyncProperties() {
         return new RabbitMQQueueProperties();
     }
