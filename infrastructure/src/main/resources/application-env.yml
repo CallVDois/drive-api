@@ -27,6 +27,7 @@ db:
 request-timeout: ${REQUEST_TIMEOUT}
 
 rabbitmq:
+  virtual-host: ${RABBITMQ_VIRTUAL_HOST:/}
   auto-create: ${RABBITMQ_AUTO_CREATE}
   host: ${RABBITMQ_HOST}
   port: ${RABBITMQ_PORT}

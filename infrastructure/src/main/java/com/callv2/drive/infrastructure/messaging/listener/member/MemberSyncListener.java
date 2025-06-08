@@ -19,7 +19,7 @@ public class MemberSyncListener implements Listener<MemberSyncEvent> {
     }
 
     @Override
-    @RabbitListener(queues = "member.member.sync.drive.queue")
+    @RabbitListener(queues = "member.sync.drive.queue")
     public void handle(final MemberSyncEvent data) {
 
         final MemberSyncEvent.Data eventData = data.data();
