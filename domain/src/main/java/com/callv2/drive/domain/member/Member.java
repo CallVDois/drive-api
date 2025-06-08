@@ -1,9 +1,12 @@
 package com.callv2.drive.domain.member;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import com.callv2.drive.domain.AggregateRoot;
+import com.callv2.drive.domain.exception.IdMismatchException;
+import com.callv2.drive.domain.exception.SynchronizedVersionOutdatedException;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.validation.Error;
 import com.callv2.drive.domain.validation.ValidationHandler;
@@ -62,12 +65,13 @@ public class Member extends AggregateRoot<MemberID> {
     public Member synchronize(final Member member) {
 
         if (!this.id.equals(member.id))
-            throw ValidationException
-                    .with("Member ID mismatch", Error.with("Member ID does not match"));
+            throw IdMismatchException
+                    .with("Member ID mismatch", List.of(Error.with("Member ID does not match")));
 
         if (this.synchronizedVersion > member.synchronizedVersion)
-            throw ValidationException
-                    .with("Member synchronizedVersion mismatch", Error.with("Member synchronizedVersion is outdated"));
+            throw SynchronizedVersionOutdatedException
+                    .with("Member synchronizedVersion mismatch",
+                            List.of(Error.with("Member synchronizedVersion is outdated")));
 
         this.nickname = member.nickname;
         this.username = member.username;

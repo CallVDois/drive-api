@@ -3,6 +3,7 @@ package com.callv2.drive.infrastructure.configuration.messaging;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -27,8 +28,24 @@ public class RabbitMQConfig {
         }
 
         @Bean
+        TopicExchange memberDlxExchange() {
+            return new TopicExchange("member.dlx.exchange");
+        }
+
+        @Bean
         Queue memberSyncQueue() {
-            return new Queue("member.sync.drive.queue");
+            return QueueBuilder
+                    .durable("member.sync.drive.queue")
+                    .deadLetterExchange("member.dlx.exchange")
+                    .deadLetterRoutingKey("member.sync.deadletter")
+                    .build();
+        }
+
+        @Bean
+        Queue memberSyncDeadLetterQueue() {
+            return QueueBuilder
+                    .durable("member.sync.drive.queue.deadletter")
+                    .build();
         }
 
         @Bean
@@ -43,6 +60,13 @@ public class RabbitMQConfig {
                 @Qualifier("memberExchange") final TopicExchange exchange,
                 @Qualifier("memberSyncQueue") final Queue queue) {
             return BindingBuilder.bind(queue).to(exchange).with("member.updated");
+        }
+
+        @Bean
+        Binding memberSyncDeadLetterBinding(
+                @Qualifier("memberDlxExchange") final TopicExchange exchange,
+                @Qualifier("memberSyncDeadLetterQueue") final Queue queue) {
+            return BindingBuilder.bind(queue).to(exchange).with("member.sync.deadletter");
         }
 
     }
