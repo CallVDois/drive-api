@@ -125,34 +125,6 @@ public class Member extends AggregateRoot<MemberID> {
         return this;
     }
 
-    // public Member changeNickname(final Nickname nickname) {
-    // final Notification notification = Notification.create();
-    // Objects.requireNonNull(nickname).validate(notification);
-    // if (notification.hasError())
-    // throw ValidationException.with("Change Nickname Error", notification);
-
-    // if (this.nickname.equals(nickname))
-    // return this;
-
-    // this.nickname = nickname;
-    // this.updatedAt = Instant.now();
-    // return this;
-    // }
-
-    // public Member changeUsername(final Username username) {
-    // final Notification notification = Notification.create();
-    // Objects.requireNonNull(username).validate(notification);
-    // if (notification.hasError())
-    // throw ValidationException.with("Change Username Error", notification);
-
-    // if (this.username.equals(username))
-    // return this;
-
-    // this.username = username;
-    // this.updatedAt = Instant.now();
-    // return this;
-    // }
-
     public Username getUsername() {
         return username;
     }
