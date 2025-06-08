@@ -4,57 +4,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.callv2.drive.domain.exception.DomainException;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
 public class Notification implements ValidationHandler {
 
-    private final List<Error> errors;
+    private final List<ValidationError> errors;
 
-    private Notification(final List<Error> errors) {
-        this.errors = errors;
+    private Notification(final List<ValidationError> errors) {
+        this.errors = errors == null ? new ArrayList<>() : errors;
     }
 
     public static Notification create() {
         return new Notification(new ArrayList<>());
     }
 
-    public static Notification create(final Throwable t) {
-        return new Notification(new ArrayList<>()).append(new Error(t.getMessage()));
-    }
-
-    public static Notification create(final Error anError) {
-        return new Notification(new ArrayList<>()).append(anError);
+    public static Notification create(final ValidationError error) {
+        return new Notification(new ArrayList<>()).append(error);
     }
 
     @Override
-    public Notification append(final Error anError) {
-        this.errors.add(anError);
+    public Notification append(final ValidationError error) {
+        this.errors.add(error);
         return this;
     }
 
     @Override
-    public Notification append(final ValidationHandler anHandler) {
-        this.errors.addAll(anHandler.getErrors());
+    public Notification append(final ValidationHandler handler) {
+        this.errors.addAll(handler.getErrors());
         return this;
     }
 
     @Override
-    public <T> T valdiate(final Validation<T> aValidation) {
+    public <T> T valdiate(final Validation<T> validation) {
         try {
-            return aValidation.validate();
+            return validation.validate();
         } catch (DomainException e) {
-            this.errors.addAll(e.getErrors());
+            this.errors.addAll(e.getErrors().stream().map(ValidationError::fromDomainError).toList());
         } catch (Throwable e) {
-            this.errors.add(new Error(e.getMessage()));
+            this.errors.add(new ValidationError(e.getMessage()));
         }
 
         return null;
     }
 
     @Override
-    public List<Error> getErrors() {
-        return this.errors;
+    public List<ValidationError> getErrors() {
+        return this.errors == null ? List.of() : List.copyOf(this.errors);
     }
 
 }

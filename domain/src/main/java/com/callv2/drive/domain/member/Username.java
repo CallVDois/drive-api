@@ -1,7 +1,7 @@
 package com.callv2.drive.domain.member;
 
 import com.callv2.drive.domain.ValueObject;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
 public record Username(String value) implements ValueObject {
@@ -11,12 +11,12 @@ public record Username(String value) implements ValueObject {
     }
 
     @Override
-    public void validate(final ValidationHandler aHandler) {
+    public void validate(final ValidationHandler handler) {
         if (value == null || value.isBlank())
-            aHandler.append(Error.with("'username' is required"));
+            handler.append(ValidationError.with("'username' is required"));
 
         if (value.contains(" "))
-            aHandler.append(Error.with("'username' cannot contain spaces"));
+            handler.append(ValidationError.with("'username' cannot contain spaces"));
     }
 
 }

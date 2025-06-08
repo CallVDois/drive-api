@@ -167,8 +167,9 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
-        final var expectedExceptionMessage = "Folder with id '%s' not found"
-                .formatted(expectedFolderId.getValue());
+        final var expectedExceptionMessage = "[Folder] not found.";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "[Folder] with id [%s] not found.".formatted(expectedFolderId.getValue());
 
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
@@ -187,6 +188,8 @@ public class DefaultCreateFileUseCaseTest {
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
         verify(folderGateway, times(1)).findById(any());
         verify(folderGateway, times(1)).findById(eq(expectedFolderId));
@@ -211,8 +214,9 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
-        final var expectedExceptionMessage = "Member with id '%s' not found"
-                .formatted(expectedOwnerId.getValue());
+        final var expectedExceptionMessage = "[Member] not found.";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "[Member] with id [%s] not found.".formatted(expectedOwnerId.getValue());
 
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.empty());
@@ -228,6 +232,8 @@ public class DefaultCreateFileUseCaseTest {
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
@@ -623,9 +629,9 @@ public class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
-        final var expectedExceptionMessage = "Quota exceeded";
+        final var expectedExceptionMessage = "Quota exceeded.";
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = "You have exceeded your actual quota of 1 bytes";
+        final var expectedErrorMessage = "You have exceeded your current quota of 1 BYTE";
 
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));

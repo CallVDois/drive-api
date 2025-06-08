@@ -8,7 +8,7 @@ import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 
 public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
 
@@ -27,8 +27,9 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
         final Folder folder = findFolder(folderId);
         final Folder newParentFolder = findFolder(newParentFolderId);
 
+        // TODO inform the cause
         if (!canMove(folder, newParentFolder))
-            throw ValidationException.with("Invalid move operation", Error.with("Cannot move folder"));
+            throw ValidationException.with("Invalid move operation", ValidationError.with("Cannot move folder"));
 
         final Folder oldParentFolder = findFolder(folder.getParentFolder());
         oldParentFolder.removeSubFolder(folder);

@@ -1,7 +1,7 @@
 package com.callv2.drive.domain.member;
 
 import com.callv2.drive.domain.ValueObject;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
 public record Nickname(String value) implements ValueObject {
@@ -11,9 +11,9 @@ public record Nickname(String value) implements ValueObject {
     }
 
     @Override
-    public void validate(final ValidationHandler aHandler) {
+    public void validate(final ValidationHandler handler) {
         if (value == null || value.isBlank())
-            aHandler.append(Error.with("'nickname' is required"));
+            handler.append(ValidationError.with("'nickname' is required"));
     }
 
 }
