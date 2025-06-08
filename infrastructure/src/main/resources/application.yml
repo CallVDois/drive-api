@@ -38,13 +38,13 @@ spring:
     listener:
       simple:
         concurrency: 1
+        max-concurrency: 20
         retry:
-          max-attempts: 20
-          stateless: true
+          max-attempts: 3
           enabled: true
           initial-interval: 1000
-          max-interval: 15000
-          multiplier: 1.5
+          max-interval: 8000
+          multiplier: 2
         default-requeue-rejected: false
     virtual-host: ${rabbitmq.virtual-host}
     dynamic: ${rabbitmq.auto-create}
