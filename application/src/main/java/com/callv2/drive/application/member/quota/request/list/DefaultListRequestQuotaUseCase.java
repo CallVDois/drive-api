@@ -15,10 +15,10 @@ public class DefaultListRequestQuotaUseCase extends ListRequestQuotaUseCase {
     }
 
     @Override
-    public Page<RequestQuotaListOutput> execute(final SearchQuery searchQuery) {
+    public Page<ListRequestQuotaOutput> execute(final SearchQuery searchQuery) {
         return memberGateway
                 .findAllQuotaRequests(searchQuery)
-                .map(RequestQuotaListOutput::from);
+                .map(ListRequestQuotaOutput::from);
     }
 
 }

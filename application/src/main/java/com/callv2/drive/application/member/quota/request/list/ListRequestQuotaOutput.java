@@ -5,14 +5,14 @@ import java.time.Instant;
 import com.callv2.drive.domain.member.QuotaRequestPreview;
 import com.callv2.drive.domain.member.QuotaUnit;
 
-public record RequestQuotaListOutput(
+public record ListRequestQuotaOutput(
         String memberId,
         long amount,
         QuotaUnit unit,
         Instant requestedAt) {
 
-    public static RequestQuotaListOutput from(final QuotaRequestPreview quotaRequestPreview) {
-        return new RequestQuotaListOutput(
+    public static ListRequestQuotaOutput from(final QuotaRequestPreview quotaRequestPreview) {
+        return new ListRequestQuotaOutput(
                 quotaRequestPreview.memberId(),
                 quotaRequestPreview.amount(),
                 quotaRequestPreview.unit(),
