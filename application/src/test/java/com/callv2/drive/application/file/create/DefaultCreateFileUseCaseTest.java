@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,8 +38,10 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.member.Nickname;
 import com.callv2.drive.domain.member.Quota;
 import com.callv2.drive.domain.member.QuotaUnit;
+import com.callv2.drive.domain.member.Username;
 import com.callv2.drive.domain.storage.StorageService;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +65,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecute_thenShouldCreateFile() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
@@ -131,7 +142,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAnInvalidFolderId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
@@ -224,7 +243,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParamsWithAlreadyExistingFileNameOnSameFolder_whenCallsExecute_thenShouldThrowValidationException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
@@ -282,7 +309,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateThrowsRandomException_thenShouldThrowInternalErrorException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
@@ -358,7 +393,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateAndContentGatewayDeleteThrowsRandomException_thenShouldThrowInternalErrorException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
@@ -434,7 +477,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecuteAndContentGatewayStoreThrowsRandomException_thenShouldThrowInternalErrorException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
@@ -488,7 +539,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAnInvalidFileName_whenCallsExecute_thenShouldThrowValidationException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
@@ -540,7 +599,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParams_whenCallsExecuteAndMemberQuotaIsExceeded_thenShouldThrowsQuotaExceededException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.BYTE))
                 .approveQuotaRequest();
 
@@ -588,7 +655,15 @@ public class DefaultCreateFileUseCaseTest {
     @Test
     void givenAnInvalidParamsWithContentTypeNull_whenCallsExecute_thenShouldThrowsValidationException() {
 
-        final var owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
