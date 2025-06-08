@@ -2,18 +2,22 @@ package com.callv2.drive.infrastructure.messaging.listener.member;
 
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 
 import com.callv2.drive.application.member.synchronize.SynchronizeMemberInput;
 import com.callv2.drive.application.member.synchronize.SynchronizeMemberUseCase;
-import com.callv2.drive.domain.exception.SynchronizedVersionOutdatedException;
 import com.callv2.drive.domain.exception.IdMismatchException;
+import com.callv2.drive.domain.exception.SynchronizedVersionOutdatedException;
 import com.callv2.drive.infrastructure.messaging.listener.Listener;
 
 @Component
 public class MemberSyncListener implements Listener<MemberSyncEvent> {
+
+    private static final Logger log = LogManager.getLogger(MemberSyncListener.class);
 
     private final SynchronizeMemberUseCase synchronizeMemberUseCase;
 
@@ -38,8 +42,7 @@ public class MemberSyncListener implements Listener<MemberSyncEvent> {
         try {
             synchronizeMemberUseCase.execute(createMemberInput);
         } catch (OptimisticLockingFailureException | SynchronizedVersionOutdatedException | IdMismatchException e) {
-            // TODO log WARN
-            System.err.println("Error synchronizing member: " + e.getMessage());
+            log.warn("Error synchronizing member: {}", e.getMessage(), e);
         }
 
     }
