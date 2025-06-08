@@ -34,25 +34,12 @@ public class Member extends AggregateRoot<MemberID> {
         super(id);
         this.username = username;
         this.nickname = nickname;
-        this.quota = quota;
+        this.quota = quota == null ? Quota.of(0, QuotaUnit.BYTE) : quota;
         this.quotaRequest = Optional.ofNullable(quotaRequest);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
 
         this.synchronizedVersion = version == null ? 0L : version;
-    }
-
-    public static Member create(
-            final MemberID id,
-            final Username username,
-            final Nickname nickname,
-            final Instant createdAt,
-            final Instant updatedAt,
-            final Long synchronizedVersion) {
-
-        final Quota quota = Quota.of(0, QuotaUnit.BYTE);
-
-        return new Member(id, username, nickname, quota, null, createdAt, updatedAt, synchronizedVersion);
     }
 
     public static Member with(

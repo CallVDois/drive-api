@@ -27,6 +27,11 @@ public class DefaultMemberGateway implements MemberGateway {
     }
 
     @Override
+    public Member create(final Member member) {
+        return this.memberJpaRepository.save(MemberJpaEntity.fromDomain(member)).toDomain();
+    }
+
+    @Override
     public Optional<Member> findById(final MemberID id) {
         return this.memberJpaRepository
                 .findById(id.getValue())

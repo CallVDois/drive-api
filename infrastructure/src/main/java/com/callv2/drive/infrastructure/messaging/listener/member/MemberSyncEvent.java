@@ -17,7 +17,7 @@ public record MemberSyncEvent(
             boolean isActive,
             Instant createdAt,
             Instant updatedAt,
-            Long version) implements Serializable {
+            Long synchronizedVersion) implements Serializable {
 
     }
 

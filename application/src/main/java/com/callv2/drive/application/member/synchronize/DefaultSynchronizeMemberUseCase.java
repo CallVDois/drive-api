@@ -23,16 +23,23 @@ public class DefaultSynchronizeMemberUseCase extends SynchronizeMemberUseCase {
         final Username username = Username.of(input.username());
         final Nickname nickname = Nickname.of(input.nickname());
 
-        final Member member = this.memberGateway
-                .findById(memberId)
-                .orElse(Member.create(
-                        memberId,
-                        username,
-                        nickname,
-                        input.createdAt(),
-                        input.updatedAt(),
-                        input.synchronizedVersion()));
+        final var updatedMember = Member.with(
+                memberId,
+                username,
+                nickname,
+                null,
+                null,
+                input.createdAt(),
+                input.updatedAt(),
+                input.synchronizedVersion());
 
+        this.memberGateway
+                .findById(memberId)
+                .map(member -> member.synchronize(updatedMember))
+                .ifPresentOrElse(this::update, () -> memberGateway.create(updatedMember));
+    }
+
+    private void update(final Member member) {
         memberGateway.update(member.synchronize(member));
     }
 

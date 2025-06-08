@@ -7,6 +7,8 @@ import com.callv2.drive.domain.pagination.SearchQuery;
 
 public interface MemberGateway {
 
+    Member create(Member member);
+
     Optional<Member> findById(MemberID id);
 
     Member update(Member member);

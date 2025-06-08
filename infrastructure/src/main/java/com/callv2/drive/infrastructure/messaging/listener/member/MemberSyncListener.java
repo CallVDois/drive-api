@@ -30,7 +30,7 @@ public class MemberSyncListener implements Listener<MemberSyncEvent> {
                 eventData.nickname(),
                 eventData.createdAt(),
                 eventData.updatedAt(),
-                eventData.version());
+                eventData.synchronizedVersion());
 
         synchronizeMemberUseCase.execute(createMemberInput);
     }

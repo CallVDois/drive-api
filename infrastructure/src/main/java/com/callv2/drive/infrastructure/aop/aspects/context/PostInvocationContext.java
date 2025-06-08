@@ -2,7 +2,7 @@ package com.callv2.drive.infrastructure.aop.aspects.context;
 
 import java.time.Instant;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public interface PostInvocationContext extends MethodInvocationContext {
 
