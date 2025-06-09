@@ -65,8 +65,9 @@ public class DefaultGetFileContentUseCaseTest {
 
         final var expectedFileId = FileID.unique();
 
-        final var expectedExceptionMessage = "File with id '%s' not found"
-                .formatted(expectedFileId.getValue().toString());
+        final var expectedExceptionMessage = "[File] not found.";
+        final var expectedErrorsCount = 1;
+        final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedFileId.getValue());
 
         when(fileGateway.findById(any()))
                 .thenReturn(Optional.empty());
@@ -76,6 +77,8 @@ public class DefaultGetFileContentUseCaseTest {
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorsCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
         verify(fileGateway, times(1)).findById(any());
         verify(fileGateway, times(1)).findById(eq(expectedFileId));

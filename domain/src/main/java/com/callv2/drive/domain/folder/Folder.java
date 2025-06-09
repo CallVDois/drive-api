@@ -7,7 +7,7 @@ import java.util.Set;
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.member.MemberID;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
 
@@ -119,13 +119,16 @@ public class Folder extends AggregateRoot<FolderID> {
         if (this.parentFolder.equals(parentFolder.getId()))
             return this;
 
+        final Notification notification = Notification.create();
+
         if (this.subFolders.stream().anyMatch(it -> it.id().equals(parentFolder.getId())))
-            throw ValidationException.with("Error on change parent folder",
-                    Error.with("Parent folder cannot be a subfolder"));
+            notification.append(ValidationError.with("Parent folder cannot be a subfolder"));
 
         if (this.getId().equals(parentFolder.getId()))
-            throw ValidationException.with("Error on change parent folder",
-                    Error.with("Parent folder cannot be the same folder"));
+            notification.append(ValidationError.with("Parent folder cannot be the same folder"));
+
+        if (notification.hasError())
+            throw ValidationException.with("Error on change parent folder", notification);
 
         this.parentFolder = parentFolder.getId();
         this.updatedAt = Instant.now();
@@ -139,12 +142,18 @@ public class Folder extends AggregateRoot<FolderID> {
 
         final SubFolder subFolder = SubFolder.from(folder);
 
+        final Notification notification = Notification.create();
+
         if (this.subFolders.contains(subFolder))
-            throw ValidationException.with("Error on add subfolder", Error.with("SubFolder already exists"));
+            notification
+                    .append(ValidationError.with("SubFolder already exists"));
 
         if (this.subFolders.stream().anyMatch(it -> it.name().equals(folder.getName())))
-            throw ValidationException.with("Error on add subfolder",
-                    Error.with("SubFolder %s already exists".formatted(folder.getName().value())));
+            notification
+                    .append(ValidationError.with("SubFolder %s already exists".formatted(folder.getName().value())));
+
+        if (notification.hasError())
+            throw ValidationException.with("Error on add subfolder", notification);
 
         this.subFolders.add(subFolder);
         this.updatedAt = Instant.now();

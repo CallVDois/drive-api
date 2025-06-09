@@ -1,13 +1,29 @@
 package com.callv2.drive.domain.exception;
 
-public class InternalErrorException extends NoStacktraceException {
+import java.util.List;
 
-    protected InternalErrorException(final String aMessage, final Throwable cause) {
-        super(aMessage, cause);
+public class InternalErrorException extends VerboseDomainException {
+
+    protected InternalErrorException(
+            final String message,
+            final List<DomainException.Error> errors,
+            final Throwable cause) {
+        super(message, errors, cause);
     }
 
-    public static InternalErrorException with(final String aMessage, final Throwable cause) {
-        return new InternalErrorException(aMessage, cause);
+    public static InternalErrorException with(final Throwable cause) {
+        return new InternalErrorException(cause.getMessage(), List.of(), cause);
+    }
+
+    public static InternalErrorException with(final String message, final Throwable cause) {
+        return new InternalErrorException(message, List.of(), cause);
+    }
+
+    public static InternalErrorException with(
+            final String message,
+            final List<DomainException.Error> errors,
+            final Throwable cause) {
+        return new InternalErrorException(message, errors, cause);
     }
 
 }

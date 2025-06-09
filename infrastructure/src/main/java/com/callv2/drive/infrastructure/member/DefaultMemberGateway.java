@@ -2,8 +2,12 @@ package com.callv2.drive.infrastructure.member;
 
 import java.util.Optional;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.callv2.drive.domain.exception.AlreadyExistsException;
+import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
@@ -25,7 +29,10 @@ public class DefaultMemberGateway implements MemberGateway {
 
     @Override
     public Member create(final Member member) {
-        return save(member);
+        if (this.memberJpaRepository.existsById(member.getId().getValue()))
+            throw AlreadyExistsException.with(Member.class, member.getId().getValue());
+
+        return this.memberJpaRepository.save(MemberJpaEntity.fromDomain(member)).toDomain();
     }
 
     @Override
@@ -35,15 +42,32 @@ public class DefaultMemberGateway implements MemberGateway {
                 .map(MemberJpaEntity::toDomain);
     }
 
+    @Transactional
     @Override
     public Member update(final Member member) {
-        return save(member);
-    }
 
-    private Member save(final Member member) {
-        return memberJpaRepository
-                .save(MemberJpaEntity.fromDomain(member))
-                .toDomain();
+        if (!this.memberJpaRepository.existsById(member.getId().getValue()))
+            throw NotFoundException.with(Member.class, member.getId().getValue());
+
+        final MemberJpaEntity memberJpa = MemberJpaEntity.fromDomain(member);
+        final Integer rowsUpdated = memberJpaRepository.update(
+                memberJpa.getId(),
+                memberJpa.getUsername(),
+                memberJpa.getNickname(),
+                memberJpa.getQuotaAmmount(),
+                memberJpa.getQuotaUnit(),
+                memberJpa.getQuotaRequestAmmount(),
+                memberJpa.getQuotaRequestUnit(),
+                memberJpa.getQuotaRequestedAt(),
+                memberJpa.getCreatedAt(),
+                memberJpa.getUpdatedAt(),
+                memberJpa.getSynchronizedVersion());
+
+        if (rowsUpdated != 1)
+            throw new OptimisticLockingFailureException(
+                    "Member update failed due to version conflict for id: " + member.getId().getValue());
+
+        return member;
     }
 
     @Override

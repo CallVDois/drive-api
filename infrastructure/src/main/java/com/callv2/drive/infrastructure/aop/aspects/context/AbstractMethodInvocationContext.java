@@ -2,7 +2,7 @@ package com.callv2.drive.infrastructure.aop.aspects.context;
 
 import java.time.Instant;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public abstract class AbstractMethodInvocationContext implements MethodInvocationContext {
 
