@@ -94,7 +94,7 @@ public class MemberJpaEntity {
                 Nickname.of(getNickname()),
                 Quota.of(getQuotaAmmount(), getQuotaUnit()),
                 quotaRequest,
-                getHasSystemAccess()tHasSystemAccess(),
+                getHasSystemAccess(),
                 getCreatedAt(),
                 getUpdatedAt(),
                 getSynchronizedVersion());
