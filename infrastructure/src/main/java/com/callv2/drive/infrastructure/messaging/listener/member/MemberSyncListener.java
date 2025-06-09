@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.callv2.drive.application.member.synchronize.SynchronizeMemberInput;
 import com.callv2.drive.application.member.synchronize.SynchronizeMemberUseCase;
+import com.callv2.drive.domain.exception.AlreadyExistsException;
 import com.callv2.drive.domain.exception.IdMismatchException;
 import com.callv2.drive.domain.exception.SynchronizedVersionOutdatedException;
 import com.callv2.drive.infrastructure.messaging.listener.Listener;
@@ -41,7 +42,10 @@ public class MemberSyncListener implements Listener<MemberSyncEvent> {
 
         try {
             synchronizeMemberUseCase.execute(createMemberInput);
-        } catch (OptimisticLockingFailureException | SynchronizedVersionOutdatedException | IdMismatchException e) {
+        } catch (OptimisticLockingFailureException
+                | SynchronizedVersionOutdatedException
+                | IdMismatchException
+                | AlreadyExistsException e) {
             log.warn("Error synchronizing member: {}", e.getMessage(), e);
         }
 
