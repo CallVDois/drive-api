@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
         final var expectedUsername = Username.of(expectedUsernameValue);
         final var expectedNickname = Nickname.of(expectedNicknameValue);
         final var expectedQuota = Quota.of(10L, QuotaUnit.GIGABYTE);
+        final var expectedHasSystemAccess = true;
 
         final var oldMember = Member.with(
                 expectedMemberId,
@@ -56,6 +58,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
                 expectedNickname,
                 expectedQuota,
                 null,
+                false,
                 expectedCreatedAt,
                 expectedCreatedAt,
                 0L);
@@ -70,6 +73,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
                 expectedIdVAlue,
                 expectedUsernameValue,
                 expectedNicknameValue,
+                expectedHasSystemAccess,
                 expectedCreatedAt,
                 expectedUpdatedAt,
                 expectedSynchronizedVersion);
@@ -84,6 +88,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
             assertEquals(expectedUsername, member.getUsername());
             assertEquals(expectedNickname, member.getNickname());
             assertEquals(expectedQuota, member.getQuota());
+            assertEquals(expectedHasSystemAccess, member.hasSystemAccess());
             assertEquals(expectedCreatedAt, member.getCreatedAt());
             assertEquals(expectedUpdatedAt, member.getUpdatedAt());
             assertEquals(expectedSynchronizedVersion, member.getSynchronizedVersion());
@@ -108,6 +113,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
         final var expectedUsername = Username.of(expectedUsernameValue);
         final var expectedNickname = Nickname.of(expectedNicknameValue);
         final var expectedQuota = Quota.of(0L, QuotaUnit.BYTE);
+        final var expectedHasSystemAccess = false;
 
         when(memberGateway.findById(expectedMemberId))
                 .thenReturn(Optional.empty());
@@ -119,6 +125,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
                 expectedIdVAlue,
                 expectedUsernameValue,
                 expectedNicknameValue,
+                expectedHasSystemAccess,
                 expectedCreatedAt,
                 expectedUpdatedAt,
                 expectedSynchronizedVersion);

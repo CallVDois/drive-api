@@ -71,6 +71,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -148,6 +149,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -169,7 +171,8 @@ public class DefaultCreateFileUseCaseTest {
 
         final var expectedExceptionMessage = "[Folder] not found.";
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = "[Folder] with id [%s] not found.".formatted(expectedFolderId.getValue());
+        final var expectedErrorMessage = "[Folder] with id [%s] not found."
+                .formatted(expectedFolderId.getValue());
 
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
@@ -216,7 +219,8 @@ public class DefaultCreateFileUseCaseTest {
 
         final var expectedExceptionMessage = "[Member] not found.";
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = "[Member] with id [%s] not found.".formatted(expectedOwnerId.getValue());
+        final var expectedErrorMessage = "[Member] with id [%s] not found."
+                .formatted(expectedOwnerId.getValue());
 
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.empty());
@@ -255,6 +259,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -321,6 +326,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -405,6 +411,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -489,6 +496,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -551,6 +559,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -611,6 +620,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)
@@ -667,6 +677,7 @@ public class DefaultCreateFileUseCaseTest {
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
                 null,
+                true,
                 Instant.now(),
                 Instant.now(),
                 0L)

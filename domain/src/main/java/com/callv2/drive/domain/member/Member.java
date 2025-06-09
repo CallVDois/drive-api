@@ -17,7 +17,7 @@ public class Member extends AggregateRoot<MemberID> {
 
     private Quota quota;
     private Optional<QuotaRequest> quotaRequest;
-    
+
     private boolean hasSystemAccess;
 
     private Instant createdAt;
@@ -57,7 +57,16 @@ public class Member extends AggregateRoot<MemberID> {
             final Instant createdAt,
             final Instant updatedAt,
             final Long synchronizedVersion) {
-        return new Member(id, username, nickname, quota, quotaRequest, hasSystemAccess, createdAt, updatedAt, synchronizedVersion);
+        return new Member(
+                id,
+                username,
+                nickname,
+                quota,
+                quotaRequest,
+                hasSystemAccess,
+                createdAt,
+                updatedAt,
+                synchronizedVersion);
     }
 
     @Override
@@ -81,7 +90,7 @@ public class Member extends AggregateRoot<MemberID> {
 
         this.nickname = member.nickname;
         this.username = member.username;
-
+        this.hasSystemAccess = member.hasSystemAccess;
         this.createdAt = member.createdAt;
         this.updatedAt = member.updatedAt;
         this.synchronizedVersion = member.synchronizedVersion;
@@ -147,7 +156,7 @@ public class Member extends AggregateRoot<MemberID> {
         return quotaRequest;
     }
 
-    public boolean hasSystemAccess(){
+    public boolean hasSystemAccess() {
         return hasSystemAccess;
     }
 
