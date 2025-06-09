@@ -54,7 +54,7 @@ public interface MemberAdminAPI {
     ResponseEntity<Page<QuotaRequestListResponse>> listQuotaRequests(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
-            @RequestParam(name = "orderField", required = false, defaultValue = "requestedAt") String orderField,
+            @RequestParam(name = "orderField", required = false, defaultValue = "quotaRequestedAt") String orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection);
 
 }

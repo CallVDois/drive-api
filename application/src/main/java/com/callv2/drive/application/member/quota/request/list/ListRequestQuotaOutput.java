@@ -7,16 +7,20 @@ import com.callv2.drive.domain.member.QuotaUnit;
 
 public record ListRequestQuotaOutput(
         String memberId,
-        long amount,
-        QuotaUnit unit,
-        Instant requestedAt) {
+        String memberUsername,
+        String memberNickname,
+        long quotaAmount,
+        QuotaUnit quotaUnit,
+        Instant quotaRequestedAt) {
 
     public static ListRequestQuotaOutput from(final QuotaRequestPreview quotaRequestPreview) {
         return new ListRequestQuotaOutput(
                 quotaRequestPreview.memberId(),
-                quotaRequestPreview.amount(),
-                quotaRequestPreview.unit(),
-                quotaRequestPreview.requestedAt());
+                quotaRequestPreview.memberUsername(),
+                quotaRequestPreview.memberNickname(),
+                quotaRequestPreview.quotaAmount(),
+                quotaRequestPreview.quotaUnit(),
+                quotaRequestPreview.quotaRequestedAt());
     }
 
 }

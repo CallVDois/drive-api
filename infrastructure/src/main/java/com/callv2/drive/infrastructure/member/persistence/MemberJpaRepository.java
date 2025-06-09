@@ -17,9 +17,11 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
     @Query("""
             select distinct new com.callv2.drive.domain.member.QuotaRequestPreview(
                 m.id as memberId,
-                m.quotaRequestAmmount as amount,
-                m.quotaRequestUnit as unit,
-                m.quotaRequestedAt as requestedAt
+                m.username as memberUsername,
+                m.nickname as memberNickname,
+                m.quotaRequestAmmount as quotaAmount,
+                m.quotaRequestUnit as quotaUnit,
+                m.quotaRequestedAt as quotaRequestedAt
             )
             from Member m
             where

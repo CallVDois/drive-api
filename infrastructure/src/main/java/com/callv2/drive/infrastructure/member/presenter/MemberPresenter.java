@@ -7,16 +7,18 @@ import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
 
 public interface MemberPresenter {
 
-    static QuotaRequestListResponse present(ListRequestQuotaOutput output) {
+    static QuotaRequestListResponse present(final ListRequestQuotaOutput output) {
         return new QuotaRequestListResponse(
-                output.memberId(),
-                output.amount(),
-                output.unit(),
-                output.requestedAt());
+                new QuotaRequestListResponse.Member(
+                        output.memberId(),
+                        output.memberUsername()),
+                output.quotaAmount(),
+                output.quotaUnit(),
+                output.quotaRequestedAt());
     }
 
-    static MemberQuotaResponse present(GetQuotaOutput output) {
-        return new MemberQuotaResponse(output.used(), output.total(), output.available());
+    static MemberQuotaResponse present(final GetQuotaOutput output) {
+        return new MemberQuotaResponse(output.memberId(), output.used(), output.total(), output.available());
     }
 
 }
