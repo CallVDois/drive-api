@@ -2,7 +2,7 @@ package com.callv2.drive.domain.file;
 
 import com.callv2.drive.domain.ValueObject;
 import com.callv2.drive.domain.validation.ValidationHandler;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 
 public record Content(String location, String type, long size) implements ValueObject {
 
@@ -18,24 +18,24 @@ public record Content(String location, String type, long size) implements ValueO
 
     private void validateLocation(final ValidationHandler aHandler) {
         if (location == null) {
-            aHandler.append(new Error("'location' cannot be null."));
+            aHandler.append(new ValidationError("'location' cannot be null."));
             return;
         }
 
         if (location.trim().isEmpty()) {
-            aHandler.append(new Error("'location' cannot be empty."));
+            aHandler.append(new ValidationError("'location' cannot be empty."));
             return;
         }
     }
 
     private void validateType(final ValidationHandler aHandler) {
         if (type == null) {
-            aHandler.append(new Error("'type' cannot be null."));
+            aHandler.append(new ValidationError("'type' cannot be null."));
             return;
         }
 
         if (type.trim().isEmpty()) {
-            aHandler.append(new Error("'type' cannot be empty."));
+            aHandler.append(new ValidationError("'type' cannot be empty."));
             return;
         }
     }

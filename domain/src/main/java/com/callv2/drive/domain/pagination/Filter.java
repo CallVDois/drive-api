@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import com.callv2.drive.domain.exception.ValidationException;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
 public record Filter(String field, String value, String valueToCompare, Type type) {
@@ -13,17 +13,17 @@ public record Filter(String field, String value, String valueToCompare, Type typ
 
         final Notification notification = Notification.create();
         if (field == null)
-            notification.append(Error.with("Filter.field cannot be null"));
+            notification.append(ValidationError.with("Filter.field cannot be null"));
 
         if (field != null && field.isBlank())
-            notification.append(Error.with("Filter.field cannot be blank"));
+            notification.append(ValidationError.with("Filter.field cannot be blank"));
 
         if (value == null)
-            notification.append(Error.with("Filter.value cannot be null"));
+            notification.append(ValidationError.with("Filter.value cannot be null"));
 
         if (type == null)
             notification.append(
-                    Error.with(
+                    ValidationError.with(
                             "Filter.type cannot be null, Valid values are: " + Arrays.toString(Type.values())));
 
         if (notification.hasError())

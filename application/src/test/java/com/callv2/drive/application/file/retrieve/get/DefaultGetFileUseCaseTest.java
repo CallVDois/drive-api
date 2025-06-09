@@ -76,9 +76,9 @@ public class DefaultGetFileUseCaseTest {
 
         final var expectedId = FileID.unique();
 
-        final var expectedExceptionMessage = "File with id '%s' not found".formatted(expectedId.getValue().toString());
+        final var expectedExceptionMessage = "[File] not found.";
         final var expectedErrorsCount = 1;
-        final var expectedErrorMessage = "File with id '%s' not found".formatted(expectedId.getValue().toString());
+        final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedId.getValue().toString());
 
         when(fileGateway.findById(any()))
                 .thenReturn(Optional.empty());

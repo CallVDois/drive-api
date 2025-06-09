@@ -79,8 +79,9 @@ public class DefaultGetFolderUseCaseTest {
 
         final var expectedFolderId = FolderID.unique();
 
-        final var excpectedExceptionMessage = "Folder with id '%s' not found"
-                .formatted(expectedFolderId.getValue().toString());
+        final var expectedExceptionMessage = "[Folder] not found.";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "[Folder] with id [%s] not found.".formatted(expectedFolderId.getValue());
 
         when(folderGateway.findById(expectedFolderId))
                 .thenReturn(Optional.empty());
@@ -89,7 +90,9 @@ public class DefaultGetFolderUseCaseTest {
 
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
 
-        assertEquals(excpectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
         verify(folderGateway, times(1)).findById(any());
         verify(folderGateway, times(1)).findById(eq(expectedFolderId));

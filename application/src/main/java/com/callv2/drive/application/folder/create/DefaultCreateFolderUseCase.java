@@ -9,7 +9,7 @@ import com.callv2.drive.domain.folder.FolderName;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
 public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
@@ -41,7 +41,7 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
     private Folder createFolder(final MemberID ownerId, FolderName name, final Folder parentFolder) {
         final Notification notification = Notification.create();
         if (parentFolder.getSubFolders().stream().anyMatch(subFolder -> subFolder.name().equals(name)))
-            notification.append(Error.with("Folder with the same name already exists"));
+            notification.append(ValidationError.with("Folder with the same name already exists"));
 
         final Folder folder = notification.valdiate(() -> Folder.create(ownerId, name, parentFolder));
 

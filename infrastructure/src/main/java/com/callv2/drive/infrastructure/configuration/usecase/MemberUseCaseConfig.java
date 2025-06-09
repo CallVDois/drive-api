@@ -11,6 +11,8 @@ import com.callv2.drive.application.member.quota.request.list.DefaultListRequest
 import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaUseCase;
 import com.callv2.drive.application.member.quota.retrieve.get.DefaultGetQuotaUseCase;
 import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaUseCase;
+import com.callv2.drive.application.member.synchronize.DefaultSynchronizeMemberUseCase;
+import com.callv2.drive.application.member.synchronize.SynchronizeMemberUseCase;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.member.MemberGateway;
 
@@ -43,6 +45,11 @@ public class MemberUseCaseConfig {
     @Bean
     GetQuotaUseCase getQuotaUseCase() {
         return new DefaultGetQuotaUseCase(memberGateway, fileGateway);
+    }
+
+    @Bean
+    SynchronizeMemberUseCase synchronizeMemberUseCase() {
+        return new DefaultSynchronizeMemberUseCase(memberGateway);
     }
 
 }

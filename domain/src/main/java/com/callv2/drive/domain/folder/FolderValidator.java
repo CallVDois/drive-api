@@ -7,9 +7,9 @@ public class FolderValidator extends Validator {
 
     private final Folder folder;
 
-    protected FolderValidator(final Folder aFolder, final ValidationHandler aHandler) {
-        super(aHandler);
-        this.folder = aFolder;
+    protected FolderValidator(final Folder folder, final ValidationHandler handler) {
+        super(handler);
+        this.folder = folder;
     }
 
     @Override

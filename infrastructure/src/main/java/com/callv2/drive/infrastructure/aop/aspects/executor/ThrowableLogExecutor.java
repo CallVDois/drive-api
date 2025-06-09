@@ -17,7 +17,6 @@ public class ThrowableLogExecutor extends Log4jExecutor<PostInvocationContext> {
         return new ThrowableLogExecutor(level, clazz);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void execute(final PostInvocationContext context) {
         if (context.getThrowable() != null)

@@ -11,10 +11,10 @@ public record Page<T>(
         List<T> items) {
 
     public <R> Page<R> map(final Function<T, R> mapper) {
-        final List<R> aNewList = this.items.stream()
+        final List<R> newList = this.items.stream()
                 .map(mapper)
                 .toList();
 
-        return new Page<>(currentPage(), perPage(), totalPages(), total(), aNewList);
+        return new Page<>(currentPage(), perPage(), totalPages(), total(), newList);
     }
 }

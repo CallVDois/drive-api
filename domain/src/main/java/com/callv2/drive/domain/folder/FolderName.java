@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.callv2.drive.domain.ValueObject;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
 public record FolderName(String value) implements ValueObject {
@@ -20,25 +20,26 @@ public record FolderName(String value) implements ValueObject {
     }
 
     @Override
-    public void validate(ValidationHandler aHandler) {
+    public void validate(ValidationHandler handler) {
 
         if (value == null) {
-            aHandler.append(new Error("'name' cannot be null."));
+            handler.append(new ValidationError("'name' cannot be null."));
             return;
         }
 
         if (value.trim().isEmpty()) {
-            aHandler.append(new Error("'name' cannot be empty."));
+            handler.append(new ValidationError("'name' cannot be empty."));
             return;
         }
 
         String trimmedName = value.trim();
         if (trimmedName.length() < MIN_LENGTH || trimmedName.length() > MAX_LENGTH)
-            aHandler.append(
-                    new Error("'name' must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters."));
+            handler.append(
+                    new ValidationError(
+                            "'name' must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters."));
 
         if (containsInvalidCharacters(value))
-            aHandler.append(new Error("'name' contains invalid characters."));
+            handler.append(new ValidationError("'name' contains invalid characters."));
 
     }
 
