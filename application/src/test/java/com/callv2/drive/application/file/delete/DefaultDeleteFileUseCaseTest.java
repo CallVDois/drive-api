@@ -16,6 +16,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +38,15 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAValidParam_whenCallsExecute_thenShouldDeleteFile() {
 
-        final Member owner = Member.create(MemberID.of("owner"))
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                Instant.now(),
+                Instant.now(),
+                0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 

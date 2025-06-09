@@ -6,6 +6,7 @@ public record SynchronizeMemberInput(
         String id,
         String username,
         String nickname,
+        Boolean hasSystemAccess,
         Instant createdAt,
         Instant updatedAt,
         Long synchronizedVersion) {
@@ -14,10 +15,11 @@ public record SynchronizeMemberInput(
             final String id,
             final String username,
             final String nickname,
+            final Boolean hasSystemAccess,
             final Instant createdAt,
             final Instant updatedAt,
             final Long synchronizedVersion) {
-        return new SynchronizeMemberInput(id, username, nickname, createdAt, updatedAt, synchronizedVersion);
+        return new SynchronizeMemberInput(id, username, nickname, hasSystemAccess, createdAt, updatedAt, synchronizedVersion);
     }
 
 }

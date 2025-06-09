@@ -29,8 +29,10 @@ public class DefaultDeleteFileUseCase extends DeleteFileUseCase {
         final MemberID ownerId = MemberID.of(input.ownerId());
         final FileID fileId = FileID.of(input.fileId());
 
-        memberGateway.findById(ownerId)
+        final Member member = memberGateway.findById(ownerId)
                 .orElseThrow(() -> NotFoundException.with(Member.class, input.ownerId()));
+
+        member.hasSystemAccess();
 
         final File file = fileGateway.findById(fileId)
                 .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));

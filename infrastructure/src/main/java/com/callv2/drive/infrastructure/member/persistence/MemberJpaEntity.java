@@ -42,6 +42,8 @@ public class MemberJpaEntity {
 
     private Instant quotaRequestedAt;
 
+    private Boolean hasSystemAccess;
+
     private Instant createdAt;
 
     private Instant updatedAt;
@@ -57,6 +59,7 @@ public class MemberJpaEntity {
             final Long quotaRequestAmmount,
             final QuotaUnit quotaRequestUnit,
             final Instant quotaRequestedAt,
+            final Boolean hasSystemAccess,
             final Instant createdAt,
             final Instant updatedAt,
             final Long synchronizedVersion) {
@@ -68,6 +71,7 @@ public class MemberJpaEntity {
         this.quotaRequestAmmount = quotaRequestAmmount;
         this.quotaRequestUnit = quotaRequestUnit;
         this.quotaRequestedAt = quotaRequestedAt;
+        this.hasSystemAccess = hasSystemAccess == null ? false : hasSystemAccess;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.synchronizedVersion = synchronizedVersion;
@@ -90,6 +94,7 @@ public class MemberJpaEntity {
                 Nickname.of(getNickname()),
                 Quota.of(getQuotaAmmount(), getQuotaUnit()),
                 quotaRequest,
+                getHasSystemAccess()tHasSystemAccess(),
                 getCreatedAt(),
                 getUpdatedAt(),
                 getSynchronizedVersion());
@@ -105,6 +110,7 @@ public class MemberJpaEntity {
                 member.getQuotaRequest().map(QuotaRequest::quota).map(Quota::amount).orElse(null),
                 member.getQuotaRequest().map(QuotaRequest::quota).map(Quota::unit).orElse(null),
                 member.getQuotaRequest().map(QuotaRequest::requesteddAt).orElse(null),
+                member.hasSystemAccess(),
                 member.getCreatedAt(),
                 member.getUpdatedAt(),
                 member.getSynchronizedVersion());
@@ -172,6 +178,14 @@ public class MemberJpaEntity {
 
     public void setQuotaRequestedAt(Instant quotaRequestedAt) {
         this.quotaRequestedAt = quotaRequestedAt;
+    }
+
+    public Boolean getHasSystemAccess() {
+        return hasSystemAccess;
+    }
+
+    public void setHasSystemAccess(Boolean hasSystemAccess) {
+        this.hasSystemAccess = hasSystemAccess;
     }
 
     public Instant getCreatedAt() {
