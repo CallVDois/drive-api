@@ -90,6 +90,13 @@ public interface FolderAPI {
             @RequestParam(name = "filters", required = false) List<String> filters);
 
     @PatchMapping(value = "{id}/change-name", consumes = { MediaType.APPLICATION_JSON_VALUE })
+    @Operation(summary = "Change folder name", description = "This method changes the name of a folder", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Folder name changed successfully", content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    })
     ResponseEntity<Void> changeName(@PathVariable(required = true) UUID id, @RequestBody String request);
 
 }
