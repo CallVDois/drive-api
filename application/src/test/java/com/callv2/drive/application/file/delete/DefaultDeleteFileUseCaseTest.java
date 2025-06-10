@@ -143,6 +143,49 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidFileId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
+        final MemberID expectedOwnerId = MemberID.of("owner");
+        final FileID expectedFileId = FileID.unique();
+
+        final String expectedExceptionMessage = "[File] not found.";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedFileId.getValue());
+
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                true,
+                Instant.now(),
+                Instant.now(),
+                0L)
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
+
+        when(memberGateway.findById(expectedOwnerId))
+                .thenReturn(Optional.of(owner));
+
+        when(fileGateway.findById(expectedFileId))
+                .thenReturn(Optional.empty());
+
+        final var input = DeleteFileInput.of(
+                expectedOwnerId.getValue(),
+                expectedFileId.getValue());
+
+        final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        verify(memberGateway, times(1)).findById(any());
+        verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
+        verify(fileGateway, times(1)).findById(any());
+        verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, never()).deleteById(any());
+        verify(storageService, never()).delete(any());
+
     }
 
 }
