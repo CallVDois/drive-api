@@ -110,9 +110,9 @@ public class FolderController implements FolderAPI {
     }
 
     @Override
-    public ResponseEntity<Void> changeName(UUID id, String request) {
+    public ResponseEntity<Void> changeName(UUID id, String newName) {
 
-        this.updateFolderNameUseCase.execute(new UpdateFolderNameInput(id, request));
+        this.updateFolderNameUseCase.execute(new UpdateFolderNameInput(id, newName));
 
         return ResponseEntity.noContent().build();
     }

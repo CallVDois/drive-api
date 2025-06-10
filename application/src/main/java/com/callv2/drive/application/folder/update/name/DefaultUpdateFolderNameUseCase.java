@@ -6,7 +6,7 @@ import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.folder.FolderName;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
 public class DefaultUpdateFolderNameUseCase extends UpdateFolderNameUseCase {
@@ -35,14 +35,14 @@ public class DefaultUpdateFolderNameUseCase extends UpdateFolderNameUseCase {
         this.folderGateway.update(folder.changeName(folderName));
     }
 
-    private void validateFolderName(Folder parentFolder, FolderName name) {
+    private void validateFolderName(final Folder parentFolder, final FolderName name) {
 
         final Notification notification = Notification.create();
 
         if (parentFolder.getSubFolders().stream().anyMatch(subFolder -> subFolder.name().equals(name)))
-            notification.append(Error.with("Folder with the same name already exists"));
+            notification.append(ValidationError.with("Folder with the same name already exists"));
 
         if (notification.hasError())
-            throw ValidationException.with("Could not update folder name Aggregate Folder", notification);
+            throw ValidationException.with("Could not update folder name", notification);
     }
 }

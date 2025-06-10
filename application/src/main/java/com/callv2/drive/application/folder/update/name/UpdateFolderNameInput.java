@@ -6,4 +6,8 @@ public record UpdateFolderNameInput(
         UUID folderId,
         String name) {
 
+    public static UpdateFolderNameInput of(final UUID folderId, final String name) {
+        return new UpdateFolderNameInput(folderId, name);
+    }
+
 }
