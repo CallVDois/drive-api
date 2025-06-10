@@ -2,9 +2,9 @@ package com.callv2.drive.infrastructure.aop.aspects.context;
 
 import java.time.Instant;
 
-import javax.annotation.Nonnull;
-
 import org.aopalliance.intercept.MethodInvocation;
+
+import jakarta.annotation.Nonnull;
 
 public interface MethodInvocationContext extends MethodInvocation {
 

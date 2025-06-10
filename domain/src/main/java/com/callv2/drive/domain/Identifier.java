@@ -2,7 +2,7 @@ package com.callv2.drive.domain;
 
 import java.util.Objects;
 
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
 public abstract class Identifier<T> implements ValueObject {
@@ -18,9 +18,9 @@ public abstract class Identifier<T> implements ValueObject {
     }
 
     @Override
-    public void validate(ValidationHandler aHandler) {
+    public void validate(ValidationHandler handler) {
         if (Objects.isNull(this.id))
-            aHandler.append(new Error("'id' should not be null"));
+            handler.append(new ValidationError("'id' should not be null"));
     }
 
     @Override

@@ -21,11 +21,11 @@ public class DefaultGetQuotaUseCase extends GetQuotaUseCase {
     @Override
     public GetQuotaOutput execute(GetQuotaInput input) {
 
-        final MemberID ownerId = MemberID.of(input.id());
+        final MemberID ownerId = MemberID.of(input.memberId());
 
         final Member owner = memberGateway
                 .findById(ownerId)
-                .orElseThrow(() -> NotFoundException.with(Member.class, input.id().toString()));
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.memberId().toString()));
 
         final Long actualUsedQuota = fileGateway
                 .findByOwner(ownerId)
@@ -36,7 +36,7 @@ public class DefaultGetQuotaUseCase extends GetQuotaUseCase {
 
         final Long available = owner.getQuota().sizeInBytes() - actualUsedQuota;
 
-        return GetQuotaOutput.from(actualUsedQuota, owner.getQuota().sizeInBytes(), available);
+        return GetQuotaOutput.from(ownerId.getValue(), actualUsedQuota, owner.getQuota().sizeInBytes(), available);
     }
 
 }

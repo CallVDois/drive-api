@@ -2,17 +2,13 @@ package com.callv2.drive.domain;
 
 import java.util.Objects;
 
-import com.callv2.drive.domain.validation.ValidationHandler;
-
-public abstract class Entity<ID extends Identifier<?>> {
+public abstract class Entity<ID extends Identifier<?>> implements Validatable {
 
     protected final ID id;
 
     protected Entity(final ID id) {
         this.id = Objects.requireNonNull(id, "'id' should not be null");
     }
-
-    public abstract void validate(ValidationHandler handler);
 
     public ID getId() {
         return id;
