@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,15 @@ public interface FileAPI {
 	ResponseEntity<CreateFileResponse> create(
 			@PathVariable(required = true, name = "folderId") UUID folderId,
 			@RequestPart("file") MultipartFile file);
+
+	@DeleteMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@Operation(summary = "Delete a file", description = "This method deletes a file", security = @SecurityRequirement(name = "bearerAuth"))
+	@ApiResponses({
+			@ApiResponse(responseCode = "204", description = "File deleted successfully"),
+			@ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class))),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+	})
+	ResponseEntity<Void> delete(@PathVariable(required = true) UUID id);
 
 	@GetMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	@Operation(summary = "Retrive a file", description = "This method retrive a file", security = @SecurityRequirement(name = "bearerAuth"))

@@ -46,7 +46,7 @@ spring:
           max-interval: 8000
           multiplier: 2
         default-requeue-rejected: false
-    virtual-host: ${rabbitmq.virtual-host}
+    # virtual-host: ${rabbitmq.virtual-host}
     dynamic: ${rabbitmq.auto-create}
     host: ${rabbitmq.host}
     port: ${rabbitmq.port}
