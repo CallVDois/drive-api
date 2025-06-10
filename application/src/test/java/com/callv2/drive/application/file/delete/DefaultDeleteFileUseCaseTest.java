@@ -54,8 +54,8 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAValidParam_whenCallsExecute_thenShouldDeleteFile() {
 
-        final var owner = Member.with(
-                MemberID.of("owner"),
+        final var deleter = Member.with(
+                MemberID.of("deleter"),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -68,7 +68,7 @@ public class DefaultDeleteFileUseCaseTest {
                 .approveQuotaRequest();
 
         final FileID expectedFileId = FileID.unique();
-        final MemberID expectedOwnerId = owner.getId();
+        final MemberID expectedDeleterId = deleter.getId();
         final FolderID expectedFolderId = FolderID.unique();
         final FileName expectedFileName = FileName.of("file.txt");
         final Content expectedContent = Content.of(
@@ -80,27 +80,27 @@ public class DefaultDeleteFileUseCaseTest {
         final Instant expectedUpdatedAt = Instant.now();
         final var file = File.with(
                 expectedFileId,
-                expectedOwnerId,
+                expectedDeleterId,
                 expectedFolderId,
                 expectedFileName,
                 expectedContent,
                 expectedCreatedAt,
                 expectedUpdatedAt);
 
-        when(memberGateway.findById(expectedOwnerId))
-                .thenReturn(Optional.of(owner));
+        when(memberGateway.findById(expectedDeleterId))
+                .thenReturn(Optional.of(deleter));
 
         when(fileGateway.findById(expectedFileId))
                 .thenReturn(Optional.of(file));
 
         final DeleteFileInput input = DeleteFileInput.of(
-                expectedOwnerId.getValue(),
+                expectedDeleterId.getValue(),
                 expectedFileId.getValue());
 
         useCase.execute(input);
 
         verify(memberGateway, times(1)).findById(any());
-        verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
+        verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
         verify(fileGateway, times(1)).findById(any());
         verify(fileGateway, times(1)).findById(eq(expectedFileId));
         verify(fileGateway, times(1)).deleteById(any());
@@ -112,21 +112,21 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidMemberId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedOwnerId = MemberID.of("owner");
+        final MemberID expectedDeleterId = MemberID.of("deleter");
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "[Member] not found.";
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = "[Member] with id [%s] not found.".formatted(expectedOwnerId.getValue());
+        final var expectedErrorMessage = "[Member] with id [%s] not found.".formatted(expectedDeleterId.getValue());
 
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.empty());
 
-        when(memberGateway.findById(expectedOwnerId))
+        when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.empty());
 
         final DeleteFileInput input = DeleteFileInput.of(
-                expectedOwnerId.getValue(),
+                expectedDeleterId.getValue(),
                 expectedFileId.getValue());
 
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
@@ -136,7 +136,7 @@ public class DefaultDeleteFileUseCaseTest {
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
         verify(memberGateway, times(1)).findById(any());
-        verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
+        verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
         verify(fileGateway, never()).findById(any());
         verify(fileGateway, never()).deleteById(any());
         verify(storageService, never()).delete(any());
@@ -145,14 +145,14 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidFileId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedOwnerId = MemberID.of("owner");
+        final MemberID expectedDeleterId = MemberID.of("deleter");
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "[File] not found.";
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedFileId.getValue());
 
-        final var owner = Member.with(
+        final var deleter = Member.with(
                 MemberID.of("owner"),
                 Username.of("username"),
                 Nickname.of("nickname"),
@@ -165,14 +165,14 @@ public class DefaultDeleteFileUseCaseTest {
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
-        when(memberGateway.findById(expectedOwnerId))
-                .thenReturn(Optional.of(owner));
+        when(memberGateway.findById(expectedDeleterId))
+                .thenReturn(Optional.of(deleter));
 
         when(fileGateway.findById(expectedFileId))
                 .thenReturn(Optional.empty());
 
         final var input = DeleteFileInput.of(
-                expectedOwnerId.getValue(),
+                expectedDeleterId.getValue(),
                 expectedFileId.getValue());
 
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
@@ -182,7 +182,7 @@ public class DefaultDeleteFileUseCaseTest {
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
         verify(memberGateway, times(1)).findById(any());
-        verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
+        verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
         verify(fileGateway, times(1)).findById(any());
         verify(fileGateway, times(1)).findById(eq(expectedFileId));
         verify(fileGateway, never()).deleteById(any());
@@ -193,14 +193,14 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAValidMemberIdButNotHaveSystemAccess_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedOwnerId = MemberID.of("owner");
+        final MemberID expectedDeleterId = MemberID.of("deleter");
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "The requested action is not allowed.";
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "Member does not have permission to delete files.";
 
-        final var owner = Member.with(
+        final var deleter = Member.with(
                 MemberID.of("owner"),
                 Username.of("username"),
                 Nickname.of("nickname"),
@@ -213,11 +213,11 @@ public class DefaultDeleteFileUseCaseTest {
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
-        when(memberGateway.findById(expectedOwnerId))
-                .thenReturn(Optional.of(owner));
+        when(memberGateway.findById(expectedDeleterId))
+                .thenReturn(Optional.of(deleter));
 
         final var input = DeleteFileInput.of(
-                expectedOwnerId.getValue(),
+                expectedDeleterId.getValue(),
                 expectedFileId.getValue());
 
         final var actualException = assertThrows(NotAllowedException.class, () -> useCase.execute(input));
@@ -227,7 +227,7 @@ public class DefaultDeleteFileUseCaseTest {
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
         verify(memberGateway, times(1)).findById(any());
-        verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
+        verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
         verify(fileGateway, never()).findById(any());
         verify(fileGateway, never()).deleteById(any());
         verify(storageService, never()).delete(any());
