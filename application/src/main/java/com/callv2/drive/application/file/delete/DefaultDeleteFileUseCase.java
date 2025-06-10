@@ -29,12 +29,12 @@ public class DefaultDeleteFileUseCase extends DeleteFileUseCase {
     }
 
     @Override
-    public void execute(DeleteFileInput input) {
-        final MemberID ownerId = MemberID.of(input.ownerId());
+    public void execute(final DeleteFileInput input) {
+        final MemberID ownerId = MemberID.of(input.deleterId());
         final FileID fileId = FileID.of(input.fileId());
 
         final Member member = memberGateway.findById(ownerId)
-                .orElseThrow(() -> NotFoundException.with(Member.class, input.ownerId()));
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.deleterId()));
 
         if (!member.hasSystemAccess())
             throw NotAllowedException.with("Member does not have permission to delete files");
