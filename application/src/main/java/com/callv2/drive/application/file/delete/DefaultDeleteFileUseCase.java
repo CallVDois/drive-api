@@ -14,6 +14,7 @@ import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.storage.StorageService;
 
 public class DefaultDeleteFileUseCase extends DeleteFileUseCase {
+
     private final MemberGateway memberGateway;
     private final FileGateway fileGateway;
     private final StorageService storageService;
@@ -52,4 +53,5 @@ public class DefaultDeleteFileUseCase extends DeleteFileUseCase {
             throw InternalErrorException.with("Could not delete BinaryContent", e);
         }
     }
+
 }
