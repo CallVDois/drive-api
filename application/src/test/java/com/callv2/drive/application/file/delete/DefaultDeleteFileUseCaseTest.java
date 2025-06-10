@@ -12,12 +12,14 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.Optional;
 
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.domain.exception.NotAllowedException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
@@ -183,6 +185,50 @@ public class DefaultDeleteFileUseCaseTest {
         verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
         verify(fileGateway, times(1)).findById(any());
         verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, never()).deleteById(any());
+        verify(storageService, never()).delete(any());
+
+    }
+
+    @Test
+    void givenAValidMemberIdButNotHaveSystemAccess_whenCallsExecute_thenShouldThrowNotFoundException() {
+
+        final MemberID expectedOwnerId = MemberID.of("owner");
+        final FileID expectedFileId = FileID.unique();
+
+        final String expectedExceptionMessage = "The requested action is not allowed.";
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "Member does not have permission to delete files.";
+
+        final var owner = Member.with(
+                MemberID.of("owner"),
+                Username.of("username"),
+                Nickname.of("nickname"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                false,
+                Instant.now(),
+                Instant.now(),
+                0L)
+                .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
+                .approveQuotaRequest();
+
+        when(memberGateway.findById(expectedOwnerId))
+                .thenReturn(Optional.of(owner));
+
+        final var input = DeleteFileInput.of(
+                expectedOwnerId.getValue(),
+                expectedFileId.getValue());
+
+        final var actualException = assertThrows(NotAllowedException.class, () -> useCase.execute(input));
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
+        assertEquals(expectedErrorCount, actualException.getErrors().size());
+        assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        verify(memberGateway, times(1)).findById(any());
+        verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
+        verify(fileGateway, never()).findById(any());
         verify(fileGateway, never()).deleteById(any());
         verify(storageService, never()).delete(any());
 
