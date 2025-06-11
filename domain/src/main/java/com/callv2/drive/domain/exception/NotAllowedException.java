@@ -4,10 +4,10 @@ import java.util.List;
 
 public class NotAllowedException extends SilentDomainException {
 
-    private NotAllowedException(final List<String> errors) {
+    private NotAllowedException(final List<String> actions) {
         super(
                 "The requested action is not allowed.",
-                errors.stream().map(DomainException.Error::with).toList());
+                actions.stream().map(DomainException.Error::with).toList());
     }
 
     public static NotAllowedException with(final String action) {
