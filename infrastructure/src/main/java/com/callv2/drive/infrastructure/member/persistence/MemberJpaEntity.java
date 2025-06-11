@@ -42,6 +42,7 @@ public class MemberJpaEntity {
 
     private Instant quotaRequestedAt;
 
+    @Column(nullable = false)
     private Boolean hasSystemAccess;
 
     private Instant createdAt;
