@@ -2,6 +2,7 @@ package com.callv2.drive.application.folder.retrieve.get;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.callv2.drive.domain.folder.Folder;
@@ -16,23 +17,20 @@ public record GetFolderOutput(
         Instant updatedAt,
         Instant deletedAt) {
 
-    public static GetFolderOutput from(final Folder folder, List<com.callv2.drive.domain.file.File> files) {
-
-        final var subFolders = folder.getSubFolders() != null
-                ? folder.getSubFolders()
-                        .stream()
-                        .map(GetFolderOutput.SubFolder::from)
-                        .toList()
-                : null;
-
-        final var filesOutput = files != null ? files.stream().map(GetFolderOutput.File::from).toList() : null;
+    public static GetFolderOutput from(
+            final Folder folder,
+            final Set<Folder> subFolders,
+            final List<com.callv2.drive.domain.file.File> files) {
 
         return new GetFolderOutput(
                 folder.getId().getValue(),
                 folder.getName().value(),
                 folder.getParentFolder().getValue(),
-                subFolders,
-                filesOutput,
+                subFolders
+                        .stream()
+                        .map(GetFolderOutput.SubFolder::from)
+                        .toList(),
+                files.stream().map(GetFolderOutput.File::from).toList(),
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
                 folder.getDeletedAt());
@@ -40,8 +38,8 @@ public record GetFolderOutput(
 
     public static record SubFolder(UUID id, String name) {
 
-        public static GetFolderOutput.SubFolder from(com.callv2.drive.domain.folder.SubFolder subFolder) {
-            return new SubFolder(subFolder.id().getValue(), subFolder.name().value());
+        public static GetFolderOutput.SubFolder from(final Folder subFolder) {
+            return new SubFolder(subFolder.getId().getValue(), subFolder.getName().value());
         }
 
     }

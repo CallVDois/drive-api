@@ -72,12 +72,7 @@ public interface FolderPresenter {
         return new FolderListResponse(
                 output.id(),
                 output.name(),
-                output.parentFolder(),
-                output.subFolders().stream().map(FolderPresenter::present).toList());
-    }
-
-    static FolderListResponse.SubFolder present(FolderListOutput.SubFolder subFolder) {
-        return new FolderListResponse.SubFolder(subFolder.id(), subFolder.name());
+                output.parentFolder());
     }
 
 }

@@ -1,5 +1,7 @@
 package com.callv2.drive.application.folder.create;
 
+import java.util.Set;
+
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.Folder;
@@ -39,8 +41,12 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
     }
 
     private Folder createFolder(final MemberID ownerId, FolderName name, final Folder parentFolder) {
+
         final Notification notification = Notification.create();
-        if (parentFolder.getSubFolders().stream().anyMatch(subFolder -> subFolder.name().equals(name)))
+
+        final Set<Folder> subFolders = folderGateway.findByParentFolderId(parentFolder.getId());
+
+        if (subFolders.stream().anyMatch(subFolder -> subFolder.getName().equals(name)))
             notification.append(ValidationError.with("Folder with the same name already exists"));
 
         final Folder folder = notification.valdiate(() -> Folder.create(ownerId, name, parentFolder));

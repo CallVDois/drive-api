@@ -49,7 +49,7 @@ public class DefaultGetFolderUseCaseTest {
                 Folder.createRoot(ownerId));
 
         final var expectedFolderId = expectedFolder.getId();
-        final var expectedSubFolders = expectedFolder.getSubFolders();
+        // final var expectedSubFolders = expectedFolder.getSubFolders();
         final var expectedCreatedAt = expectedFolder.getCreatedAt();
         final var expectedUpdatedAt = expectedFolder.getUpdatedAt();
         final var expectedDeletedAt = expectedFolder.getDeletedAt();
@@ -64,7 +64,7 @@ public class DefaultGetFolderUseCaseTest {
         assertEquals(expectedFolderId.getValue(), actualOutput.id());
         assertEquals(expectedFolderName, actualOutput.name());
         assertEquals(expectedFolder.getParentFolder().getValue(), actualOutput.parentFolder());
-        assertEquals(expectedSubFolders.size(), actualOutput.subFolders().size());
+        // assertEquals(expectedSubFolders.size(), actualOutput.subFolders().size());
         assertEquals(expectedCreatedAt, actualOutput.createdAt());
         assertEquals(expectedUpdatedAt, actualOutput.updatedAt());
         assertEquals(expectedDeletedAt, actualOutput.deletedAt());

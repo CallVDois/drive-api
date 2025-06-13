@@ -2,6 +2,7 @@ package com.callv2.drive.application.folder.retrieve.get.root;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.callv2.drive.domain.folder.Folder;
@@ -12,21 +13,24 @@ public record GetRootFolderOutput(
         List<GetRootFolderOutput.File> files,
         Instant createdAt) {
 
-    public static GetRootFolderOutput from(final Folder folder, List<com.callv2.drive.domain.file.File> files) {
+    public static GetRootFolderOutput from(
+            final Folder folder,
+            final Set<Folder> subFolders,
+            final List<com.callv2.drive.domain.file.File> files) {
 
         final var filesOutput = files != null ? files.stream().map(GetRootFolderOutput.File::from).toList() : null;
 
         return new GetRootFolderOutput(
                 folder.getId().getValue(),
-                folder.getSubFolders().stream().map(GetRootFolderOutput.SubFolder::from).toList(),
+                subFolders.stream().map(GetRootFolderOutput.SubFolder::from).toList(),
                 filesOutput,
                 folder.getCreatedAt());
     }
 
     public static record SubFolder(UUID id, String name) {
 
-        public static GetRootFolderOutput.SubFolder from(com.callv2.drive.domain.folder.SubFolder subFolder) {
-            return new SubFolder(subFolder.id().getValue(), subFolder.name().value());
+        public static GetRootFolderOutput.SubFolder from(final Folder subFolder) {
+            return new SubFolder(subFolder.getId().getValue(), subFolder.getName().value());
         }
 
     }
