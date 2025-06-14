@@ -3,6 +3,7 @@ package com.callv2.drive.application.folder.move;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,7 +61,7 @@ public class DefaultMoveFolderUseCaseTest {
         assertDoesNotThrow(() -> useCase.execute(input));
 
         verify(folderGateway, never()).updateAll(anyList());
-
+        verify(folderGateway, times(1)).update(eq(expectedFolderToMove));
         verify(folderGateway, times(1)).findByParentFolderId(any());
 
     }
