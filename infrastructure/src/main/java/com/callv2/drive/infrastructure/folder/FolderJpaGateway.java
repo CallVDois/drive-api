@@ -2,6 +2,8 @@ package com.callv2.drive.infrastructure.folder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,15 @@ public class FolderJpaGateway implements FolderGateway {
     @Override
     public Optional<Folder> findRoot() {
         return this.folderRepository.findByRootFolderTrue().map(FolderJpaEntity::toDomain);
+    }
+
+    @Override
+    public Set<Folder> findByParentFolderId(FolderID parentFolderId) {
+        return this.folderRepository
+                .findAllByParentFolderId(parentFolderId.getValue())
+                .stream()
+                .map(FolderJpaEntity::toDomain)
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -36,7 +36,11 @@ public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
 
         final Optional<Folder> root = folderGateway.findRoot();
         final Folder folder = root.isPresent() ? root.get() : folderGateway.create(Folder.createRoot(owner));
-        return GetRootFolderOutput.from(folder, fileGateway.findByFolder(folder.getId()));
+
+        return GetRootFolderOutput.from(
+                folder,
+                this.folderGateway.findByParentFolderId(folder.getId()),
+                fileGateway.findByFolder(folder.getId()));
     }
 
 }

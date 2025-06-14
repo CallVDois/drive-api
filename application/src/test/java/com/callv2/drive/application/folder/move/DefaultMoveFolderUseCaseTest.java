@@ -1,12 +1,15 @@
 package com.callv2.drive.application.folder.move;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,9 +50,8 @@ public class DefaultMoveFolderUseCaseTest {
         when(folderGateway.findById(expectedRootFolder.getId()))
                 .thenReturn(Optional.of(expectedRootFolder));
 
-        doNothing()
-                .when(folderGateway)
-                .updateAll(anyList());
+        when(folderGateway.findByParentFolderId(expectedFolderTarget.getId()))
+                .thenReturn(Set.of());
 
         final var input = new MoveFolderInput(
                 expectedFolderToMove.getId().getValue(),
@@ -57,7 +59,10 @@ public class DefaultMoveFolderUseCaseTest {
 
         assertDoesNotThrow(() -> useCase.execute(input));
 
-        verify(folderGateway).updateAll(anyList());
+        verify(folderGateway, never()).updateAll(anyList());
+
+        verify(folderGateway, times(1)).findByParentFolderId(any());
+
     }
 
 }

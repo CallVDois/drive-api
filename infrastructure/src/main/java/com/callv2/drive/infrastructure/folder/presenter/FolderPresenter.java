@@ -1,5 +1,7 @@
 package com.callv2.drive.infrastructure.folder.presenter;
 
+import java.util.stream.Collectors;
+
 import com.callv2.drive.application.folder.create.CreateFolderOutput;
 import com.callv2.drive.application.folder.retrieve.get.GetFolderOutput;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderOutput;
@@ -7,35 +9,69 @@ import com.callv2.drive.application.folder.retrieve.list.FolderListOutput;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
-import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 
 public interface FolderPresenter {
 
-    static CreateFolderResponse present(CreateFolderOutput output) {
+    static CreateFolderResponse present(final CreateFolderOutput output) {
         return new CreateFolderResponse(output.id());
     }
 
-    static GetFolderResponse present(GetFolderOutput output) {
+    static GetFolderResponse present(final GetFolderOutput output) {
         return new GetFolderResponse(
                 output.id(),
                 output.name(),
+                output.isRootFolder(),
                 output.parentFolder(),
                 output.subFolders().stream()
                         .map(FolderPresenter::present)
-                        .toList(),
+                        .collect(Collectors.toSet()),
                 output.files()
                         .stream()
                         .map(FolderPresenter::present)
-                        .toList(),
+                        .collect(Collectors.toSet()),
+                output.ownerId(),
                 output.createdAt(),
                 output.updatedAt());
     }
 
-    static GetFolderResponse.SubFolder present(GetFolderOutput.SubFolder subFolder) {
+    static GetFolderResponse.SubFolder present(final GetFolderOutput.SubFolder subFolder) {
         return new GetFolderResponse.SubFolder(subFolder.id(), subFolder.name());
     }
 
-    static GetFolderResponse.File present(GetFolderOutput.File subFolder) {
+    static GetFolderResponse.File present(final GetFolderOutput.File file) {
+        return new GetFolderResponse.File(
+                file.id(),
+                file.name(),
+                file.size(),
+                file.createdAt(),
+                file.updatedAt());
+    }
+
+    static GetFolderResponse present(final GetRootFolderOutput output) {
+        return new GetFolderResponse(
+                output.id(),
+                output.name(),
+                true,
+                null,
+                output
+                        .subFolders()
+                        .stream()
+                        .map(FolderPresenter::present)
+                        .collect(Collectors.toSet()),
+                output.files()
+                        .stream()
+                        .map(FolderPresenter::present)
+                        .collect(Collectors.toSet()),
+                output.ownerId(),
+                output.createdAt(),
+                output.updatedAt());
+    }
+
+    static GetFolderResponse.SubFolder present(final GetRootFolderOutput.SubFolder subFolder) {
+        return new GetFolderResponse.SubFolder(subFolder.id(), subFolder.name());
+    }
+
+    static GetFolderResponse.File present(final GetRootFolderOutput.File subFolder) {
         return new GetFolderResponse.File(
                 subFolder.id(),
                 subFolder.name(),
@@ -44,40 +80,20 @@ public interface FolderPresenter {
                 subFolder.updatedAt());
     }
 
-    static GetRootFolderResponse present(GetRootFolderOutput output) {
-        return new GetRootFolderResponse(
-                output.id(),
-                output.subFolders().stream().map(FolderPresenter::present).toList(),
-                output.files()
-                        .stream()
-                        .map(FolderPresenter::present)
-                        .toList(),
-                output.createdAt());
+    static GetFolderResponse.File present(final GetFolderResponse.File file) {
+        return new GetFolderResponse.File(
+                file.id(),
+                file.name(),
+                file.size(),
+                file.createdAt(),
+                file.updatedAt());
     }
 
-    static GetRootFolderResponse.SubFolder present(GetRootFolderOutput.SubFolder subFolder) {
-        return new GetRootFolderResponse.SubFolder(subFolder.id(), subFolder.name());
-    }
-
-    static GetRootFolderResponse.File present(GetRootFolderOutput.File subFolder) {
-        return new GetRootFolderResponse.File(
-                subFolder.id(),
-                subFolder.name(),
-                subFolder.size(),
-                subFolder.createdAt(),
-                subFolder.updatedAt());
-    }
-
-    static FolderListResponse present(FolderListOutput output) {
+    static FolderListResponse present(final FolderListOutput output) {
         return new FolderListResponse(
                 output.id(),
                 output.name(),
-                output.parentFolder(),
-                output.subFolders().stream().map(FolderPresenter::present).toList());
-    }
-
-    static FolderListResponse.SubFolder present(FolderListOutput.SubFolder subFolder) {
-        return new FolderListResponse.SubFolder(subFolder.id(), subFolder.name());
+                output.parentFolder());
     }
 
 }
