@@ -36,7 +36,7 @@ public class Notification implements ValidationHandler {
     }
 
     @Override
-    public <T> T valdiate(final Validation<T> validation) {
+    public <T> T validate(final Validation<T> validation) {
         try {
             return validation.validate();
         } catch (DomainException e) {

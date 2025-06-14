@@ -28,7 +28,7 @@ public class DefaultCreateRequestQuotaUseCase extends CreateRequestQuotaUseCase 
                 .orElseThrow(() -> NotFoundException.with(Member.class, input.memberId()));
 
         final Notification notification = Notification.create();
-        notification.valdiate(() -> member.requestQuota(Quota.of(input.ammount(), input.unit())));
+        notification.validate(() -> member.requestQuota(Quota.of(input.ammount(), input.unit())));
 
         if (notification.hasError())
             throw ValidationException.with("Request Quota Error", notification);

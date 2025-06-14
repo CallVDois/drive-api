@@ -49,7 +49,7 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
         if (subFolders.stream().anyMatch(subFolder -> subFolder.getName().equals(name)))
             notification.append(ValidationError.with("Folder with the same name already exists"));
 
-        final Folder folder = notification.valdiate(() -> Folder.create(ownerId, name, parentFolder));
+        final Folder folder = notification.validate(() -> Folder.create(ownerId, name, parentFolder));
 
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate Folder", notification);
