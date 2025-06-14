@@ -9,9 +9,12 @@ import com.callv2.drive.domain.folder.Folder;
 
 public record GetRootFolderOutput(
         UUID id,
+        String name,
         List<GetRootFolderOutput.SubFolder> subFolders,
         List<GetRootFolderOutput.File> files,
-        Instant createdAt) {
+        String ownerId,
+        Instant createdAt,
+        Instant updatedAt) {
 
     public static GetRootFolderOutput from(
             final Folder folder,
@@ -22,9 +25,12 @@ public record GetRootFolderOutput(
 
         return new GetRootFolderOutput(
                 folder.getId().getValue(),
+                folder.getName().value(),
                 subFolders.stream().map(GetRootFolderOutput.SubFolder::from).toList(),
                 filesOutput,
-                folder.getCreatedAt());
+                folder.getOwner().getValue(),
+                folder.getCreatedAt(),
+                folder.getUpdatedAt());
     }
 
     public static record SubFolder(UUID id, String name) {

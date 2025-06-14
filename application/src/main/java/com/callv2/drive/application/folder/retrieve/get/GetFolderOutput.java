@@ -4,15 +4,18 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.callv2.drive.domain.folder.Folder;
 
 public record GetFolderOutput(
         UUID id,
         String name,
+        Boolean isRootFolder,
         UUID parentFolder,
-        List<GetFolderOutput.SubFolder> subFolders,
-        List<GetFolderOutput.File> files,
+        Set<GetFolderOutput.SubFolder> subFolders,
+        Set<GetFolderOutput.File> files,
+        String ownerId,
         Instant createdAt,
         Instant updatedAt,
         Instant deletedAt) {
@@ -25,12 +28,17 @@ public record GetFolderOutput(
         return new GetFolderOutput(
                 folder.getId().getValue(),
                 folder.getName().value(),
+                folder.isRootFolder(),
                 folder.getParentFolder().getValue(),
                 subFolders
                         .stream()
                         .map(GetFolderOutput.SubFolder::from)
-                        .toList(),
-                files.stream().map(GetFolderOutput.File::from).toList(),
+                        .collect(Collectors.toSet()),
+                files
+                        .stream()
+                        .map(GetFolderOutput.File::from)
+                        .collect(Collectors.toSet()),
+                folder.getOwner().getValue(),
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
                 folder.getDeletedAt());
