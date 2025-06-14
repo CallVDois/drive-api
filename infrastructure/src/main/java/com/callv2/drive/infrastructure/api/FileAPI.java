@@ -60,7 +60,7 @@ public interface FileAPI {
 	@GetMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	@Operation(summary = "Retrive a file", description = "This method retrive a file", security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "File retrived successfully", content = @Content(schema = @Schema(implementation = GetFileResponse.class))),
+			@ApiResponse(responseCode = "200", description = "File retrieved successfully", content = @Content(schema = @Schema(implementation = GetFileResponse.class))),
 			@ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
 	})

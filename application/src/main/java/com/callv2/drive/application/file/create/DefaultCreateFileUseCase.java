@@ -84,7 +84,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
         final Content content = Content.of(contentLocation, contentType, contentSize);
 
-        final File file = notification.valdiate(() -> File.create(ownerId, folderId, fileName, content));
+        final File file = notification.validate(() -> File.create(ownerId, folderId, fileName, content));
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate File", notification);
 

@@ -1,15 +1,17 @@
 package com.callv2.drive.infrastructure.folder.model;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public record GetFolderResponse(
         UUID id,
         String name,
+        Boolean rootFolder,
         UUID parentFolder,
-        List<GetFolderResponse.SubFolder> subFolders,
-        List<GetFolderResponse.File> files,
+        Set<GetFolderResponse.SubFolder> subFolders,
+        Set<GetFolderResponse.File> files,
+        String ownerId,
         Instant createdAt,
         Instant updatedAt) {
 
