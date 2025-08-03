@@ -2,12 +2,12 @@ package com.callv2.aop.executor.chain;
 
 import com.callv2.aop.context.PostInvocationContext;
 import com.callv2.aop.context.PreInvocationContext;
-import com.callv2.aop.executor.Executor;
+import com.callv2.aop.executor.PreExecutor;
 
 public class PreInvocationExecutorChain
-        extends ExecutorChain<PostInvocationContext, PreInvocationContext, Executor<PreInvocationContext>> {
+        extends ExecutorChain<PostInvocationContext, PreInvocationContext, PreExecutor> {
 
-    public PreInvocationExecutorChain(final Executor<PreInvocationContext> executor) {
+    public PreInvocationExecutorChain(final PreExecutor executor) {
         super(executor);
     }
 

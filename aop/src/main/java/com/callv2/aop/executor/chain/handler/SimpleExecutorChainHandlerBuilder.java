@@ -2,9 +2,8 @@ package com.callv2.aop.executor.chain.handler;
 
 import java.util.Objects;
 
-import com.callv2.aop.context.PostInvocationContext;
-import com.callv2.aop.context.PreInvocationContext;
-import com.callv2.aop.executor.Executor;
+import com.callv2.aop.executor.PostExecutor;
+import com.callv2.aop.executor.PreExecutor;
 import com.callv2.aop.executor.chain.PostInvocationExecutorChain;
 import com.callv2.aop.executor.chain.PreInvocationExecutorChain;
 
@@ -18,7 +17,7 @@ public class SimpleExecutorChainHandlerBuilder {
         return new SimpleExecutorChainHandlerBuilder();
     }
 
-    public SimpleExecutorChainHandlerBuilder preExecutor(final Executor<PreInvocationContext> executor) {
+    public SimpleExecutorChainHandlerBuilder preExecutor(final PreExecutor executor) {
 
         final PreInvocationExecutorChain preInvocationExecutorChain = new PreInvocationExecutorChain(executor);
 
@@ -33,7 +32,7 @@ public class SimpleExecutorChainHandlerBuilder {
 
     }
 
-    public SimpleExecutorChainHandlerBuilder postExecutor(final Executor<PostInvocationContext> executor) {
+    public SimpleExecutorChainHandlerBuilder postExecutor(final PostExecutor executor) {
 
         final PostInvocationExecutorChain postInvocationExecutorChain = new PostInvocationExecutorChain(executor);
 
@@ -48,7 +47,7 @@ public class SimpleExecutorChainHandlerBuilder {
 
     }
 
-    public SimpleExecutorChainHandlerBuilder errorExecutor(final Executor<PostInvocationContext> executor) {
+    public SimpleExecutorChainHandlerBuilder errorExecutor(final PostExecutor executor) {
 
         final PostInvocationExecutorChain errorInvocationExecutorChain = new PostInvocationExecutorChain(executor);
 
