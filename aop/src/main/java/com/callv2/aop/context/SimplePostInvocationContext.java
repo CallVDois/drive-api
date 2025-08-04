@@ -53,11 +53,25 @@ public final class SimplePostInvocationContext extends AbstractInvocationContext
 
     @Override
     public Object proceed() throws Throwable {
+        if (this.proceeded.get()) {
+            if (successful.get())
+                return result;
+            else
+                throw throwable;
+        }
+
         return this.joinPoint.proceed();
     }
 
     @Override
     public Object proceed(Object[] args) throws Throwable {
+        if (this.proceeded.get()) {
+            if (successful.get())
+                return result;
+            else
+                throw throwable;
+        }
+
         return this.joinPoint.proceed(args);
     }
 
