@@ -13,7 +13,7 @@ import com.callv2.aop.executor.chain.ExecutorChain;
 import com.callv2.aop.executor.chain.PostInvocationExecutorChain;
 import com.callv2.aop.executor.chain.PreInvocationExecutorChain;
 
-public class SimpleExecutorChainHandlerBuilder {
+public final class SimpleExecutorChainHandlerBuilder {
 
     private final Queue<ExecutorChain<PostInvocationContext, PreInvocationContext, PreExecutor>> preInvocationExecutorChainQueue;
     private final Queue<ExecutorChain<Object, PostInvocationContext, PostExecutor>> postInvocationExecutorChainQueue;

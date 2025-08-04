@@ -4,7 +4,7 @@ import com.callv2.aop.context.PostInvocationContext;
 import com.callv2.aop.context.PreInvocationContext;
 import com.callv2.aop.executor.PreExecutor;
 
-public class PreInvocationExecutorChain
+public final class PreInvocationExecutorChain
         extends ExecutorChain<PostInvocationContext, PreInvocationContext, PreExecutor> {
 
     public PreInvocationExecutorChain(final PreExecutor executor) {
