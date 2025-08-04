@@ -1,16 +1,23 @@
 package com.callv2.aop.context;
 
+import java.time.Instant;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.runtime.internal.AroundClosure;
 
-public abstract class AbstractInvocationContext implements ProceedingJoinPoint {
+public abstract class AbstractInvocationContext implements InvocationContext {
 
     protected final ProceedingJoinPoint joinPoint;
+    protected final AtomicBoolean proceeded;
+    private final Instant contextedAt;
 
     protected AbstractInvocationContext(final ProceedingJoinPoint joinPoint) {
         this.joinPoint = joinPoint;
+        this.proceeded = new AtomicBoolean(false);
+        this.contextedAt = Instant.now();
     }
 
     @Override
@@ -61,6 +68,16 @@ public abstract class AbstractInvocationContext implements ProceedingJoinPoint {
     @Override
     public StaticPart getStaticPart() {
         return this.joinPoint.getStaticPart();
+    }
+
+    @Override
+    public Instant getContextedAt() {
+        return this.contextedAt;
+    }
+
+    @Override
+    public boolean proceeded() {
+        return this.proceeded.get();
     }
 
 }
