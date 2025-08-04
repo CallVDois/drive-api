@@ -20,6 +20,12 @@ public abstract class AbstractInvocationContext implements InvocationContext {
         this.contextedAt = Instant.now();
     }
 
+    protected AbstractInvocationContext(final PreInvocationContext preInvocationContext) {
+        this.joinPoint = preInvocationContext;
+        this.proceeded = new AtomicBoolean(preInvocationContext.proceeded());
+        this.contextedAt = preInvocationContext.getContextedAt();
+    }
+
     @Override
     public void set$AroundClosure(AroundClosure arc) {
         this.joinPoint.set$AroundClosure(arc);

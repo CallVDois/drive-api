@@ -3,8 +3,6 @@ package com.callv2.aop.context;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-
 public final class SimplePostInvocationContext extends AbstractInvocationContext implements PostInvocationContext {
 
     private final Object result;
@@ -13,12 +11,12 @@ public final class SimplePostInvocationContext extends AbstractInvocationContext
     private final AtomicBoolean successful;
 
     private SimplePostInvocationContext(
-            final ProceedingJoinPoint joinPoint,
+            final PreInvocationContext preInvocationContext,
             final Object result,
             final Throwable throwable,
             final Instant proceededAt,
             final boolean successful) {
-        super(joinPoint);
+        super(preInvocationContext);
         this.result = result;
         this.throwable = throwable;
         this.proceededAt = proceededAt;
