@@ -16,7 +16,7 @@ import com.callv2.drive.infrastructure.aop.executor.LogTelemetryPostExecutor;
 
 @Aspect
 @Component
-public class ApplicationLayerAspect {
+public class InfrastructureLayerAspect {
 
     private final ExecutorChainHandler chainHandler = SimpleExecutorChainHandlerBuilder
             .create()
@@ -27,8 +27,13 @@ public class ApplicationLayerAspect {
             .errorExecutor(new LogErrorPostExecutor(Level.ERROR))
             .build();
 
-    @Around("execution(* com.callv2.drive.application..*.*(..))")
-    public Object aspect(final ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("execution(* com.callv2.drive.infrastructure.api.controller..*.*(..))")
+    public Object controllerAspect(final ProceedingJoinPoint joinPoint) throws Throwable {
+        return chainHandler.handle(joinPoint);
+    }
+
+    @Around("execution(* com.callv2.drive.infrastructure.messaging..*.*(..))")
+    public Object messagingAspect(final ProceedingJoinPoint joinPoint) throws Throwable {
         return chainHandler.handle(joinPoint);
     }
 

@@ -19,7 +19,7 @@ public class LogMethodSignaturePreExecutor implements PreExecutor {
 
     @Override
     public void execute(final PreInvocationContext joinPoint) {
-        logger.log("<<METHOD-CALLED>>: [{}]", joinPoint.getSignature().toString());
+        logger.log("<<METHOD-CALLED>>: [{}]", joinPoint.getSignature().toShortString());
     }
 
 }

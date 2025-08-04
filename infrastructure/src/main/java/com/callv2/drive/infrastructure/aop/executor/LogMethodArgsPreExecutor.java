@@ -21,11 +21,10 @@ public class LogMethodArgsPreExecutor implements PreExecutor {
 
     @Override
     public void execute(final PreInvocationContext joinPoint) {
-        final var args = joinPoint.getArgs();
-        logger.log("<<METHOD-CALLED>> [{}] <<ARGS>> count:[{}] args: [{}]",
-                joinPoint.getSignature(),
-                args.length,
-                Arrays.toString(args));
+
+        logger.log("<<METHOD-CALLED>> [{}] <<ARGS>> [{}]",
+                joinPoint.getSignature().toShortString(),
+                Arrays.toString(joinPoint.getArgs()));
     }
 
 }

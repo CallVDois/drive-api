@@ -20,11 +20,13 @@ public class LogErrorPostExecutor implements PostExecutor {
     @Override
     public void execute(final PostInvocationContext joinPoint) {
         if (joinPoint.getThrowable() != null)
-            logger.log("<<EXCEPTION>> [{}] <<EXCEPTION-MESSAGE>> [{}] <<METHOD-CALLED>> [{}]",
+            logger.log("<<METHOD-CALLED>> [{}] <<EXCEPTION>> [{}] <<EXCEPTION-MESSAGE>> [{}]",
+                    joinPoint.getSignature().toShortString(),
                     joinPoint.getThrowable().getClass().getName(),
                     joinPoint.getThrowable().getMessage(),
-                    joinPoint.getSignature().toString(),
                     joinPoint.getThrowable());
+        else
+            logger.log("<<METHOD-CALLED>> [{}] <<NO-EXCEPTION>>", joinPoint.getSignature().toShortString());
     }
 
 }

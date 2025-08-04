@@ -21,9 +21,9 @@ public class LogTelemetryPostExecutor implements PostExecutor {
 
     @Override
     public void execute(final PostInvocationContext joinPoint) {
-        logger.log("<<EXECUTION-TIME>> [{}] ms <<METHOD>> [{}]",
-                Duration.between(joinPoint.getContextedAt(), joinPoint.getProceededAt()).toMillis(),
-                joinPoint.getSignature().toString());
+        logger.log("<<METHOD-CALLED>>: [{}] <<EXECUTION-TIME>> [{}] ms",
+                joinPoint.getSignature().toShortString(),
+                Duration.between(joinPoint.getContextedAt(), joinPoint.getProceededAt()).toMillis());
     }
 
 }
