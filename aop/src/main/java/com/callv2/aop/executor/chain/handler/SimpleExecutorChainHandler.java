@@ -13,13 +13,22 @@ public final class SimpleExecutorChainHandler implements ExecutorChainHandler {
     private final PostInvocationExecutorChain postInvocationExecutorChain;
     private final PostInvocationExecutorChain errorInvocationExecutorChain;
 
+    private final PreInvocationExecutorChain noOpPreInvocationExecutorChain = new PreInvocationExecutorChain(j -> {
+    });
+
+    private final PostInvocationExecutorChain noOpPostInvocationExecutorChain = new PostInvocationExecutorChain(j -> {
+    });
+
     public SimpleExecutorChainHandler(
             final PreInvocationExecutorChain preInvocationExecutorChain,
             final PostInvocationExecutorChain postInvocationExecutorChain,
             final PostInvocationExecutorChain errorInvocationExecutorChain) {
-        this.preInvocationExecutorChain = preInvocationExecutorChain;
-        this.postInvocationExecutorChain = postInvocationExecutorChain;
-        this.errorInvocationExecutorChain = errorInvocationExecutorChain;
+        this.preInvocationExecutorChain = preInvocationExecutorChain == null ? noOpPreInvocationExecutorChain
+                : preInvocationExecutorChain;
+        this.postInvocationExecutorChain = postInvocationExecutorChain == null ? noOpPostInvocationExecutorChain
+                : postInvocationExecutorChain;
+        this.errorInvocationExecutorChain = errorInvocationExecutorChain == null ? noOpPostInvocationExecutorChain
+                : errorInvocationExecutorChain;
     }
 
     @Override
