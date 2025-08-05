@@ -159,4 +159,11 @@ public class Folder extends AggregateRoot<FolderID> {
             throw ValidationException.with("Validation fail has occoured", notification);
     }
 
+    @Override
+    public String toString() {
+        return "Folder [id=" + id + ", rootFolder=" + rootFolder + ", owner=" + owner + ", name=" + name
+                + ", parentFolder=" + parentFolder + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+                + ", deletedAt=" + deletedAt + "]";
+    }
+
 }
