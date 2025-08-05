@@ -12,7 +12,7 @@ public class LogMethodArgsPreExecutor implements PreExecutor {
     private final Log4jLogger logger;
 
     public LogMethodArgsPreExecutor(final Level logLevel) {
-        this.logger = new Log4jLogger(logLevel, LogTelemetryPostExecutor.class);
+        this.logger = new Log4jLogger(logLevel, LogMethodArgsPreExecutor.class);
     }
 
     public LogMethodArgsPreExecutor(final Level logLevel, final Class<?> clazz) {

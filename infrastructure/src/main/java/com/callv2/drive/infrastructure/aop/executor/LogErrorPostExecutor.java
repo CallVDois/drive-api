@@ -10,7 +10,7 @@ public class LogErrorPostExecutor implements PostExecutor {
     private final Log4jLogger logger;
 
     public LogErrorPostExecutor(final Level logLevel) {
-        this.logger = new Log4jLogger(logLevel, LogTelemetryPostExecutor.class);
+        this.logger = new Log4jLogger(logLevel, LogErrorPostExecutor.class);
     }
 
     public LogErrorPostExecutor(final Level logLevel, final Class<?> clazz) {
