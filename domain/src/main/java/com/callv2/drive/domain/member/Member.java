@@ -172,4 +172,11 @@ public class Member extends AggregateRoot<MemberID> {
         return synchronizedVersion;
     }
 
+    @Override
+    public String toString() {
+        return "Member [id=" + id + ", username=" + username + ", nickname=" + nickname + ", quota=" + quota
+                + ", quotaRequest=" + quotaRequest + ", hasSystemAccess=" + hasSystemAccess + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt + ", synchronizedVersion=" + synchronizedVersion + "]";
+    }
+
 }
