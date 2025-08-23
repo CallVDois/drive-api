@@ -7,21 +7,19 @@ import org.apache.logging.log4j.Level;
 import com.callv2.aop.context.PostInvocationContext;
 import com.callv2.aop.executor.PostExecutor;
 
-public class LogTelemetryPostExecutor implements PostExecutor {
+public class LogTelemetryPostExecutor extends Log4jLogger implements PostExecutor {
 
-    private final Log4jLogger logger;
-
-    public LogTelemetryPostExecutor(final Level logLevel) {
-        this.logger = new Log4jLogger(logLevel, LogTelemetryPostExecutor.class);
+    private LogTelemetryPostExecutor(final Level logLevel, final Class<?> clazz) {
+        super(logLevel, clazz);
     }
 
-    public LogTelemetryPostExecutor(final Level logLevel, final Class<?> clazz) {
-        this.logger = new Log4jLogger(logLevel, clazz);
+    public static LogTelemetryPostExecutor create(final Level logLevel) {
+        return new LogTelemetryPostExecutor(logLevel, LogTelemetryPostExecutor.class);
     }
 
     @Override
     public void execute(final PostInvocationContext joinPoint) {
-        logger.log("<<METHOD-CALLED>>: [{}] <<EXECUTION-TIME>> [{}] ms",
+        log("<<METHOD-CALLED>>: [{}] <<EXECUTION-TIME>> [{}] ms",
                 joinPoint.getSignature().toShortString(),
                 Duration.between(joinPoint.getContextedAt(), joinPoint.getProceededAt()).toMillis());
     }

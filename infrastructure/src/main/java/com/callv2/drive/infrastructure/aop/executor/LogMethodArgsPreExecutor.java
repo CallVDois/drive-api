@@ -7,22 +7,20 @@ import org.apache.logging.log4j.Level;
 import com.callv2.aop.context.PreInvocationContext;
 import com.callv2.aop.executor.PreExecutor;
 
-public class LogMethodArgsPreExecutor implements PreExecutor {
+public class LogMethodArgsPreExecutor extends Log4jLogger implements PreExecutor {
 
-    private final Log4jLogger logger;
-
-    public LogMethodArgsPreExecutor(final Level logLevel) {
-        this.logger = new Log4jLogger(logLevel, LogMethodArgsPreExecutor.class);
+    private LogMethodArgsPreExecutor(final Level logLevel, final Class<?> clazz) {
+        super(logLevel, clazz);
     }
 
-    public LogMethodArgsPreExecutor(final Level logLevel, final Class<?> clazz) {
-        this.logger = new Log4jLogger(logLevel, clazz);
+    public static LogMethodArgsPreExecutor create(final Level logLevel) {
+        return new LogMethodArgsPreExecutor(logLevel, LogMethodArgsPreExecutor.class);
     }
 
     @Override
     public void execute(final PreInvocationContext joinPoint) {
 
-        logger.log("<<METHOD-CALLED>> [{}] <<ARGS>> [{}]",
+        log("<<METHOD-CALLED>> [{}] <<ARGS>> [{}]",
                 joinPoint.getSignature().toShortString(),
                 Arrays.toString(joinPoint.getArgs()));
     }

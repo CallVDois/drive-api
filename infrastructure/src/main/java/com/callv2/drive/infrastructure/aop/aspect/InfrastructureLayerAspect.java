@@ -20,11 +20,11 @@ public class InfrastructureLayerAspect {
 
     private final ExecutorChainHandler chainHandler = SimpleExecutorChainHandlerBuilder
             .create()
-            .preExecutor(new LogMethodSignaturePreExecutor(Level.INFO))
-            .preExecutor(new LogMethodArgsPreExecutor(Level.DEBUG))
-            .postExecutor(new LogMethodResultPostExecutor(Level.DEBUG))
-            .postExecutor(new LogTelemetryPostExecutor(Level.INFO))
-            .errorExecutor(new LogErrorPostExecutor(Level.ERROR))
+            .preExecutor(LogMethodSignaturePreExecutor.create(Level.INFO))
+            .preExecutor(LogMethodArgsPreExecutor.create(Level.DEBUG))
+            .postExecutor(LogMethodResultPostExecutor.create(Level.DEBUG))
+            .postExecutor(LogTelemetryPostExecutor.create(Level.INFO))
+            .errorExecutor(LogErrorPostExecutor.create(Level.ERROR))
             .build();
 
     @Around("execution(* com.callv2.drive.infrastructure.api.controller..*.*(..))")

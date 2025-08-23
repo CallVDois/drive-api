@@ -5,21 +5,19 @@ import org.apache.logging.log4j.Level;
 import com.callv2.aop.context.PreInvocationContext;
 import com.callv2.aop.executor.PreExecutor;
 
-public class LogMethodSignaturePreExecutor implements PreExecutor {
+public class LogMethodSignaturePreExecutor extends Log4jLogger implements PreExecutor {
 
-    private final Log4jLogger logger;
-
-    public LogMethodSignaturePreExecutor(final Level logLevel) {
-        this.logger = new Log4jLogger(logLevel, LogMethodSignaturePreExecutor.class);
+    private LogMethodSignaturePreExecutor(final Level logLevel, final Class<?> clazz) {
+        super(logLevel, clazz);
     }
 
-    public LogMethodSignaturePreExecutor(final Level logLevel, final Class<?> clazz) {
-        this.logger = new Log4jLogger(logLevel, clazz);
+    public static LogMethodSignaturePreExecutor create(final Level logLevel) {
+        return new LogMethodSignaturePreExecutor(logLevel, LogMethodSignaturePreExecutor.class);
     }
 
     @Override
     public void execute(final PreInvocationContext joinPoint) {
-        logger.log("<<METHOD-CALLED>>: [{}]", joinPoint.getSignature().toShortString());
+        log("<<METHOD-CALLED>>: [{}]", joinPoint.getSignature().toShortString());
     }
 
 }

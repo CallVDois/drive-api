@@ -5,28 +5,26 @@ import org.apache.logging.log4j.Level;
 import com.callv2.aop.context.PostInvocationContext;
 import com.callv2.aop.executor.PostExecutor;
 
-public class LogErrorPostExecutor implements PostExecutor {
+public class LogErrorPostExecutor extends Log4jLogger implements PostExecutor {
 
-    private final Log4jLogger logger;
-
-    public LogErrorPostExecutor(final Level logLevel) {
-        this.logger = new Log4jLogger(logLevel, LogErrorPostExecutor.class);
+    private LogErrorPostExecutor(final Level logLevel, final Class<?> clazz) {
+        super(logLevel, clazz);
     }
 
-    public LogErrorPostExecutor(final Level logLevel, final Class<?> clazz) {
-        this.logger = new Log4jLogger(logLevel, clazz);
+    public static LogErrorPostExecutor create(final Level logLevel) {
+        return new LogErrorPostExecutor(logLevel, LogErrorPostExecutor.class);
     }
 
     @Override
     public void execute(final PostInvocationContext joinPoint) {
         if (joinPoint.getThrowable() != null)
-            logger.log("<<METHOD-CALLED>> [{}] <<EXCEPTION>> [{}] <<EXCEPTION-MESSAGE>> [{}]",
+            log("<<METHOD-CALLED>> [{}] <<EXCEPTION>> [{}] <<EXCEPTION-MESSAGE>> [{}]",
                     joinPoint.getSignature().toShortString(),
                     joinPoint.getThrowable().getClass().getName(),
                     joinPoint.getThrowable().getMessage(),
                     joinPoint.getThrowable());
         else
-            logger.log("<<METHOD-CALLED>> [{}] <<NO-EXCEPTION>>", joinPoint.getSignature().toShortString());
+            log("<<METHOD-CALLED>> [{}] <<NO-EXCEPTION>>", joinPoint.getSignature().toShortString());
     }
 
 }

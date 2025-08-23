@@ -5,12 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.Message;
 
-public class Log4jLogger {
+public abstract class Log4jLogger {
 
     private final Logger logger;
     private final Level logLevel;
 
-    public Log4jLogger(final Level logLevel, final Class<?> clazz) {
+    protected Log4jLogger(final Level logLevel, final Class<?> clazz) {
         this.logLevel = logLevel;
         this.logger = LogManager.getLogger(clazz);
     }
