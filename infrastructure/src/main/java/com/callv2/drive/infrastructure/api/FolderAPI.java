@@ -62,7 +62,7 @@ public interface FolderAPI {
     })
     ResponseEntity<GetFolderResponse> getById(@PathVariable(required = true) UUID id);
 
-    @PatchMapping(value = "{id}/move", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
+    @PatchMapping(value = "{id}/parent", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
             MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "Move a folder", description = "This method moves a folder to a new location", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
