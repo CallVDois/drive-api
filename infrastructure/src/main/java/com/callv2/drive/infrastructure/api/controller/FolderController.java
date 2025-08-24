@@ -27,7 +27,6 @@ import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
-import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
 import com.callv2.drive.infrastructure.folder.presenter.FolderPresenter;
 import com.callv2.drive.infrastructure.security.SecurityContext;
@@ -58,7 +57,7 @@ public class FolderController implements FolderAPI {
     }
 
     @Override
-    public ResponseEntity<GetRootFolderResponse> getRoot() {
+    public ResponseEntity<GetFolderResponse> getRoot() {
         return ResponseEntity.ok(FolderPresenter.present(
                 getRootFolderUseCase.execute(GetRootFolderInput.from(SecurityContext.getAuthenticatedUser()))));
     }

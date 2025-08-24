@@ -81,4 +81,9 @@ public class FileJPAGateway implements FileGateway {
                 .toList();
     }
 
+    @Override
+    public void deleteById(final FileID id) {
+        this.fileRepository.deleteById(id.getValue());
+    }
+
 }

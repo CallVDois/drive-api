@@ -21,7 +21,6 @@ import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
-import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,10 +38,10 @@ public interface FolderAPI {
     @GetMapping(value = "root", produces = { MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "Retrive a folder", description = "This method retrive a root folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Root folder retrived successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Root folder retrieved successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    ResponseEntity<GetRootFolderResponse> getRoot();
+    ResponseEntity<GetFolderResponse> getRoot();
 
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
             MediaType.APPLICATION_JSON_VALUE })
@@ -57,7 +56,7 @@ public interface FolderAPI {
     @GetMapping(value = "{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "Retrive a folder", description = "This method retrive a folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Folder retrived successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Folder retrieved successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class))),
             @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })

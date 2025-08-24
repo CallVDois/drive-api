@@ -1,8 +1,6 @@
 package com.callv2.drive.domain.folder;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.exception.ValidationException;
@@ -19,7 +17,6 @@ public class Folder extends AggregateRoot<FolderID> {
 
     private FolderName name;
     private FolderID parentFolder;
-    private Set<SubFolder> subFolders;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -30,7 +27,6 @@ public class Folder extends AggregateRoot<FolderID> {
             final MemberID owner,
             final FolderName name,
             final FolderID parentFolder,
-            final Set<SubFolder> subFolders,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
@@ -40,7 +36,6 @@ public class Folder extends AggregateRoot<FolderID> {
         this.owner = owner;
         this.name = name;
         this.parentFolder = parentFolder;
-        this.subFolders = subFolders == null ? new HashSet<>() : new HashSet<>(subFolders);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
@@ -54,12 +49,11 @@ public class Folder extends AggregateRoot<FolderID> {
             final MemberID owner,
             final FolderName name,
             final FolderID parentFolder,
-            final Set<SubFolder> subFolders,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
             final boolean rootFolder) {
-        return new Folder(id, owner, name, parentFolder, subFolders, createdAt, updatedAt, deletedAt, rootFolder);
+        return new Folder(id, owner, name, parentFolder, createdAt, updatedAt, deletedAt, rootFolder);
     }
 
     public static Folder createRoot(final MemberID owner) {
@@ -70,7 +64,6 @@ public class Folder extends AggregateRoot<FolderID> {
                 owner,
                 FolderName.of("Root"),
                 null,
-                new HashSet<>(),
                 now,
                 now,
                 null,
@@ -89,13 +82,11 @@ public class Folder extends AggregateRoot<FolderID> {
                 owner,
                 name,
                 parentFolder.getId(),
-                new HashSet<>(),
                 now,
                 now,
                 null,
                 false);
 
-        parentFolder.addSubFolder(folder);
         return folder;
     }
 
@@ -121,9 +112,6 @@ public class Folder extends AggregateRoot<FolderID> {
 
         final Notification notification = Notification.create();
 
-        if (this.subFolders.stream().anyMatch(it -> it.id().equals(parentFolder.getId())))
-            notification.append(ValidationError.with("Parent folder cannot be a subfolder"));
-
         if (this.getId().equals(parentFolder.getId()))
             notification.append(ValidationError.with("Parent folder cannot be the same folder"));
 
@@ -132,48 +120,6 @@ public class Folder extends AggregateRoot<FolderID> {
 
         this.parentFolder = parentFolder.getId();
         this.updatedAt = Instant.now();
-        return this;
-    }
-
-    public Folder addSubFolder(final Folder folder) {
-
-        if (folder == null)
-            return this;
-
-        final SubFolder subFolder = SubFolder.from(folder);
-
-        final Notification notification = Notification.create();
-
-        if (this.subFolders.contains(subFolder))
-            notification
-                    .append(ValidationError.with("SubFolder already exists"));
-
-        if (this.subFolders.stream().anyMatch(it -> it.name().equals(folder.getName())))
-            notification
-                    .append(ValidationError.with("SubFolder %s already exists".formatted(folder.getName().value())));
-
-        if (notification.hasError())
-            throw ValidationException.with("Error on add subfolder", notification);
-
-        this.subFolders.add(subFolder);
-        this.updatedAt = Instant.now();
-
-        return this;
-    }
-
-    public Folder removeSubFolder(final Folder folder) {
-
-        if (folder == null)
-            return this;
-
-        final SubFolder subFolder = SubFolder.from(folder);
-
-        if (!this.subFolders.contains(subFolder))
-            return this;
-
-        this.subFolders.remove(subFolder);
-        this.updatedAt = Instant.now();
-
         return this;
     }
 
@@ -191,10 +137,6 @@ public class Folder extends AggregateRoot<FolderID> {
 
     public FolderName getName() {
         return name;
-    }
-
-    public Set<SubFolder> getSubFolders() {
-        return Set.copyOf(subFolders);
     }
 
     public Instant getCreatedAt() {
@@ -215,6 +157,13 @@ public class Folder extends AggregateRoot<FolderID> {
 
         if (notification.hasError())
             throw ValidationException.with("Validation fail has occoured", notification);
+    }
+
+    @Override
+    public String toString() {
+        return "Folder [id=" + id + ", rootFolder=" + rootFolder + ", owner=" + owner + ", name=" + name
+                + ", parentFolder=" + parentFolder + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+                + ", deletedAt=" + deletedAt + "]";
     }
 
 }

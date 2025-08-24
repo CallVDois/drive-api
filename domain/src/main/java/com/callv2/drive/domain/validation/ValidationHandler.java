@@ -8,7 +8,7 @@ public interface ValidationHandler {
 
     ValidationHandler append(final ValidationHandler handler);
 
-    <T> T valdiate(final Validation<T> validation);
+    <T> T validate(final Validation<T> validation);
 
     List<ValidationError> getErrors();
 

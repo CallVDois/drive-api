@@ -18,4 +18,9 @@ public class FileID extends Identifier<UUID> {
         return FileID.of(UUID.randomUUID());
     }
 
+    @Override
+    public String toString() {
+        return "FileID [value=" + getValue() + "]";
+    }
+
 }

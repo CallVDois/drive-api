@@ -29,6 +29,7 @@ public class DefaultSynchronizeMemberUseCase extends SynchronizeMemberUseCase {
                 nickname,
                 null,
                 null,
+                input.hasSystemAccess(),
                 input.createdAt(),
                 input.updatedAt(),
                 input.synchronizedVersion());

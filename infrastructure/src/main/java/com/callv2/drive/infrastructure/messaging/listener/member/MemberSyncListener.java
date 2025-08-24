@@ -32,10 +32,13 @@ public class MemberSyncListener implements Listener<MemberSyncEvent> {
 
         final MemberSyncEvent.Data eventData = data.data();
 
+        final Boolean hasSystemAccess = eventData.systems() != null && eventData.systems().contains("DRIVE");
+
         final SynchronizeMemberInput createMemberInput = SynchronizeMemberInput.from(
                 eventData.id(),
                 eventData.username(),
                 eventData.nickname(),
+                hasSystemAccess,
                 eventData.createdAt(),
                 eventData.updatedAt(),
                 eventData.synchronizedVersion());
