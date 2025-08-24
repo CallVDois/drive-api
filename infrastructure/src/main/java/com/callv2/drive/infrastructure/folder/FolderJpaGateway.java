@@ -81,7 +81,7 @@ public class FolderJpaGateway implements FolderGateway {
                 searchQuery.filters());
 
         final org.springframework.data.domain.Page<FolderJpaEntity> pageResult = this.folderRepository.findAll(
-                Specification.where(specification),
+                specification,
                 page);
 
         return new Page<>(
