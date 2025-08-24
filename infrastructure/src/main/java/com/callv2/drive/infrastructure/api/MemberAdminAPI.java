@@ -1,6 +1,5 @@
 package com.callv2.drive.infrastructure.api;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -26,31 +24,25 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("admin/members")
 public interface MemberAdminAPI {
 
-    @GetMapping("{id}/quotas")
     @Operation(summary = "Request drive quota", description = "This method request a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Retrieve successfuly"),
-            @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
-    })
+    @ApiResponse(responseCode = "200", description = "Retrieve successfuly")
+    @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @GetMapping("{id}/quotas")
     ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable(value = "id", required = true) String id);
 
-    @PostMapping("{id}/quotas/requests/approve")
     @Operation(summary = "Approve drive quota request", description = "This method approve a drive ammount quota request", security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Approved successfuly"),
-            @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
-    })
+    @ApiResponse(responseCode = "204", description = "Approved successfuly")
+    @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @PostMapping("{id}/quotas/requests/approve")
     ResponseEntity<Void> approveQuotaRequest(
             @PathVariable(value = "id", required = true) String id,
             @RequestParam(value = "approved", defaultValue = "true") boolean approved);
 
-    @GetMapping(value = "quotas/requests", produces = { MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "List quotas requests", description = "This method list quotas requests", security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Quotas requests listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
-                    QuotaRequestListResponse.class }))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
-    })
+    @ApiResponse(responseCode = "200", description = "Quotas requests listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
+            QuotaRequestListResponse.class })))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @GetMapping("quotas/requests")
     ResponseEntity<Page<QuotaRequestListResponse>> listQuotaRequests(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
