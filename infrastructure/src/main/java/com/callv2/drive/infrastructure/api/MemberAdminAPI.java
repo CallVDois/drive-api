@@ -2,8 +2,8 @@ package com.callv2.drive.infrastructure.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -33,7 +33,7 @@ public interface MemberAdminAPI {
     @Operation(summary = "Approve drive quota request", description = "This method approve a drive ammount quota request", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Approved successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
-    @PostMapping("{id}/quotas/requests/approve")
+    @PatchMapping("{id}/quotas/requests")
     ResponseEntity<Void> approveQuotaRequest(
             @PathVariable(value = "id", required = true) String id,
             @RequestParam(value = "approved", defaultValue = "true") boolean approved);

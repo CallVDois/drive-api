@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.callv2.drive.domain.pagination.Filter;
@@ -38,31 +38,31 @@ public interface FileAPI {
     @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "413", description = "File is too large", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
-    @PostMapping("/folders/{folderId}/upload")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<CreateFileResponse> create(
-            @PathVariable(required = true, name = "folderId") UUID folderId,
-            @RequestPart("file") MultipartFile file);
+            @RequestParam("folderId") UUID folderId,
+            @RequestParam("file") MultipartFile file);
 
     @Operation(summary = "Delete a file", description = "This method deletes a file", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "File deleted successfully")
     @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @DeleteMapping("{id}")
-    ResponseEntity<Void> delete(@PathVariable(required = true) UUID id);
+    ResponseEntity<Void> delete(@PathVariable UUID id);
 
     @Operation(summary = "Retrive a file", description = "This method retrive a file", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "File retrieved successfully", content = @Content(schema = @Schema(implementation = GetFileResponse.class)))
     @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @GetMapping("{id}")
-    ResponseEntity<GetFileResponse> getById(@PathVariable(required = true) UUID id);
+    ResponseEntity<GetFileResponse> getById(@PathVariable UUID id);
 
     @Operation(summary = "Download a file", description = "This method downloads a file", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "File downloaded successfully", content = @Content(schema = @Schema(implementation = Resource.class)))
     @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
-    @GetMapping("{id}/download")
-    ResponseEntity<Resource> download(@PathVariable(required = true) UUID id);
+    @GetMapping("{id}/content")
+    ResponseEntity<Resource> download(@PathVariable UUID id);
 
     @Operation(summary = "List files", description = "This method list files", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Files listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
