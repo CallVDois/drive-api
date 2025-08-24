@@ -88,7 +88,7 @@ public interface FolderAPI {
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
             @RequestParam(name = "filters", required = false) List<String> filters);
 
-    @PatchMapping(value = "{id}/change-name", consumes = { MediaType.APPLICATION_JSON_VALUE })
+    @PatchMapping(value = "{id}/name", consumes = { MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "Change folder name", description = "This method changes the name of a folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Folder name changed successfully", content = @Content(schema = @Schema(implementation = Void.class))),
