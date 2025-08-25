@@ -166,4 +166,11 @@ public class FileJpaEntity {
         this.updatedAt = updatedAt;
     }
 
+    @Override
+    public String toString() {
+        return "FileJpaEntity [id=" + id + ", ownerId=" + ownerId + ", folderId=" + folderId + ", name=" + name
+                + ", contentType=" + contentType + ", contentLocation=" + contentLocation + ", contentSize="
+                + contentSize + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+    }
+
 }

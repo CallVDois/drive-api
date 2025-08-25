@@ -1,22 +1,16 @@
 package com.callv2.drive.infrastructure.folder.persistence;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.folder.FolderName;
-import com.callv2.drive.domain.folder.SubFolder;
 import com.callv2.drive.domain.member.MemberID;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity(name = "Folder")
@@ -47,9 +41,6 @@ public class FolderJpaEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SubFolderJpaEntity> subFolders;
-
     private FolderJpaEntity(
             final UUID id,
             final Boolean rootFolder,
@@ -68,7 +59,6 @@ public class FolderJpaEntity {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
 
-        this.subFolders = new HashSet<>();
     }
 
     public FolderJpaEntity() {
@@ -87,9 +77,6 @@ public class FolderJpaEntity {
                 folder.getUpdatedAt(),
                 folder.getDeletedAt());
 
-        folder.getSubFolders()
-                .forEach(entity::addSubFolder);
-
         return entity;
     }
 
@@ -99,17 +86,10 @@ public class FolderJpaEntity {
                 MemberID.of(ownerId),
                 FolderName.of(name),
                 FolderID.of(parentFolderId),
-                subFolders.stream()
-                        .map(SubFolderJpaEntity::toDomain)
-                        .collect(Collectors.toSet()),
                 createdAt,
                 updatedAt,
                 deletedAt,
                 rootFolder);
-    }
-
-    public void addSubFolder(final SubFolder anId) {
-        this.subFolders.add(SubFolderJpaEntity.with(this, anId));
     }
 
     public UUID getId() {
@@ -150,14 +130,6 @@ public class FolderJpaEntity {
 
     public void setParentFolderId(UUID parentFolderId) {
         this.parentFolderId = parentFolderId;
-    }
-
-    public Set<SubFolderJpaEntity> getSubFolders() {
-        return subFolders;
-    }
-
-    public void setSubFolders(Set<SubFolderJpaEntity> subFolders) {
-        this.subFolders = subFolders;
     }
 
     public Instant getCreatedAt() {

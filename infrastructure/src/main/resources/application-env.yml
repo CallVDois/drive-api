@@ -26,6 +26,14 @@ db:
 
 request-timeout: ${REQUEST_TIMEOUT}
 
+rabbitmq:
+  virtual-host: ${RABBITMQ_VIRTUAL_HOST:/}
+  auto-create: ${RABBITMQ_AUTO_CREATE}
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USERNAME}
+  password: ${RABBITMQ_PASSWORD}
+
 storage:
   max-file-size: ${MAX_FILE_SIZE}
   max-request-size: ${MAX_REQUEST_SIZE}

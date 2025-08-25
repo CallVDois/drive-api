@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,72 +29,92 @@ import com.callv2.drive.domain.member.MemberID;
 @ExtendWith(MockitoExtension.class)
 public class DefaultGetFolderUseCaseTest {
 
-    @InjectMocks
-    DefaultGetFolderUseCase useCase;
+        @InjectMocks
+        DefaultGetFolderUseCase useCase;
 
-    @Mock
-    FolderGateway folderGateway;
+        @Mock
+        FolderGateway folderGateway;
 
-    @Mock
-    FileGateway fileGateway;
+        @Mock
+        FileGateway fileGateway;
 
-    @Test
-    void givenAValidFolderId_whenCallsExecute_thenShouldReturnFolder() {
+        @Test
+        void givenAValidFolderId_whenCallsExecute_thenShouldReturnFolder() {
 
-        final var ownerId = MemberID.of("owner");
+                final var ownerId = MemberID.of("owner");
 
-        final var expectedFolderName = "folder";
-        final var expectedFolder = Folder.create(
-                ownerId,
-                FolderName.of(expectedFolderName),
-                Folder.createRoot(ownerId));
+                final var expectedFolderName = "folder";
+                final var expectedFolder = Folder.create(
+                                ownerId,
+                                FolderName.of(expectedFolderName),
+                                Folder.createRoot(ownerId));
 
-        final var expectedFolderId = expectedFolder.getId();
-        final var expectedSubFolders = expectedFolder.getSubFolders();
-        final var expectedCreatedAt = expectedFolder.getCreatedAt();
-        final var expectedUpdatedAt = expectedFolder.getUpdatedAt();
-        final var expectedDeletedAt = expectedFolder.getDeletedAt();
+                final var expectedSubFolder1 = Folder.create(
+                                ownerId,
+                                FolderName.of("subFolder1"),
+                                expectedFolder);
+                final var expectedSubFolder2 = Folder.create(
+                                ownerId,
+                                FolderName.of("subFolder2"),
+                                expectedFolder);
 
-        when(folderGateway.findById(expectedFolderId))
-                .thenReturn(Optional.of(expectedFolder));
+                final var expectedSubFolders = Set.of(expectedSubFolder1, expectedSubFolder2);
 
-        final var input = GetFolderInput.with(expectedFolderId.getValue());
+                final var expectedFolderId = expectedFolder.getId();
+                final var expectedCreatedAt = expectedFolder.getCreatedAt();
+                final var expectedUpdatedAt = expectedFolder.getUpdatedAt();
+                final var expectedDeletedAt = expectedFolder.getDeletedAt();
 
-        final var actualOutput = assertDoesNotThrow(() -> useCase.execute(input));
+                when(folderGateway.findById(expectedFolderId))
+                                .thenReturn(Optional.of(expectedFolder));
 
-        assertEquals(expectedFolderId.getValue(), actualOutput.id());
-        assertEquals(expectedFolderName, actualOutput.name());
-        assertEquals(expectedFolder.getParentFolder().getValue(), actualOutput.parentFolder());
-        assertEquals(expectedSubFolders.size(), actualOutput.subFolders().size());
-        assertEquals(expectedCreatedAt, actualOutput.createdAt());
-        assertEquals(expectedUpdatedAt, actualOutput.updatedAt());
-        assertEquals(expectedDeletedAt, actualOutput.deletedAt());
+                when(folderGateway.findByParentFolderId(expectedFolder.getId()))
+                                .thenReturn(expectedSubFolders);
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+                final var input = GetFolderInput.with(expectedFolderId.getValue());
 
-    }
+                final var actualOutput = assertDoesNotThrow(() -> useCase.execute(input));
 
-    @Test
-    void givenNotExistentFolderId_whenCallsExecute_thenShouldThorwsNotFoundException() {
+                assertEquals(expectedFolderId.getValue(), actualOutput.id());
+                assertEquals(expectedFolderName, actualOutput.name());
+                assertEquals(expectedFolder.getParentFolder().getValue(), actualOutput.parentFolder());
+                assertEquals(expectedSubFolders.size(), actualOutput.subFolders().size());
+                assertEquals(expectedCreatedAt, actualOutput.createdAt());
+                assertEquals(expectedUpdatedAt, actualOutput.updatedAt());
+                assertEquals(expectedDeletedAt, actualOutput.deletedAt());
 
-        final var expectedFolderId = FolderID.unique();
+                verify(folderGateway, times(1)).findById(any());
+                verify(folderGateway, times(1)).findById(eq(expectedFolderId));
 
-        final var excpectedExceptionMessage = "Folder with id '%s' not found"
-                .formatted(expectedFolderId.getValue().toString());
+                verify(folderGateway, times(1)).findByParentFolderId(any());
+                verify(folderGateway, times(1)).findByParentFolderId(eq(expectedFolder.getId()));
 
-        when(folderGateway.findById(expectedFolderId))
-                .thenReturn(Optional.empty());
+        }
 
-        final var input = GetFolderInput.with(expectedFolderId.getValue());
+        @Test
+        void givenNotExistentFolderId_whenCallsExecute_thenShouldThorwsNotFoundException() {
 
-        final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
+                final var expectedFolderId = FolderID.unique();
 
-        assertEquals(excpectedExceptionMessage, actualException.getMessage());
+                final var expectedExceptionMessage = "[Folder] not found.";
+                final var expectedErrorCount = 1;
+                final var expectedErrorMessage = "[Folder] with id [%s] not found."
+                                .formatted(expectedFolderId.getValue());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+                when(folderGateway.findById(expectedFolderId))
+                                .thenReturn(Optional.empty());
 
-    }
+                final var input = GetFolderInput.with(expectedFolderId.getValue());
+
+                final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
+
+                assertEquals(expectedExceptionMessage, actualException.getMessage());
+                assertEquals(expectedErrorCount, actualException.getErrors().size());
+                assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+                verify(folderGateway, times(1)).findById(any());
+                verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+
+        }
 
 }

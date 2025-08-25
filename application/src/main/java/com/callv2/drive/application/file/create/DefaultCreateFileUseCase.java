@@ -20,7 +20,7 @@ import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.storage.StorageService;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
 public class DefaultCreateFileUseCase extends CreateFileUseCase {
@@ -58,8 +58,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
                 .sum();
 
         if (actualUsedQuota + input.size() > owner.getQuota().sizeInBytes())
-            throw QuotaExceededException.with("Quota exceeded",
-                    Error.with("You have exceeded your actual quota of " + owner.getQuota().sizeInBytes() + " bytes"));
+            throw QuotaExceededException.with(owner.getQuota());
 
         final FolderID folderId = folderGateway
                 .findById(FolderID.of(input.folderId()))
@@ -76,7 +75,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         final List<File> filesOnSameFolder = fileGateway.findByFolder(folderId);
         if (filesOnSameFolder.stream().map(File::getName).anyMatch(fileName::equals))
             throw ValidationException.with("Could not create Aggregate File",
-                    Error.with("File with same name already exists on this folder"));
+                    ValidationError.with("File with same name already exists on this folder"));
 
         final String randomContentName = UUID.randomUUID().toString();
         final String contentLocation = storeContentFile(randomContentName, input.content());
@@ -85,7 +84,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
         final Content content = Content.of(contentLocation, contentType, contentSize);
 
-        final File file = notification.valdiate(() -> File.create(ownerId, folderId, fileName, content));
+        final File file = notification.validate(() -> File.create(ownerId, folderId, fileName, content));
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate File", notification);
 

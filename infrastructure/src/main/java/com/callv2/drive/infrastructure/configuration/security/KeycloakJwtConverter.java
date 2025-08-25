@@ -3,6 +3,7 @@ package com.callv2.drive.infrastructure.configuration.security;
 import java.util.Collection;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -18,7 +19,7 @@ public class KeycloakJwtConverter implements Converter<Jwt, AbstractAuthenticati
     }
 
     @Override
-    public AbstractAuthenticationToken convert(final Jwt jwt) {
+    public AbstractAuthenticationToken convert(@NonNull final Jwt jwt) {
         return new JwtAuthenticationToken(jwt, extractAuthorities(jwt), extractPrincipal(jwt));
     }
 

@@ -23,12 +23,12 @@ public class FilterService {
             final List<Filter> filters) {
 
         if (filterMethod.equals(Filter.Operator.AND))
-            return Specification.where(andSpecifications(buildSpecifications(entityClass, filters)));
+            return andSpecifications(buildSpecifications(entityClass, filters));
 
         if (filterMethod.equals(Filter.Operator.OR))
-            return Specification.where(orSpecifications(buildSpecifications(entityClass, filters)));
+            return orSpecifications(buildSpecifications(entityClass, filters));
 
-        return Specification.where(andSpecifications(buildSpecifications(entityClass, filters)));
+        return andSpecifications(buildSpecifications(entityClass, filters));
     }
 
     private <T> List<Specification<T>> buildSpecifications(Class<T> entityClass,

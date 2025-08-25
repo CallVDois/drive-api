@@ -18,4 +18,9 @@ public class FolderID extends Identifier<UUID> {
         return FolderID.of(UUID.randomUUID());
     }
 
+    @Override
+    public String toString() {
+        return "FolderID [value=" + getValue() + "]";
+    }
+
 }

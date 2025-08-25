@@ -4,8 +4,10 @@ import java.time.Instant;
 
 public record QuotaRequestPreview(
         String memberId,
-        long amount,
-        QuotaUnit unit,
-        Instant requestedAt) {
+        String memberUsername,
+        String memberNickname,
+        long quotaAmount,
+        QuotaUnit quotaUnit,
+        Instant quotaRequestedAt) {
 
 }

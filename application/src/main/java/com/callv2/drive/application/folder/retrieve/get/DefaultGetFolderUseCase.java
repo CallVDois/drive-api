@@ -28,7 +28,10 @@ public class DefaultGetFolderUseCase extends GetFolderUseCase {
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.id().toString()));
 
         return GetFolderOutput
-                .from(folder, fileGateway.findByFolder(folder.getId()));
+                .from(
+                        folder,
+                        folderGateway.findByParentFolderId(folder.getId()),
+                        fileGateway.findByFolder(folder.getId()));
     }
 
 }

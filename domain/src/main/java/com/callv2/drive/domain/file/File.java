@@ -136,4 +136,10 @@ public class File extends AggregateRoot<FileID> {
             throw ValidationException.with("Validation fail has occoured", notification);
     }
 
+    @Override
+    public String toString() {
+        return "File [id=" + id + ", owner=" + owner + ", folder=" + folder + ", name=" + name + ", content=" + content
+                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+    }
+
 }

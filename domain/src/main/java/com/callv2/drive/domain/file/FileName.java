@@ -1,7 +1,7 @@
 package com.callv2.drive.domain.file;
 
 import com.callv2.drive.domain.ValueObject;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
 public record FileName(String value) implements ValueObject {
@@ -30,22 +30,22 @@ public record FileName(String value) implements ValueObject {
     public void validate(final ValidationHandler aHandler) {
 
         if (value == null) {
-            aHandler.append(new Error("'name' cannot be null."));
+            aHandler.append(new ValidationError("'name' cannot be null."));
             return;
         }
 
         if (value.trim().isEmpty()) {
-            aHandler.append(new Error("'name' cannot be empty."));
+            aHandler.append(new ValidationError("'name' cannot be empty."));
             return;
         }
 
         String trimmedName = value.trim();
         if (trimmedName.length() < MIN_LENGTH || trimmedName.length() > MAX_LENGTH)
             aHandler.append(
-                    new Error("'name' must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters."));
+                    new ValidationError("'name' must be between " + MIN_LENGTH + " and " + MAX_LENGTH + " characters."));
 
         if (isReservedName(trimmedName))
-            aHandler.append(new Error("'name' cannot be a reserved name: " + trimmedName));
+            aHandler.append(new ValidationError("'name' cannot be a reserved name: " + trimmedName));
     }
 
     private boolean isReservedName(final String name) {

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.callv2.drive.domain.exception.DomainException;
 import com.callv2.drive.domain.exception.InternalErrorException;
+import com.callv2.drive.domain.exception.NotAllowedException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.QuotaExceededException;
 import com.callv2.drive.domain.exception.ValidationException;
@@ -17,7 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Throwable.class)
     public ResponseEntity<ApiError> handle(final Throwable ex) {
-        return ResponseEntity.internalServerError().body(ApiError.with("Internal Server Error" + ex.getMessage()));
+        return ResponseEntity.internalServerError().body(ApiError.with("Internal Server Error"));
     }
 
     @ExceptionHandler(value = InternalErrorException.class)
@@ -49,6 +50,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handle(final InvalidDataAccessApiUsageException ex) {
         return ResponseEntity.badRequest()
                 .body(ApiError.with("Invalid Data Access Api Usage [%s]".formatted(ex.getMessage())));
+    }
+
+    @ExceptionHandler(value = NotAllowedException.class)
+    public ResponseEntity<ApiError> handle(final NotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiError.from(ex));
     }
 
 }

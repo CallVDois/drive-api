@@ -17,6 +17,8 @@ import com.callv2.drive.application.file.content.get.GetFileContentInput;
 import com.callv2.drive.application.file.content.get.GetFileContentOutput;
 import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
+import com.callv2.drive.application.file.delete.DeleteFileUseCase;
+import com.callv2.drive.application.file.delete.DeleteFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
@@ -37,16 +39,19 @@ import com.callv2.drive.infrastructure.security.SecurityContext;
 public class FileController implements FileAPI {
 
     private final CreateFileUseCase createFileUseCase;
+    private final DeleteFileUseCase deleteFileUseCase;
     private final GetFileUseCase getFileUseCase;
     private final GetFileContentUseCase getFileContentUseCase;
     private final ListFilesUseCase listFilesUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
+            final DeleteFileUseCase deleteFileUseCase,
             final GetFileUseCase getFileUseCase,
             final GetFileContentUseCase getFileContentUseCase,
             final ListFilesUseCase listFilesUseCase) {
         this.createFileUseCase = createFileUseCase;
+        this.deleteFileUseCase = deleteFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.getFileContentUseCase = getFileContentUseCase;
         this.listFilesUseCase = listFilesUseCase;
@@ -63,6 +68,16 @@ public class FileController implements FileAPI {
         return ResponseEntity
                 .created(URI.create("/files/" + response.id()))
                 .body(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> delete(UUID id) {
+        final var deleterId = SecurityContext.getAuthenticatedUser();
+
+        DeleteFileInput deleteFileInput = DeleteFileInput.of(deleterId, id);
+
+        deleteFileUseCase.execute(deleteFileInput);
+        return ResponseEntity.noContent().build();
     }
 
     @Override

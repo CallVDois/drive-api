@@ -1,14 +1,15 @@
 package com.callv2.drive.application.folder.move;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.validation.Error;
+import com.callv2.drive.domain.validation.ValidationError;
+import com.callv2.drive.domain.validation.handler.Notification;
 
 public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
 
@@ -27,16 +28,14 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
         final Folder folder = findFolder(folderId);
         final Folder newParentFolder = findFolder(newParentFolderId);
 
-        if (!canMove(folder, newParentFolder))
-            throw ValidationException.with("Invalid move operation", Error.with("Cannot move folder"));
+        final Notification notification = Notification.create();
+        validateMove(folder, newParentFolder, notification);
+        if (notification.hasError())
+            throw ValidationException.with("Invalid move operation", notification);
 
-        final Folder oldParentFolder = findFolder(folder.getParentFolder());
-        oldParentFolder.removeSubFolder(folder);
-
-        newParentFolder.addSubFolder(folder);
         folder.changeParentFolder(newParentFolder);
 
-        folderGateway.updateAll(List.of(folder, newParentFolder, oldParentFolder));
+        folderGateway.update(folder);
     }
 
     private Folder findFolder(FolderID id) {
@@ -45,29 +44,35 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
                 .orElseThrow(() -> NotFoundException.with(Folder.class, id.getValue().toString()));
     }
 
-    private boolean canMove(Folder folder, Folder newParentFolder) {
+    private void validateMove(final Folder folder, final Folder newParentFolder, final Notification notification) {
 
-        if (newParentFolder.getSubFolders().stream().anyMatch(sf -> sf.name().equals(folder.getName())))
-            return false;
+        final Set<Folder> newParentFolderSubFolders = this.folderGateway.findByParentFolderId(newParentFolder.getId());
+
+        if (newParentFolderSubFolders.stream().anyMatch(sf -> sf.getName().equals(folder.getName())))
+            notification.append(
+                    ValidationError.with("A folder with the same name already exists in the target parent folder."));
 
         if (folder.equals(newParentFolder))
-            return false;
+            notification.append(ValidationError.with("Cannot move a folder into itself."));
 
         if (folder.isRootFolder())
-            return false;
+            notification.append(ValidationError.with("Cannot move the root folder."));
 
         if (newParentFolder.isRootFolder())
-            return true;
+            return;
 
         Folder actualParent = newParentFolder;
         while (!actualParent.isRootFolder()) {
-            if (folder.equals(actualParent))
-                return false;
+            if (folder.equals(actualParent)) {
+                notification.append(
+                        ValidationError.with("Cannot move a folder into one of its subfolders."));
+                break;
+            }
 
             actualParent = findFolder(actualParent.getParentFolder());
         }
 
-        return true;
+        return;
     }
 
 }

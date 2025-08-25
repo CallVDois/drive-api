@@ -61,7 +61,7 @@ public class FileJPAGateway implements FileGateway {
                 searchQuery.filters());
 
         final org.springframework.data.domain.Page<FileJpaEntity> pageResult = this.fileRepository
-                .findAll(Specification.where(specification), page);
+                .findAll(specification, page);
 
         return new Page<>(
                 pageResult.getNumber(),
@@ -79,6 +79,11 @@ public class FileJPAGateway implements FileGateway {
                 .stream()
                 .map(FileJpaEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void deleteById(final FileID id) {
+        this.fileRepository.deleteById(id.getValue());
     }
 
 }

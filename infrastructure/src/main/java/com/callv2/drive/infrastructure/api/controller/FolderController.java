@@ -14,6 +14,8 @@ import com.callv2.drive.application.folder.retrieve.get.GetFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderInput;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
+import com.callv2.drive.application.folder.update.name.UpdateFolderNameInput;
+import com.callv2.drive.application.folder.update.name.UpdateFolderNameUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
@@ -25,7 +27,6 @@ import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
-import com.callv2.drive.infrastructure.folder.model.GetRootFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
 import com.callv2.drive.infrastructure.folder.presenter.FolderPresenter;
 import com.callv2.drive.infrastructure.security.SecurityContext;
@@ -38,22 +39,25 @@ public class FolderController implements FolderAPI {
     private final GetFolderUseCase getFolderUseCase;
     private final MoveFolderUseCase moveFolderUseCase;
     private final ListFoldersUseCase listFoldersUseCase;
+    private final UpdateFolderNameUseCase updateFolderNameUseCase;
 
     public FolderController(
             final GetRootFolderUseCase getRootFolderUseCase,
             final CreateFolderUseCase createFolderUseCase,
             final GetFolderUseCase getFolderUseCase,
             final MoveFolderUseCase moveFolderUseCase,
-            final ListFoldersUseCase listFoldersUseCase) {
+            final ListFoldersUseCase listFoldersUseCase,
+            final UpdateFolderNameUseCase updateFolderNameUseCase) {
         this.getRootFolderUseCase = getRootFolderUseCase;
         this.createFolderUseCase = createFolderUseCase;
         this.getFolderUseCase = getFolderUseCase;
         this.moveFolderUseCase = moveFolderUseCase;
         this.listFoldersUseCase = listFoldersUseCase;
+        this.updateFolderNameUseCase = updateFolderNameUseCase;
     }
 
     @Override
-    public ResponseEntity<GetRootFolderResponse> getRoot() {
+    public ResponseEntity<GetFolderResponse> getRoot() {
         return ResponseEntity.ok(FolderPresenter.present(
                 getRootFolderUseCase.execute(GetRootFolderInput.from(SecurityContext.getAuthenticatedUser()))));
     }
@@ -102,6 +106,14 @@ public class FolderController implements FolderAPI {
                 searchFilters);
 
         return ResponseEntity.ok(listFoldersUseCase.execute(query).map(FolderPresenter::present));
+    }
+
+    @Override
+    public ResponseEntity<Void> changeName(UUID id, String newName) {
+
+        this.updateFolderNameUseCase.execute(new UpdateFolderNameInput(id, newName));
+
+        return ResponseEntity.noContent().build();
     }
 
 }
