@@ -38,8 +38,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.19.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // testImplementation 'com.h2database:h2:2.3.232'
