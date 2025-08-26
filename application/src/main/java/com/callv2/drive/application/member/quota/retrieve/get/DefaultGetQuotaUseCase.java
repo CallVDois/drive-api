@@ -34,9 +34,8 @@ public class DefaultGetQuotaUseCase extends GetQuotaUseCase {
                 .mapToLong(Content::size)
                 .sum();
 
-        final Long available = owner.getQuota().sizeInBytes() - actualUsedQuota;
+        return GetQuotaOutput.from(owner, actualUsedQuota);
 
-        return GetQuotaOutput.from(ownerId.getValue(), actualUsedQuota, owner.getQuota().sizeInBytes(), available);
     }
 
 }
