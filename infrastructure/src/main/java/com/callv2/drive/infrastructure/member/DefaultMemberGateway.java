@@ -43,6 +43,11 @@ public class DefaultMemberGateway implements MemberGateway {
     }
 
     @Override
+    public Long count() {
+        return memberJpaRepository.count();
+    }
+
+    @Override
     public Page<Member> findAll(SearchQuery searchQuery) {
 
         final PageRequest pageRequest = QueryAdapter.of(searchQuery.pagination());
@@ -83,9 +88,9 @@ public class DefaultMemberGateway implements MemberGateway {
                 memberJpa.getId(),
                 memberJpa.getUsername(),
                 memberJpa.getNickname(),
-                memberJpa.getQuotaAmmount(),
+                memberJpa.getQuotaAmount(),
                 memberJpa.getQuotaUnit(),
-                memberJpa.getQuotaRequestAmmount(),
+                memberJpa.getQuotaRequestAmount(),
                 memberJpa.getQuotaRequestUnit(),
                 memberJpa.getQuotaRequestedAt(),
                 memberJpa.getCreatedAt(),
@@ -116,6 +121,11 @@ public class DefaultMemberGateway implements MemberGateway {
     @Override
     public Boolean existsById(MemberID id) {
         return this.memberJpaRepository.existsById(id.getValue());
+    }
+
+    @Override
+    public Long sumAllQuota() {
+        return this.memberJpaRepository.sumAllQuota();
     }
 
 }

@@ -22,4 +22,6 @@ public interface FileGateway {
 
     void deleteById(FileID id);
 
+    Long sumAllContentSize();
+
 }

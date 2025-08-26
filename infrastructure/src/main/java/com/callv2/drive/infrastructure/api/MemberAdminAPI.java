@@ -16,6 +16,7 @@ import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaListResponse;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
+import com.callv2.drive.infrastructure.member.model.QuotaSummaryResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,13 +29,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("admin/members")
 public interface MemberAdminAPI {
 
-    @Operation(summary = "Request drive quota", description = "This method request a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Request drive quota", description = "This method request a drive amount quota", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Retrieve successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @GetMapping("{id}/quotas")
     ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable(value = "id", required = true) String id);
 
-    @Operation(summary = "Approve drive quota request", description = "This method approve a drive ammount quota request", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Approve drive quota request", description = "This method approve a drive amount quota request", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Approved successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @PatchMapping("{id}/quotas/requests")
@@ -65,5 +66,11 @@ public interface MemberAdminAPI {
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
             @RequestParam(name = "filters", required = false) List<String> filters);
+
+    @Operation(summary = "Get quota summary", description = "Returns an aggregated summary of quotas, including total allocated quota, used quota, available quota, and total members.", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "200", description = "Quota summary retrieved successfully", content = @Content(schema = @Schema(implementation = QuotaSummaryResponse.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @GetMapping("quotas/summary")
+    ResponseEntity<QuotaSummaryResponse> quotaSummary();
 
 }

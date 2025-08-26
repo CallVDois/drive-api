@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("members")
 public interface MemberAPI {
 
-    @Operation(summary = "Request drive quota", description = "This method request a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Request drive quota", description = "This method request a drive amount quota", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Requested successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @PostMapping("quotas/requests/{amount}")
@@ -29,7 +29,7 @@ public interface MemberAPI {
             @PathVariable(value = "amount", required = true) long amount,
             @RequestParam(value = "unit", defaultValue = "GIGABYTE") QuotaUnit unit);
 
-    @Operation(summary = "Retrieve actual drive quota", description = "This method retrieve a drive ammount quota", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Retrieve actual drive quota", description = "This method retrieve a drive amount quota", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Retrieve successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @GetMapping("quotas")
