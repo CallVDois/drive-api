@@ -22,6 +22,7 @@ public interface MemberPresenter {
     static MemberQuotaResponse present(final GetQuotaOutput output) {
         return new MemberQuotaResponse(
                 output.memberId(),
+                output.username(),
                 output.used(),
                 output.total(),
                 output.available());
