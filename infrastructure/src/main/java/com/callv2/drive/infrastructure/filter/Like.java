@@ -24,7 +24,7 @@ public class Like extends SpecificationFilter {
         validateFilter(filter);
 
         return (root, query, criteriaBuilder) -> criteriaBuilder
-                .like(root.get(filter.field()), "%" + filter.value() + "%");
+                .like(criteriaBuilder.upper(root.get(filter.field())), "%" + filter.value().toUpperCase() + "%");
     }
 
     private void validateFilter(final Filter filter) {
