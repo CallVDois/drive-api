@@ -86,4 +86,9 @@ public class FileJPAGateway implements FileGateway {
         this.fileRepository.deleteById(id.getValue());
     }
 
+    @Override
+    public Long sumAllContentSize() {
+        return this.fileRepository.sumAllContentSize();
+    }
+
 }

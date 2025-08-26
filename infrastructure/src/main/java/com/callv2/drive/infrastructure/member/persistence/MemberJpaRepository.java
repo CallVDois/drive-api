@@ -22,7 +22,7 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
                 m.id as memberId,
                 m.username as memberUsername,
                 m.nickname as memberNickname,
-                m.quotaRequestAmmount as quotaAmount,
+                m.quotaRequestAmount as quotaAmount,
                 m.quotaRequestUnit as quotaUnit,
                 m.quotaRequestedAt as quotaRequestedAt
             )
@@ -38,9 +38,9 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
             set
                 m.username = :username,
                 m.nickname = :nickname,
-                m.quotaAmmount = :quotaAmmount,
+                m.quotaAmount = :quotaAmount,
                 m.quotaUnit = :quotaUnit,
-                m.quotaRequestAmmount = :quotaRequestAmmount,
+                m.quotaRequestAmount = :quotaRequestAmount,
                 m.quotaRequestUnit = :quotaRequestUnit,
                 m.quotaRequestedAt = :quotaRequestedAt,
                 m.createdAt = :createdAt,
@@ -53,13 +53,16 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
             @Param("id") String id,
             @Param("username") String username,
             @Param("nickname") String nickname,
-            @Param("quotaAmmount") Long quotaAmmount,
+            @Param("quotaAmount") Long quotaAmount,
             @Param("quotaUnit") QuotaUnit quotaUnit,
-            @Param("quotaRequestAmmount") Long quotaRequestAmmount,
+            @Param("quotaRequestAmount") Long quotaRequestAmount,
             @Param("quotaRequestUnit") QuotaUnit quotaRequestUnit,
             @Param("quotaRequestedAt") Instant quotaRequestedAt,
             @Param("createdAt") Instant createdAt,
             @Param("updatedAt") Instant updatedAt,
             @Param("synchronizedVersion") Long synchronizedVersion);
+
+    @Query("select coalesce(sum(m.quotaInBytes), 0) from Member m")
+    Long sumAllQuota();
 
 }
