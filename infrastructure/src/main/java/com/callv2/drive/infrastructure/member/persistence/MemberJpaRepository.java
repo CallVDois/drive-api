@@ -62,4 +62,7 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
             @Param("updatedAt") Instant updatedAt,
             @Param("synchronizedVersion") Long synchronizedVersion);
 
+    @Query("select coalesce(sum(m.quotaInBytes), 0) from Member m")
+    Long sumAllQuota();
+
 }

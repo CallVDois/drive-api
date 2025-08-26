@@ -16,6 +16,7 @@ import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaListResponse;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
+import com.callv2.drive.infrastructure.member.model.QuotaSummaryResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -65,5 +66,11 @@ public interface MemberAdminAPI {
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
             @RequestParam(name = "filters", required = false) List<String> filters);
+
+    @Operation(summary = "Get quota summary", description = "Returns an aggregated summary of quotas, including total allocated quota, used quota, available quota, and total members.", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "200", description = "Quota summary retrieved successfully", content = @Content(schema = @Schema(implementation = QuotaSummaryResponse.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @GetMapping("quotas/summary")
+    ResponseEntity<QuotaSummaryResponse> quotaSummary();
 
 }

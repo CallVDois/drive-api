@@ -11,6 +11,7 @@ import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaUs
 import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaInput;
 import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaUseCase;
 import com.callv2.drive.application.member.quota.retrieve.list.ListQuotasUseCase;
+import com.callv2.drive.application.member.quota.retrieve.summary.GetQuotasSummaryUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Filter.Operator;
 import com.callv2.drive.domain.pagination.Page;
@@ -22,6 +23,7 @@ import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaListResponse;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
+import com.callv2.drive.infrastructure.member.model.QuotaSummaryResponse;
 import com.callv2.drive.infrastructure.member.presenter.MemberPresenter;
 
 @Controller
@@ -31,16 +33,19 @@ public class MemberAdminController implements MemberAdminAPI {
     private final ListRequestQuotaUseCase listRequestQuotaUseCase;
     private final GetQuotaUseCase getQuotaUseCase;
     private final ListQuotasUseCase listQuotasUseCase;
+    private final GetQuotasSummaryUseCase getQuotasSummaryUseCase;
 
     public MemberAdminController(
             final ApproveRequestQuotaUseCase approveRequestQuotaUseCase,
             final ListRequestQuotaUseCase listRequestQuotaUseCase,
             final GetQuotaUseCase getQuotaUseCase,
-            final ListQuotasUseCase listQuotasUseCase) {
+            final ListQuotasUseCase listQuotasUseCase,
+            final GetQuotasSummaryUseCase getQuotasSummaryUseCase) {
         this.approveRequestQuotaUseCase = approveRequestQuotaUseCase;
         this.listRequestQuotaUseCase = listRequestQuotaUseCase;
         this.getQuotaUseCase = getQuotaUseCase;
         this.listQuotasUseCase = listQuotasUseCase;
+        this.getQuotasSummaryUseCase = getQuotasSummaryUseCase;
     }
 
     @Override
@@ -92,6 +97,11 @@ public class MemberAdminController implements MemberAdminAPI {
 
         return ResponseEntity.ok(listQuotasUseCase.execute(query).map(MemberPresenter::present));
 
+    }
+
+    @Override
+    public ResponseEntity<QuotaSummaryResponse> quotaSummary() {
+        return ResponseEntity.ok(MemberPresenter.present(getQuotasSummaryUseCase.execute()));
     }
 
 }
