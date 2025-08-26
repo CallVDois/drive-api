@@ -29,13 +29,18 @@ public class MemberJpaEntity {
     private String nickname;
 
     @Column(nullable = false)
-    private Long quotaAmmount;
+    private Long quotaInBytes;
+
+    @Column(nullable = false)
+    private Long quotaAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private QuotaUnit quotaUnit;
 
-    private Long quotaRequestAmmount;
+    private Long quotaRequestInBytes;
+
+    private Long quotaRequestAmount;
 
     @Enumerated(EnumType.STRING)
     private QuotaUnit quotaRequestUnit;
@@ -55,8 +60,10 @@ public class MemberJpaEntity {
             final String id,
             final String username,
             final String nickname,
+            final Long quotaInBytes,
             final Long quotaAmmount,
             final QuotaUnit quotaUnit,
+            final Long quotaRequestInBytes,
             final Long quotaRequestAmmount,
             final QuotaUnit quotaRequestUnit,
             final Instant quotaRequestedAt,
@@ -67,9 +74,11 @@ public class MemberJpaEntity {
         this.id = id;
         this.username = username;
         this.nickname = nickname;
-        this.quotaAmmount = quotaAmmount;
+        this.quotaInBytes = quotaInBytes;
+        this.quotaAmount = quotaAmmount;
         this.quotaUnit = quotaUnit;
-        this.quotaRequestAmmount = quotaRequestAmmount;
+        this.quotaRequestInBytes = quotaRequestInBytes;
+        this.quotaRequestAmount = quotaRequestAmmount;
         this.quotaRequestUnit = quotaRequestUnit;
         this.quotaRequestedAt = quotaRequestedAt;
         this.hasSystemAccess = hasSystemAccess == null ? false : hasSystemAccess;
@@ -84,16 +93,16 @@ public class MemberJpaEntity {
     public Member toDomain() {
 
         QuotaRequest quotaRequest = null;
-        if (getQuotaRequestAmmount() != null && getQuotaRequestUnit() != null && getQuotaRequestedAt() != null)
+        if (getQuotaRequestAmount() != null && getQuotaRequestUnit() != null && getQuotaRequestedAt() != null)
             quotaRequest = QuotaRequest.of(
-                    Quota.of(getQuotaRequestAmmount(), getQuotaRequestUnit()),
+                    Quota.of(getQuotaRequestAmount(), getQuotaRequestUnit()),
                     getQuotaRequestedAt());
 
         return Member.with(
                 MemberID.of(getId()),
                 Username.of(getUsername()),
                 Nickname.of(getNickname()),
-                Quota.of(getQuotaAmmount(), getQuotaUnit()),
+                Quota.of(getQuotaAmount(), getQuotaUnit()),
                 quotaRequest,
                 getHasSystemAccess(),
                 getCreatedAt(),
@@ -106,8 +115,10 @@ public class MemberJpaEntity {
                 member.getId().getValue(),
                 member.getUsername().value(),
                 member.getNickname().value(),
+                member.getQuota().sizeInBytes(),
                 member.getQuota().amount(),
                 member.getQuota().unit(),
+                member.getQuotaRequest().map(QuotaRequest::quota).map(Quota::sizeInBytes).orElse(null),
                 member.getQuotaRequest().map(QuotaRequest::quota).map(Quota::amount).orElse(null),
                 member.getQuotaRequest().map(QuotaRequest::quota).map(Quota::unit).orElse(null),
                 member.getQuotaRequest().map(QuotaRequest::requesteddAt).orElse(null),
@@ -141,12 +152,20 @@ public class MemberJpaEntity {
         this.nickname = nickname;
     }
 
-    public Long getQuotaAmmount() {
-        return quotaAmmount;
+    public Long getQuotaInBytes() {
+        return quotaInBytes;
     }
 
-    public void setQuotaAmmount(Long quotaAmmount) {
-        this.quotaAmmount = quotaAmmount;
+    public void setQuotaInBytes(Long quotaInBytes) {
+        this.quotaInBytes = quotaInBytes;
+    }
+
+    public Long getQuotaAmount() {
+        return quotaAmount;
+    }
+
+    public void setQuotaAmount(Long quotaAmmount) {
+        this.quotaAmount = quotaAmmount;
     }
 
     public QuotaUnit getQuotaUnit() {
@@ -157,12 +176,20 @@ public class MemberJpaEntity {
         this.quotaUnit = quotaUnit;
     }
 
-    public Long getQuotaRequestAmmount() {
-        return quotaRequestAmmount;
+    public Long getQuotaRequestInBytes() {
+        return quotaRequestInBytes;
     }
 
-    public void setQuotaRequestAmmount(Long quotaRequestAmmount) {
-        this.quotaRequestAmmount = quotaRequestAmmount;
+    public void setQuotaRequestInBytes(Long quotaRequestInBytes) {
+        this.quotaRequestInBytes = quotaRequestInBytes;
+    }
+
+    public Long getQuotaRequestAmount() {
+        return quotaRequestAmount;
+    }
+
+    public void setQuotaRequestAmount(Long quotaRequestAmmount) {
+        this.quotaRequestAmount = quotaRequestAmmount;
     }
 
     public QuotaUnit getQuotaRequestUnit() {
