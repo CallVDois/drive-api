@@ -2,6 +2,8 @@ package com.callv2.drive.infrastructure.member.presenter;
 
 import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaOutput;
 import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaOutput;
+import com.callv2.drive.application.member.quota.retrieve.list.ListQuotaOutput;
+import com.callv2.drive.infrastructure.member.model.MemberQuotaListResponse;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
 
@@ -18,7 +20,19 @@ public interface MemberPresenter {
     }
 
     static MemberQuotaResponse present(final GetQuotaOutput output) {
-        return new MemberQuotaResponse(output.memberId(), output.used(), output.total(), output.available());
+        return new MemberQuotaResponse(
+                output.memberId(),
+                output.username(),
+                output.used(),
+                output.total(),
+                output.available());
+    }
+
+    static MemberQuotaListResponse present(final ListQuotaOutput output) {
+        return new MemberQuotaListResponse(
+                output.memberId(),
+                output.username(),
+                output.total());
     }
 
 }

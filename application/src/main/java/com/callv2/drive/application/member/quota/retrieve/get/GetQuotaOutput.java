@@ -1,9 +1,16 @@
 package com.callv2.drive.application.member.quota.retrieve.get;
 
-public record GetQuotaOutput(String memberId, Long used, Long total, Long available) {
+import com.callv2.drive.domain.member.Member;
 
-    public static GetQuotaOutput from(final String memberId, final Long used, final Long total, final Long available) {
-        return new GetQuotaOutput(memberId, used, total, available);
+public record GetQuotaOutput(String memberId, String username, Long used, Long total, Long available) {
+
+    public static GetQuotaOutput from(final Member member, final Long usedQuotaInBytes) {
+        return new GetQuotaOutput(
+                member.getId().getValue(),
+                member.getUsername().value(),
+                usedQuotaInBytes,
+                member.getQuota().sizeInBytes(),
+                member.getQuota().sizeInBytes() - usedQuotaInBytes);
     }
 
 }

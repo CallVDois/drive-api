@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,8 @@ import com.callv2.drive.domain.member.QuotaRequestPreview;
 import com.callv2.drive.domain.member.QuotaUnit;
 
 public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, String> {
+
+    Page<MemberJpaEntity> findAll(Specification<MemberJpaEntity> whereClause, Pageable page);
 
     @Query("""
             select distinct new com.callv2.drive.domain.member.QuotaRequestPreview(
