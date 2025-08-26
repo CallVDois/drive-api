@@ -9,6 +9,8 @@ public interface MemberGateway {
 
     Member create(Member member);
 
+    Page<Member> findAll(SearchQuery searchQuery);
+
     Optional<Member> findById(MemberID id);
 
     Member update(Member member);
