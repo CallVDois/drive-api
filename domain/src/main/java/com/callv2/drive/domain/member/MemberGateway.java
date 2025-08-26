@@ -9,6 +9,8 @@ public interface MemberGateway {
 
     Member create(Member member);
 
+    Long count();
+
     Page<Member> findAll(SearchQuery searchQuery);
 
     Optional<Member> findById(MemberID id);
@@ -18,5 +20,7 @@ public interface MemberGateway {
     Page<QuotaRequestPreview> findAllQuotaRequests(final SearchQuery searchQuery);
 
     Boolean existsById(MemberID id);
+
+    Long sumAllQuota();
 
 }
