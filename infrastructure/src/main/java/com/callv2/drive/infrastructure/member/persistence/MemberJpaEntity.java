@@ -61,10 +61,10 @@ public class MemberJpaEntity {
             final String username,
             final String nickname,
             final Long quotaInBytes,
-            final Long quotaAmmount,
+            final Long quotaAmount,
             final QuotaUnit quotaUnit,
             final Long quotaRequestInBytes,
-            final Long quotaRequestAmmount,
+            final Long quotaRequestAmount,
             final QuotaUnit quotaRequestUnit,
             final Instant quotaRequestedAt,
             final Boolean hasSystemAccess,
@@ -75,10 +75,10 @@ public class MemberJpaEntity {
         this.username = username;
         this.nickname = nickname;
         this.quotaInBytes = quotaInBytes;
-        this.quotaAmount = quotaAmmount;
+        this.quotaAmount = quotaAmount;
         this.quotaUnit = quotaUnit;
         this.quotaRequestInBytes = quotaRequestInBytes;
-        this.quotaRequestAmount = quotaRequestAmmount;
+        this.quotaRequestAmount = quotaRequestAmount;
         this.quotaRequestUnit = quotaRequestUnit;
         this.quotaRequestedAt = quotaRequestedAt;
         this.hasSystemAccess = hasSystemAccess == null ? false : hasSystemAccess;
@@ -164,8 +164,8 @@ public class MemberJpaEntity {
         return quotaAmount;
     }
 
-    public void setQuotaAmount(Long quotaAmmount) {
-        this.quotaAmount = quotaAmmount;
+    public void setQuotaAmount(Long quotaAmount) {
+        this.quotaAmount = quotaAmount;
     }
 
     public QuotaUnit getQuotaUnit() {
@@ -188,8 +188,8 @@ public class MemberJpaEntity {
         return quotaRequestAmount;
     }
 
-    public void setQuotaRequestAmount(Long quotaRequestAmmount) {
-        this.quotaRequestAmount = quotaRequestAmmount;
+    public void setQuotaRequestAmount(Long quotaRequestAmount) {
+        this.quotaRequestAmount = quotaRequestAmount;
     }
 
     public QuotaUnit getQuotaRequestUnit() {
