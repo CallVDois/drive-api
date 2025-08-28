@@ -34,8 +34,8 @@ public class FileJpaEntity {
     @Column(name = "content_type", nullable = false)
     private String contentType;
 
-    @Column(name = "content_location", nullable = false)
-    private String contentLocation;
+    @Column(name = "content_storage_key", nullable = false)
+    private String contentStorageKey;
 
     @Column(name = "content_size", nullable = false)
     private Long contentSize;
@@ -61,7 +61,7 @@ public class FileJpaEntity {
         this.folderId = folderId;
         this.name = name;
         this.contentType = contentType;
-        this.contentLocation = contentLocation;
+        this.contentStorageKey = contentLocation;
         this.contentSize = contentSize;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -77,7 +77,7 @@ public class FileJpaEntity {
                 file.getFolder().getValue(),
                 file.getName().value(),
                 file.getContent().type(),
-                file.getContent().location(),
+                file.getContent().storageKey(),
                 file.getContent().size(),
                 file.getCreatedAt(),
                 file.getUpdatedAt());
@@ -89,7 +89,7 @@ public class FileJpaEntity {
                 MemberID.of(getOwnerId()),
                 FolderID.of(getFolderId()),
                 FileName.of(getName()),
-                Content.of(getContentLocation(), getContentType(), getContentSize()),
+                Content.of(getContentStorageKey(), getContentType(), getContentSize()),
                 getCreatedAt(),
                 getUpdatedAt());
     }
@@ -134,12 +134,12 @@ public class FileJpaEntity {
         this.contentType = contentType;
     }
 
-    public String getContentLocation() {
-        return contentLocation;
+    public String getContentStorageKey() {
+        return contentStorageKey;
     }
 
-    public void setContentLocation(String contentLocation) {
-        this.contentLocation = contentLocation;
+    public void setContentStorageKey(String contentStorageKey) {
+        this.contentStorageKey = contentStorageKey;
     }
 
     public Long getContentSize() {
@@ -169,7 +169,7 @@ public class FileJpaEntity {
     @Override
     public String toString() {
         return "FileJpaEntity [id=" + id + ", ownerId=" + ownerId + ", folderId=" + folderId + ", name=" + name
-                + ", contentType=" + contentType + ", contentLocation=" + contentLocation + ", contentSize="
+                + ", contentType=" + contentType + ", contentStorageKey=" + contentStorageKey + ", contentSize="
                 + contentSize + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
     }
 
