@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.QuotaExceededException;
+import com.callv2.drive.domain.exception.StorageKeyAlreadyExistsException;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
@@ -77,12 +78,11 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
             throw ValidationException.with("Could not create Aggregate File",
                     ValidationError.with("File with same name already exists on this folder"));
 
-        final String randomContentName = UUID.randomUUID().toString();
-        final String contentLocation = storeContentFile(randomContentName, input.content());
+        final String storageKey = storeContentFile(input.content());
         final String contentType = input.contentType();
         final Long contentSize = input.size();
 
-        final Content content = Content.of(contentLocation, contentType, contentSize);
+        final Content content = Content.of(storageKey, contentType, contentSize);
 
         final File file = notification.validate(() -> File.create(ownerId, folderId, fileName, content));
         if (notification.hasError())
@@ -97,17 +97,31 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         try {
             fileGateway.create(file);
         } catch (Exception e) {
-            deleteContentFile(file.getContent().location());
+            deleteContentFile(file.getContent().storageKey());
             throw InternalErrorException.with("Could not store File", e);
         }
     }
 
-    private String storeContentFile(final String contentName, final InputStream inputStream) {
+    private String storeContentFile(final InputStream inputStream) {
+
         try {
-            return storageService.store(contentName, inputStream);
+
+            do {
+
+                try {
+                    final String key = UUID.randomUUID().toString();
+                    storageService.store(key, inputStream);
+                    return key;
+                } catch (StorageKeyAlreadyExistsException e) {
+                    continue;
+                }
+
+            } while (true);
+
         } catch (Exception e) {
             throw InternalErrorException.with("Could not store BinaryContent", e);
         }
+
     }
 
     private void deleteContentFile(final String contentLocation) {

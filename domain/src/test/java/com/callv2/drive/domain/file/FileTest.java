@@ -35,7 +35,7 @@ public class FileTest {
         assertEquals(expectedOwner, actualFile.getOwner());
         assertEquals(expectedName, actualFile.getName().value());
         assertEquals(expectedContentType, actualFile.getContent().type());
-        assertEquals(expectedContentLocation, actualFile.getContent().location());
+        assertEquals(expectedContentLocation, actualFile.getContent().storageKey());
         assertEquals(expectedContentSize, actualFile.getContent().size());
         assertNotNull(actualFile.getCreatedAt());
         assertNotNull(actualFile.getUpdatedAt());
@@ -218,7 +218,7 @@ public class FileTest {
 
         assertEquals(expectedName, actualUpdatedFile.getName());
         assertEquals(expectedContentType, actualUpdatedFile.getContent().type());
-        assertEquals(expectedContentLocation, actualUpdatedFile.getContent().location());
+        assertEquals(expectedContentLocation, actualUpdatedFile.getContent().storageKey());
         assertEquals(expectedContentSize, actualUpdatedFile.getContent().size());
         assertNotNull(actualUpdatedFile.getCreatedAt());
         assertNotNull(actualUpdatedFile.getUpdatedAt());

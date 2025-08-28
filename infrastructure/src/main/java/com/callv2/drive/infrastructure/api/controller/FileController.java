@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,8 +17,8 @@ import com.callv2.drive.application.file.content.get.GetFileContentInput;
 import com.callv2.drive.application.file.content.get.GetFileContentOutput;
 import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
-import com.callv2.drive.application.file.delete.DeleteFileUseCase;
 import com.callv2.drive.application.file.delete.DeleteFileInput;
+import com.callv2.drive.application.file.delete.DeleteFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
@@ -95,7 +95,7 @@ public class FileController implements FileAPI {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.name() + "\"")
                 .contentLength(output.size())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new FileSystemResource(output.location()));
+                .body(new InputStreamResource(output.inputStream()));
     }
 
     @Override

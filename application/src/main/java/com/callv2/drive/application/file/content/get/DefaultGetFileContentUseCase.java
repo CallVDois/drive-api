@@ -6,13 +6,18 @@ import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
+import com.callv2.drive.domain.storage.StorageService;
 
 public class DefaultGetFileContentUseCase extends GetFileContentUseCase {
 
     private final FileGateway fileGateway;
+    private final StorageService storageService;
 
-    public DefaultGetFileContentUseCase(final FileGateway fileGateway) {
+    public DefaultGetFileContentUseCase(
+            final FileGateway fileGateway,
+            final StorageService storageService) {
         this.fileGateway = Objects.requireNonNull(fileGateway);
+        this.storageService = Objects.requireNonNull(storageService);
     }
 
     @Override
@@ -26,8 +31,9 @@ public class DefaultGetFileContentUseCase extends GetFileContentUseCase {
 
         return GetFileContentOutput.with(
                 file.getName().value(),
-                file.getContent().location(),
-                file.getContent().size());
+                file.getContent().size(),
+                storageService.retrieve(file.getContent().storageKey()));
+
     }
 
 }
