@@ -54,7 +54,7 @@ public class FileUseCaseConfig {
 
     @Bean
     GetFileContentUseCase getFileContentUseCase() {
-        return new DefaultGetFileContentUseCase(fileGateway);
+        return new DefaultGetFileContentUseCase(fileGateway, storageService);
     }
 
     @Bean

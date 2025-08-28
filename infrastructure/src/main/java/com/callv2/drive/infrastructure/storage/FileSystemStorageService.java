@@ -2,6 +2,7 @@ package com.callv2.drive.infrastructure.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,24 +10,28 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 import com.callv2.drive.domain.exception.InternalErrorException;
+import com.callv2.drive.domain.exception.StorageKeyAlreadyExistsException;
 import com.callv2.drive.domain.storage.StorageService;
 
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
 
-    public FileSystemStorageService(Path rootLocation) {
+    public FileSystemStorageService(final Path rootLocation) {
         this.rootLocation = Objects.requireNonNull(rootLocation).toAbsolutePath().normalize();
     }
 
     @Override
-    public String store(final String name, final InputStream content) {
+    public void store(final String key, final InputStream content) {
         try {
 
             if (content == null)
                 throw new IllegalArgumentException("Failed to store empty file.");
 
-            Path destinationFile = this.rootLocation.resolve(Paths.get(name)).normalize().toAbsolutePath();
+            final Path destinationFile = this.rootLocation.resolve(Paths.get(key)).normalize().toAbsolutePath();
+
+            if (Files.exists(destinationFile))
+                throw StorageKeyAlreadyExistsException.with(key);
 
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath()))
                 throw new IllegalArgumentException("Cannot store file outside current directory.");
@@ -35,19 +40,19 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return destinationFile.toString();
-
+        } catch (FileAlreadyExistsException e) {
+            throw StorageKeyAlreadyExistsException.with(key);
         } catch (IOException e) {
             throw InternalErrorException.with("Failed to store file.", e);
         }
     }
 
     @Override
-    public void delete(final String location) {
+    public void delete(final String key) {
 
         try {
 
-            Path filePath = Paths.get(location).normalize().toAbsolutePath();
+            final Path filePath = this.rootLocation.resolve(Paths.get(key)).normalize().toAbsolutePath();
 
             if (!filePath.getParent().equals(this.rootLocation.toAbsolutePath()))
                 return;
@@ -56,6 +61,20 @@ public class FileSystemStorageService implements StorageService {
 
         } catch (IOException e) {
             throw InternalErrorException.with("Failed to delete file.", e);
+        }
+
+    }
+
+    @Override
+    public InputStream retrieve(final String key) {
+
+        try {
+
+            final Path filePath = this.rootLocation.resolve(Paths.get(key)).normalize().toAbsolutePath();
+            return Files.newInputStream(filePath);
+
+        } catch (IOException e) {
+            throw InternalErrorException.with("Failed to retrieve file.", e);
         }
 
     }
