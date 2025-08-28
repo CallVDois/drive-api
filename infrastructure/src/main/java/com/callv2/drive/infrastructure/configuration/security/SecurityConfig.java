@@ -38,11 +38,10 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.OPTIONS, "/**")
                             .permitAll()
 
-                            .requestMatchers("admin/**")
+                            .requestMatchers("/admin/**")
                             .hasAnyRole(ROLE_ADMIN)
 
                             .requestMatchers(HttpMethod.GET,
-                                    "swagger-ui.html",
                                     "/v3/api-docs/**",
                                     "/swagger-ui/**",
                                     "/swagger-ui.html")
