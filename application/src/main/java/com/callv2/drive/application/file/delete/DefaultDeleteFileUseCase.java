@@ -43,7 +43,7 @@ public class DefaultDeleteFileUseCase extends DeleteFileUseCase {
                 .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
 
         fileGateway.deleteById(file.getId()); // TODO maybe needs transactional
-        deleteContentFile(file.getContent().location());
+        deleteContentFile(file.getContent().storageKey());
     }
 
     private void deleteContentFile(final String contentLocation) {

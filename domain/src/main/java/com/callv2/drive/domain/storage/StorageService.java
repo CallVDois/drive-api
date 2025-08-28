@@ -4,8 +4,10 @@ import java.io.InputStream;
 
 public interface StorageService {
 
-    String store(String name, InputStream content);
+    void store(String key, InputStream content);
 
-    void delete(String name);
+    void delete(String key);
+
+    InputStream retrieve(String key);
 
 }

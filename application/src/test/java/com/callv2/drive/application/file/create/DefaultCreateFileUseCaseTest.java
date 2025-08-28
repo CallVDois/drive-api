@@ -45,7 +45,7 @@ import com.callv2.drive.domain.member.Username;
 import com.callv2.drive.domain.storage.StorageService;
 
 @ExtendWith(MockitoExtension.class)
-public class DefaultCreateFileUseCaseTest {
+class DefaultCreateFileUseCaseTest {
 
     @InjectMocks
     DefaultCreateFileUseCase useCase;
@@ -99,8 +99,8 @@ public class DefaultCreateFileUseCaseTest {
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
-        when(storageService.store(any(), any()))
-                .then(returnsFirstArg());
+        doNothing()
+                .when(storageService).store(any(), any());
 
         when(fileGateway.create(any()))
                 .thenAnswer(returnsFirstArg());
@@ -132,7 +132,7 @@ public class DefaultCreateFileUseCaseTest {
             assertEquals(expectedContentType, file.getContent().type());
             assertNotNull(file.getCreatedAt());
             assertNotNull(file.getUpdatedAt());
-            assertNotNull(file.getContent().location());
+            assertNotNull(file.getContent().storageKey());
             assertEquals(file.getCreatedAt(), file.getUpdatedAt());
 
             return true;
@@ -356,8 +356,8 @@ public class DefaultCreateFileUseCaseTest {
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
-        when(storageService.store(any(), any()))
-                .then(returnsFirstArg());
+        doNothing()
+                .when(storageService).store(any(), any());
 
         when(fileGateway.create(any()))
                 .thenThrow(new IllegalStateException("FileGateway Exception"));
@@ -394,7 +394,7 @@ public class DefaultCreateFileUseCaseTest {
             assertEquals(expectedContentType, file.getContent().type());
             assertNotNull(file.getCreatedAt());
             assertNotNull(file.getUpdatedAt());
-            assertNotNull(file.getContent().location());
+            assertNotNull(file.getContent().storageKey());
             assertEquals(file.getCreatedAt(), file.getUpdatedAt());
 
             return true;
@@ -441,8 +441,8 @@ public class DefaultCreateFileUseCaseTest {
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
-        when(storageService.store(any(), any()))
-                .then(returnsFirstArg());
+        doNothing()
+                .when(storageService).store(any(), any());
 
         when(fileGateway.create(any()))
                 .thenThrow(new IllegalStateException("FileGateway Exception"));
@@ -479,7 +479,7 @@ public class DefaultCreateFileUseCaseTest {
             assertEquals(expectedContentType, file.getContent().type());
             assertNotNull(file.getCreatedAt());
             assertNotNull(file.getUpdatedAt());
-            assertNotNull(file.getContent().location());
+            assertNotNull(file.getContent().storageKey());
             assertEquals(file.getCreatedAt(), file.getUpdatedAt());
 
             return true;
@@ -523,8 +523,9 @@ public class DefaultCreateFileUseCaseTest {
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
-        when(storageService.store(any(), any()))
-                .thenThrow(new IllegalStateException("ContentGateway Exception"));
+        doThrow(new IllegalStateException("ContentGateway Exception"))
+                .when(storageService)
+                .store(any(), any());
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -709,8 +710,8 @@ public class DefaultCreateFileUseCaseTest {
         when(folderGateway.findById(any()))
                 .thenReturn(Optional.of(folder));
 
-        when(storageService.store(any(), any()))
-                .then(returnsFirstArg());
+        doNothing()
+                .when(storageService).store(any(), any());
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),

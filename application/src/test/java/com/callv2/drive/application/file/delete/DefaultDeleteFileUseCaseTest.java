@@ -105,7 +105,7 @@ public class DefaultDeleteFileUseCaseTest {
         verify(fileGateway, times(1)).deleteById(any());
         verify(fileGateway, times(1)).deleteById(eq(expectedFileId));
         verify(storageService, times(1)).delete(any());
-        verify(storageService, times(1)).delete(eq(expectedContent.location()));
+        verify(storageService, times(1)).delete(eq(expectedContent.storageKey()));
     }
 
     @Test
