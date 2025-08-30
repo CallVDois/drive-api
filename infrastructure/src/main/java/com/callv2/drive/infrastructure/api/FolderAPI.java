@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,5 +82,9 @@ public interface FolderAPI {
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @PatchMapping("{id}/name")
     ResponseEntity<Void> changeName(@PathVariable(required = true) UUID id, @RequestBody String request);
+
+    @Operation(summary = "Delete folder", description = "This method delete a folder by id", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping("{id}")
+    ResponseEntity<Void> delete(@PathVariable(required = true) UUID id);
 
 }

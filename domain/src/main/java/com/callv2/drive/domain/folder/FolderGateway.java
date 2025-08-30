@@ -23,4 +23,6 @@ public interface FolderGateway {
 
     Page<Folder> findAll(final SearchQuery searchQuery);
 
+    void deleteById(FolderID id);
+
 }

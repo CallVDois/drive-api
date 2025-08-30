@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.callv2.drive.application.folder.create.CreateFolderUseCase;
+import com.callv2.drive.application.folder.delete.DeleteFolderInput;
+import com.callv2.drive.application.folder.delete.DeleteFolderUseCase;
 import com.callv2.drive.application.folder.move.MoveFolderInput;
 import com.callv2.drive.application.folder.move.MoveFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.GetFolderUseCase;
@@ -40,6 +43,7 @@ public class FolderController implements FolderAPI {
     private final MoveFolderUseCase moveFolderUseCase;
     private final ListFoldersUseCase listFoldersUseCase;
     private final UpdateFolderNameUseCase updateFolderNameUseCase;
+    private final DeleteFolderUseCase deleteFolderUseCase;
 
     public FolderController(
             final GetRootFolderUseCase getRootFolderUseCase,
@@ -47,13 +51,15 @@ public class FolderController implements FolderAPI {
             final GetFolderUseCase getFolderUseCase,
             final MoveFolderUseCase moveFolderUseCase,
             final ListFoldersUseCase listFoldersUseCase,
-            final UpdateFolderNameUseCase updateFolderNameUseCase) {
+            final UpdateFolderNameUseCase updateFolderNameUseCase,
+            final DeleteFolderUseCase deleteFolderUseCase) {
         this.getRootFolderUseCase = getRootFolderUseCase;
         this.createFolderUseCase = createFolderUseCase;
         this.getFolderUseCase = getFolderUseCase;
         this.moveFolderUseCase = moveFolderUseCase;
         this.listFoldersUseCase = listFoldersUseCase;
         this.updateFolderNameUseCase = updateFolderNameUseCase;
+        this.deleteFolderUseCase = deleteFolderUseCase;
     }
 
     @Override
@@ -112,6 +118,17 @@ public class FolderController implements FolderAPI {
     public ResponseEntity<Void> changeName(UUID id, String newName) {
 
         this.updateFolderNameUseCase.execute(new UpdateFolderNameInput(id, newName));
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Transactional
+    @Override
+    public ResponseEntity<Void> delete(UUID id) {
+
+        final var memberId = SecurityContext.getAuthenticatedUser();
+
+        this.deleteFolderUseCase.execute(new DeleteFolderInput(id, memberId));
 
         return ResponseEntity.noContent().build();
     }
