@@ -14,6 +14,10 @@ public class FolderID extends Identifier<UUID> {
         return new FolderID(id);
     }
 
+    public String getStringValue() {
+        return getValue().toString();
+    }
+
     public static FolderID unique() {
         return FolderID.of(UUID.randomUUID());
     }
