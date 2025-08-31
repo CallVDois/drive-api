@@ -1,6 +1,5 @@
 package com.callv2.drive.application.file.content.delete;
 
-import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
@@ -23,10 +22,13 @@ public class DefaultlDeleteFileContentUseCase extends DeleteFileContentUseCase {
 
         fileGateway
                 .findById(FileID.of(input.id()))
-                .map(File::getContent)
-                .map(Content::storageKey)
-                .ifPresent(storageService::delete);
+                .ifPresent(this::fullFileDeletion);
 
+    }
+
+    private void fullFileDeletion(final File file) {
+        fileGateway.deleteById(file.getId());
+        storageService.delete(file.getContent().storageKey());
     }
 
 }
