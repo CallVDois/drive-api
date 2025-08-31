@@ -3,6 +3,8 @@ package com.callv2.drive.infrastructure.configuration.usecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.callv2.drive.application.file.content.delete.DefaultlDeleteFileContentUseCase;
+import com.callv2.drive.application.file.content.delete.DeleteFileContentUseCase;
 import com.callv2.drive.application.file.content.get.DefaultGetFileContentUseCase;
 import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
@@ -60,5 +62,10 @@ public class FileUseCaseConfig {
     @Bean
     ListFilesUseCase listFilesUseCase() {
         return new DefaultListFilesUseCase(fileGateway);
+    }
+
+    @Bean
+    DeleteFileContentUseCase deleteFileContentUseCase() {
+        return new DefaultlDeleteFileContentUseCase(fileGateway, storageService);
     }
 }

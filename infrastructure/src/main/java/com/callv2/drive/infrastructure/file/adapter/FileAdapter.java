@@ -4,8 +4,10 @@ import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.callv2.drive.application.file.content.delete.DeleteFileContentInput;
 import com.callv2.drive.application.file.create.CreateFileInput;
 import com.callv2.drive.domain.exception.InternalErrorException;
+import com.callv2.drive.infrastructure.file.model.DeleteFileContentMessage;
 
 public interface FileAdapter {
 
@@ -21,6 +23,10 @@ public interface FileAdapter {
         } catch (Exception e) {
             throw InternalErrorException.with("An Error ocurred on adapt MultipartFile to CreateFileInput", e);
         }
+    }
+
+    static DeleteFileContentInput adapt(DeleteFileContentMessage message) {
+        return DeleteFileContentInput.of(message.data().fileId());
     }
 
 }

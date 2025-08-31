@@ -28,6 +28,7 @@ public class FileDeletedEvent extends Event<FileDeletedEvent.Data> {
     }
 
     public record Data(
+            UUID fileId,
             String ownerId,
             UUID folderId,
             String name,
@@ -40,6 +41,7 @@ public class FileDeletedEvent extends Event<FileDeletedEvent.Data> {
 
         public static Data of(final File file) {
             return new Data(
+                    file.getId().getValue(),
                     file.getOwner().getValue(),
                     file.getFolder().getValue(),
                     file.getName().value(),
