@@ -29,17 +29,17 @@ public class RabbitMQConfig {
     private static final String FILE_DELETED_QUEUE_NAME = "drive.file.deleted.queue";
     private static final String FILE_DELETED_ROUTING_KEY = "drive.file.deleted.event";
     private static final String FILE_DELETED_DLX_ROUTING_KEY = "drive.file.deleted.event.deadletter";
-    private static final String FILE_DELETED_DLX_QUEUE = "drive.file.deleted.queue.dlq";
+    private static final String FILE_DELETED_DLQ_QUEUE = "drive.file.deleted.queue.dlq";
 
     private static final String MEMBER_CREATED_QUEUE_NAME = "drive.member.created.queue";
     private static final String MEMBER_CREATED_ROUTING_KEY = "drive.member.created.event";
     private static final String MEMBER_CREATED_DLX_ROUTING_KEY = "drive.member.created.event.deadletter";
-    private static final String MEMBER_CREATED_DLX_QUEUE = "drive.member.created.queue.dlq";
+    private static final String MEMBER_CREATED_DLQ_QUEUE = "drive.member.created.queue.dlq";
 
     private static final String MEMBER_UPDATED_QUEUE_NAME = "drive.member.updated.queue";
     private static final String MEMBER_UPDATED_ROUTING_KEY = "drive.member.updated.event";
     private static final String MEMBER_UPDATED_DLX_ROUTING_KEY = "drive.member.updated.event.deadletter";
-    private static final String MEMBER_UPDATED_DLX_QUEUE = "drive.member.updated.queue.dlq";
+    private static final String MEMBER_UPDATED_DLQ_QUEUE = "drive.member.updated.queue.dlq";
 
     @Bean
     MessageConverter jsonMessageConverter() {
@@ -84,7 +84,7 @@ public class RabbitMQConfig {
                 .build();
 
         private final Queue fileDeletedDlxQueue = QueueBuilder
-                .durable(FILE_DELETED_DLX_QUEUE)
+                .durable(FILE_DELETED_DLQ_QUEUE)
                 .build();
 
         private final Binding fileDeletedBinding = BindingBuilder
@@ -104,7 +104,7 @@ public class RabbitMQConfig {
                 .build();
 
         private final Queue memberCreatedDlxQueue = QueueBuilder
-                .durable(MEMBER_CREATED_DLX_QUEUE)
+                .durable(MEMBER_CREATED_DLQ_QUEUE)
                 .build();
 
         private final Binding memberCreatedBinding = BindingBuilder
@@ -124,7 +124,7 @@ public class RabbitMQConfig {
                 .build();
 
         private final Queue memberUpdatedDlxQueue = QueueBuilder
-                .durable(MEMBER_UPDATED_DLX_QUEUE)
+                .durable(MEMBER_UPDATED_DLQ_QUEUE)
                 .build();
 
         private final Binding memberUpdatedBinding = BindingBuilder
