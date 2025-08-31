@@ -18,7 +18,7 @@ public class FileContentDeletedListener implements Listener<DeleteFileContentMes
     }
 
     @Override
-    @RabbitListener(queues = "file.deleted.queue")
+    @RabbitListener(queues = "drive.file.deleted.queue")
     public void handle(final DeleteFileContentMessage message) {
         this.deleteFileContentUseCase.execute(FileAdapter.adapt(message));
     }
