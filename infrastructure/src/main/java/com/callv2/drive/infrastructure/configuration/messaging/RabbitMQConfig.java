@@ -19,8 +19,9 @@ import com.callv2.drive.infrastructure.messaging.producer.rabbitmq.RabbitMQProdu
 public class RabbitMQConfig {
 
     private static final String EVENT_HUB_EXCHANGE_NAME = "eventhub.exchange";
-
     private static final String EVENT_HUB_EXCHANGE_ROUTING_KEY = "drive.#.event";
+    private static final String EVENT_HUB_MEMBER_CREATED_ROUTING_KEY = "member.member.created.event";
+    private static final String EVENT_HUB_MEMBER_UPDATED_ROUTING_KEY = "member.member.updated.event";
 
     private static final String DRIVE_EXCHANGE_NAME = "drive.exchange";
     private static final String DRIVE_DLX_EXCHANGE_NAME = "drive.dlx.exchange";
@@ -28,17 +29,17 @@ public class RabbitMQConfig {
     private static final String FILE_DELETED_QUEUE_NAME = "drive.file.deleted.queue";
     private static final String FILE_DELETED_ROUTING_KEY = "drive.file.deleted.event";
     private static final String FILE_DELETED_DLX_ROUTING_KEY = "drive.file.deleted.event.deadletter";
-    private static final String FILE_DELETED_DLX_QUEUE = "drive.file.deleted.dlx.queue";
+    private static final String FILE_DELETED_DLX_QUEUE = "drive.file.deleted.queue.dlq";
 
     private static final String MEMBER_CREATED_QUEUE_NAME = "drive.member.created.queue";
     private static final String MEMBER_CREATED_ROUTING_KEY = "drive.member.created.event";
     private static final String MEMBER_CREATED_DLX_ROUTING_KEY = "drive.member.created.event.deadletter";
-    private static final String MEMBER_CREATED_DLX_QUEUE = "drive.member.created.dlx.queue";
+    private static final String MEMBER_CREATED_DLX_QUEUE = "drive.member.created.queue.dlq";
 
     private static final String MEMBER_UPDATED_QUEUE_NAME = "drive.member.updated.queue";
     private static final String MEMBER_UPDATED_ROUTING_KEY = "drive.member.updated.event";
     private static final String MEMBER_UPDATED_DLX_ROUTING_KEY = "drive.member.updated.event.deadletter";
-    private static final String MEMBER_UPDATED_DLX_QUEUE = "drive.member.updated.dlx.queue";
+    private static final String MEMBER_UPDATED_DLX_QUEUE = "drive.member.updated.queue.dlq";
 
     @Bean
     MessageConverter jsonMessageConverter() {
@@ -61,10 +62,20 @@ public class RabbitMQConfig {
         private final TopicExchange driveExchange = new TopicExchange(DRIVE_EXCHANGE_NAME);
         private final TopicExchange driveDlxExchange = new TopicExchange(DRIVE_DLX_EXCHANGE_NAME);
 
-        private final Binding eventHubMemberEventsBinding = BindingBuilder
+        public final Binding evenDriveEventsBinding = BindingBuilder
                 .bind(eventHubExchange)
                 .to(driveExchange)
-                .with(EVENT_HUB_EXCHANGE_ROUTING_KEY); // TODO segregate
+                .with(EVENT_HUB_EXCHANGE_ROUTING_KEY);
+
+        private final Binding eventHubMemberCreatedEventBinding = BindingBuilder
+                .bind(driveExchange)
+                .to(eventHubExchange)
+                .with(EVENT_HUB_MEMBER_CREATED_ROUTING_KEY);
+
+        private final Binding eventHubMemberUpdatedEventBinding = BindingBuilder
+                .bind(driveExchange)
+                .to(eventHubExchange)
+                .with(EVENT_HUB_MEMBER_UPDATED_ROUTING_KEY);
 
         private final Queue fileDeletedQueue = QueueBuilder
                 .durable(FILE_DELETED_QUEUE_NAME)
@@ -142,8 +153,18 @@ public class RabbitMQConfig {
         }
 
         @Bean
-        Binding eventHubMemberEventsBinding() {
-            return eventHubMemberEventsBinding;
+        Binding evenDriveEventsBinding() {
+            return evenDriveEventsBinding;
+        }
+
+        @Bean
+        Binding eventHubMemberCreatedEventBinding() {
+            return eventHubMemberCreatedEventBinding;
+        }
+
+        @Bean
+        Binding eventHubMemberUpdatedEventBinding() {
+            return eventHubMemberUpdatedEventBinding;
         }
 
         @Bean
