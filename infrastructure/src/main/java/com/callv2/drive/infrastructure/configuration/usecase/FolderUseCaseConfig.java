@@ -1,6 +1,5 @@
 package com.callv2.drive.infrastructure.configuration.usecase;
 
-import org.hibernate.cache.spi.support.StorageAccess;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
