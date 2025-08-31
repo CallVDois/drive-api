@@ -7,28 +7,23 @@ import java.util.Set;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.File;
-import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.storage.StorageService;
 
 public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
 
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
-    private final StorageService storageService;
     private final EventDispatcher eventDispatcher;
 
     public DefaultDeleteFolderUseCase(
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
-            final StorageService storageService,
             final EventDispatcher eventDispatcher) {
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
-        this.storageService = storageService;
         this.eventDispatcher = eventDispatcher;
     }
 

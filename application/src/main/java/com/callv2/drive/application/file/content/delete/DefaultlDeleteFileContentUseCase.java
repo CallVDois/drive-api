@@ -1,7 +1,5 @@
 package com.callv2.drive.application.file.content.delete;
 
-import java.util.Optional;
-
 import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
