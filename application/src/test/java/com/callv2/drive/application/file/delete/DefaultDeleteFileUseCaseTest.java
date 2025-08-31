@@ -2,6 +2,7 @@ package com.callv2.drive.application.file.delete;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -18,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.domain.event.EventDispatcher;
+import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.NotAllowedException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.Content;
@@ -33,7 +36,6 @@ import com.callv2.drive.domain.member.Nickname;
 import com.callv2.drive.domain.member.Quota;
 import com.callv2.drive.domain.member.QuotaUnit;
 import com.callv2.drive.domain.member.Username;
-import com.callv2.drive.domain.storage.StorageService;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultDeleteFileUseCaseTest {
@@ -48,7 +50,7 @@ public class DefaultDeleteFileUseCaseTest {
     FileGateway fileGateway;
 
     @Mock
-    StorageService storageService;
+    EventDispatcher eventDispatcher;
 
     @Test
     void givenAValidParam_whenCallsExecute_thenShouldDeleteFile() {
@@ -94,6 +96,9 @@ public class DefaultDeleteFileUseCaseTest {
         when(fileGateway.findById(expectedFileId))
                 .thenReturn(Optional.of(file));
 
+        when(fileGateway.update(any()))
+                .thenAnswer(returnsFirstArg());
+
         final DeleteFileInput input = DeleteFileInput.of(
                 expectedDeleterId.getValue(),
                 expectedFileId.getValue());
@@ -104,10 +109,9 @@ public class DefaultDeleteFileUseCaseTest {
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
         verify(fileGateway, times(1)).findById(any());
         verify(fileGateway, times(1)).findById(eq(expectedFileId));
-        verify(fileGateway, times(1)).deleteById(any());
-        verify(fileGateway, times(1)).deleteById(eq(expectedFileId));
-        verify(storageService, times(1)).delete(any());
-        verify(storageService, times(1)).delete(eq(expectedContent.storageKey()));
+        verify(fileGateway, times(0)).deleteById(any());
+        verify(eventDispatcher, times(1)).notify(any(File.class));
+        verify(eventDispatcher, times(1)).notify(any(EventSource.class));
     }
 
     @Test
@@ -140,7 +144,7 @@ public class DefaultDeleteFileUseCaseTest {
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
         verify(fileGateway, never()).findById(any());
         verify(fileGateway, never()).deleteById(any());
-        verify(storageService, never()).delete(any());
+        verify(eventDispatcher, never()).notify(any(EventSource.class));
     }
 
     @Test
@@ -187,7 +191,7 @@ public class DefaultDeleteFileUseCaseTest {
         verify(fileGateway, times(1)).findById(any());
         verify(fileGateway, times(1)).findById(eq(expectedFileId));
         verify(fileGateway, never()).deleteById(any());
-        verify(storageService, never()).delete(any());
+        verify(eventDispatcher, never()).notify(any(EventSource.class));
 
     }
 
@@ -231,7 +235,7 @@ public class DefaultDeleteFileUseCaseTest {
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
         verify(fileGateway, never()).findById(any());
         verify(fileGateway, never()).deleteById(any());
-        verify(storageService, never()).delete(any());
+        verify(eventDispatcher, never()).notify(any(EventSource.class));
 
     }
 
