@@ -1,15 +1,22 @@
 package com.callv2.drive.domain.file;
 
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Queue;
 
 import com.callv2.drive.domain.AggregateRoot;
+import com.callv2.drive.domain.event.Event;
+import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
 
-public class File extends AggregateRoot<FileID> {
+public class File extends AggregateRoot<FileID> implements EventSource {
+
+    private Queue<Event<?>> events;
 
     private MemberID owner;
 
@@ -20,6 +27,9 @@ public class File extends AggregateRoot<FileID> {
 
     private Instant createdAt;
     private Instant updatedAt;
+    private Instant deletedAt;
+
+    private Boolean isDeleted;
 
     private File(
             final FileID anId,
@@ -28,7 +38,9 @@ public class File extends AggregateRoot<FileID> {
             final FileName name,
             final Content content,
             final Instant createdAt,
-            final Instant updatedAt) {
+            final Instant updatedAt,
+            final Instant deletedAt,
+            final Boolean isDeleted) {
         super(anId);
 
         this.folder = folder;
@@ -37,6 +49,10 @@ public class File extends AggregateRoot<FileID> {
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.isDeleted = isDeleted;
+
+        this.events = new LinkedList<>();
 
         selfValidate();
     }
@@ -53,8 +69,10 @@ public class File extends AggregateRoot<FileID> {
             final FileName name,
             final Content content,
             final Instant createdAt,
-            final Instant updatedAt) {
-        return new File(id, owner, folder, name, content, createdAt, updatedAt);
+            final Instant updatedAt,
+            final Instant deletedAt,
+            final Boolean isDeleted) {
+        return new File(id, owner, folder, name, content, createdAt, updatedAt, deletedAt, isDeleted);
     }
 
     public static File with(final File file) {
@@ -65,7 +83,14 @@ public class File extends AggregateRoot<FileID> {
                 file.getName(),
                 file.getContent(),
                 file.getCreatedAt(),
-                file.getUpdatedAt());
+                file.getUpdatedAt(),
+                file.getDeletedAt(),
+                file.getIsDeleted());
+    }
+
+    @Override
+    public Optional<Event<?>> nextEvent() {
+        return Optional.ofNullable(this.events.poll());
     }
 
     public static File create(
@@ -83,7 +108,9 @@ public class File extends AggregateRoot<FileID> {
                 name,
                 content,
                 now,
-                now);
+                now,
+                null,
+                false);
     }
 
     public File update(
@@ -102,6 +129,28 @@ public class File extends AggregateRoot<FileID> {
 
         selfValidate();
         return this;
+    }
+
+    public File delete() {
+
+        if (this.isDeleted)
+            return this;
+
+        this.deletedAt = Instant.now();
+        this.isDeleted = true;
+
+        this.events.add(FileDeletedEvent.create(this));
+
+        return this;
+
+    }
+
+    private void selfValidate() {
+        final var notification = Notification.create();
+        validate(notification);
+
+        if (notification.hasError())
+            throw ValidationException.with("Validation fail has occoured", notification);
     }
 
     public MemberID getOwner() {
@@ -128,18 +177,19 @@ public class File extends AggregateRoot<FileID> {
         return updatedAt;
     }
 
-    private void selfValidate() {
-        final var notification = Notification.create();
-        validate(notification);
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
 
-        if (notification.hasError())
-            throw ValidationException.with("Validation fail has occoured", notification);
+    public Boolean getIsDeleted() {
+        return isDeleted;
     }
 
     @Override
     public String toString() {
         return "File [id=" + id + ", owner=" + owner + ", folder=" + folder + ", name=" + name + ", content=" + content
-                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", isDeleted="
+                + isDeleted + "]";
     }
 
 }

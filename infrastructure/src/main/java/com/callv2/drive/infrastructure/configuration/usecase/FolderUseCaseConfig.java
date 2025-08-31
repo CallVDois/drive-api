@@ -18,6 +18,7 @@ import com.callv2.drive.application.folder.retrieve.list.DefaultListFoldersUseCa
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.application.folder.update.name.DefaultUpdateFolderNameUseCase;
 import com.callv2.drive.application.folder.update.name.UpdateFolderNameUseCase;
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.member.MemberGateway;
@@ -30,16 +31,19 @@ public class FolderUseCaseConfig {
     private final FileGateway fileGateway;
     private final MemberGateway memberGateway;
     private final StorageService storageService;
+    private final EventDispatcher eventDispatcher;
 
     public FolderUseCaseConfig(
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
             final MemberGateway memberGateway,
-            final StorageService storageService) {
+            final StorageService storageService,
+            final EventDispatcher eventDispatcher) {
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.memberGateway = memberGateway;
         this.storageService = storageService;
+        this.eventDispatcher = eventDispatcher;
     }
 
     @Bean
@@ -74,7 +78,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     DeleteFolderUseCase deleteFolderUseCase() {
-        return new DefaultDeleteFolderUseCase(folderGateway, fileGateway, storageService);
+        return new DefaultDeleteFolderUseCase(folderGateway, fileGateway, storageService, eventDispatcher);
     }
 
 }

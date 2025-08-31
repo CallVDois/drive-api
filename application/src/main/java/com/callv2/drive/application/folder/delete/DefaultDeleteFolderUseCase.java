@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.Content;
@@ -18,14 +19,17 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
     private final StorageService storageService;
+    private final EventDispatcher eventDispatcher;
 
     public DefaultDeleteFolderUseCase(
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
-            final StorageService storageService) {
+            final StorageService storageService,
+            final EventDispatcher eventDispatcher) {
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.storageService = storageService;
+        this.eventDispatcher = eventDispatcher;
     }
 
     @Override
@@ -37,17 +41,17 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
                 .findById(FolderID.of(input.id()))
                 .orElseThrow(() -> NotFoundException.with(Folder.class, folderId.getValue().toString()));
 
-        final List<String> storageKeysDeleted = deleteRecursively(folder.getId());
+        final List<File> deletedFiles = deleteRecursively(folder.getId());
 
-        for (String storageKey : storageKeysDeleted) {
-            this.storageService.delete(storageKey);
+        for (File deletedFile : deletedFiles) {
+            eventDispatcher.notify(deletedFile);
         }
 
     }
 
-    private List<String> deleteRecursively(final FolderID folderId) {
+    private List<File> deleteRecursively(final FolderID folderId) {
 
-        final List<String> storageKeysToBeDeleted = new ArrayList<>(deleteFiles(folderId));
+        final List<File> storageKeysToBeDeleted = new ArrayList<>(deleteFiles(folderId));
         final Set<Folder> childrenFolders = folderGateway.findByParentFolderId(folderId);
 
         for (Folder children : childrenFolders) {
@@ -60,19 +64,15 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
 
     }
 
-    private List<String> deleteFiles(final FolderID folderId) {
+    private List<File> deleteFiles(final FolderID folderId) {
 
         final List<File> fileList = fileGateway.findByFolder(folderId);
 
         for (File file : fileList) {
-            fileGateway.deleteById(file.getId());
+            fileGateway.update(file.delete());
         }
 
-        return fileList
-                .stream()
-                .map(File::getContent)
-                .map(Content::storageKey)
-                .toList();
+        return fileList;
     }
 
 }

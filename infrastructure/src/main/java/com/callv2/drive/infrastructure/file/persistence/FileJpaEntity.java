@@ -46,6 +46,12 @@ public class FileJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDelete;
+
     private FileJpaEntity(
             final UUID id,
             final String ownerId,
@@ -55,7 +61,9 @@ public class FileJpaEntity {
             final String contentLocation,
             final Long contentSize,
             final Instant createdAt,
-            final Instant updatedAt) {
+            final Instant updatedAt,
+            final Instant deletedAt,
+            final Boolean isDeleted) {
         this.id = id;
         this.ownerId = ownerId;
         this.folderId = folderId;
@@ -65,6 +73,8 @@ public class FileJpaEntity {
         this.contentSize = contentSize;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+        this.isDelete = isDelete;
     }
 
     public FileJpaEntity() {
@@ -80,7 +90,9 @@ public class FileJpaEntity {
                 file.getContent().storageKey(),
                 file.getContent().size(),
                 file.getCreatedAt(),
-                file.getUpdatedAt());
+                file.getUpdatedAt(),
+                file.getDeletedAt(),
+                file.getIsDeleted());
     }
 
     public File toDomain() {
@@ -91,7 +103,10 @@ public class FileJpaEntity {
                 FileName.of(getName()),
                 Content.of(getContentStorageKey(), getContentType(), getContentSize()),
                 getCreatedAt(),
-                getUpdatedAt());
+                getUpdatedAt(),
+                getDeletedAt(),
+                getIsDelete());
+
     }
 
     public UUID getId() {
@@ -166,11 +181,20 @@ public class FileJpaEntity {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public String toString() {
-        return "FileJpaEntity [id=" + id + ", ownerId=" + ownerId + ", folderId=" + folderId + ", name=" + name
-                + ", contentType=" + contentType + ", contentStorageKey=" + contentStorageKey + ", contentSize="
-                + contentSize + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public Boolean getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Boolean isDelete) {
+        this.isDelete = isDelete;
     }
 
 }
