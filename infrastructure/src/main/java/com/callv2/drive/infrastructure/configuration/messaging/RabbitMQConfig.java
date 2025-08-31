@@ -32,12 +32,12 @@ public class RabbitMQConfig {
     private static final String FILE_DELETED_DLQ_QUEUE = "drive.file.deleted.queue.dlq";
 
     private static final String MEMBER_CREATED_QUEUE_NAME = "drive.member.created.queue";
-    private static final String MEMBER_CREATED_ROUTING_KEY = "drive.member.created.event";
+    private static final String MEMBER_CREATED_ROUTING_KEY = EVENT_HUB_MEMBER_CREATED_ROUTING_KEY;
     private static final String MEMBER_CREATED_DLX_ROUTING_KEY = "drive.member.created.event.deadletter";
     private static final String MEMBER_CREATED_DLQ_QUEUE = "drive.member.created.queue.dlq";
 
     private static final String MEMBER_UPDATED_QUEUE_NAME = "drive.member.updated.queue";
-    private static final String MEMBER_UPDATED_ROUTING_KEY = "drive.member.updated.event";
+    private static final String MEMBER_UPDATED_ROUTING_KEY = EVENT_HUB_MEMBER_UPDATED_ROUTING_KEY;
     private static final String MEMBER_UPDATED_DLX_ROUTING_KEY = "drive.member.updated.event.deadletter";
     private static final String MEMBER_UPDATED_DLQ_QUEUE = "drive.member.updated.queue.dlq";
 
