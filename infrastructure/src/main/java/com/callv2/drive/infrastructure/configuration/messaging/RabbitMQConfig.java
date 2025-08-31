@@ -62,7 +62,7 @@ public class RabbitMQConfig {
         private final TopicExchange driveExchange = new TopicExchange(DRIVE_EXCHANGE_NAME);
         private final TopicExchange driveDlxExchange = new TopicExchange(DRIVE_DLX_EXCHANGE_NAME);
 
-        public final Binding evenDriveEventsBinding = BindingBuilder
+        public final Binding driveEventsBinding = BindingBuilder
                 .bind(eventHubExchange)
                 .to(driveExchange)
                 .with(EVENT_HUB_EXCHANGE_ROUTING_KEY);
@@ -153,8 +153,8 @@ public class RabbitMQConfig {
         }
 
         @Bean
-        Binding evenDriveEventsBinding() {
-            return evenDriveEventsBinding;
+        Binding driveEventsBinding() {
+            return driveEventsBinding;
         }
 
         @Bean
