@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventEntity;
+import com.callv2.drive.domain.member.Member;
 
 public class FolderDeletedEvent extends Event<FolderDeletedEvent.Data> {
 
@@ -39,9 +40,9 @@ public class FolderDeletedEvent extends Event<FolderDeletedEvent.Data> {
     }
 
     public static FolderDeletedEvent create(final Folder folder) {
-        return new FolderDeletedEvent(Instant.now(), Set.of(EventEntity.of(folder)), Data.from(folder)); // TODO add
-                                                                                                         // related
-                                                                                                         // entities
+        return new FolderDeletedEvent(Instant.now(),
+                Set.of(EventEntity.of(folder), EventEntity.of(Member.class, folder.getOwner())),
+                Data.from(folder));
     }
 
 }
