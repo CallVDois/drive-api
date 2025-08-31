@@ -50,7 +50,7 @@ public class FileJpaEntity {
     private Instant deletedAt;
 
     @Column(name = "is_deleted", nullable = false)
-    private Boolean isDelete;
+    private Boolean isDeleted;
 
     private FileJpaEntity(
             final UUID id,
@@ -74,7 +74,7 @@ public class FileJpaEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
-        this.isDelete = isDelete;
+        this.isDeleted = isDeleted;
     }
 
     public FileJpaEntity() {
@@ -105,8 +105,7 @@ public class FileJpaEntity {
                 getCreatedAt(),
                 getUpdatedAt(),
                 getDeletedAt(),
-                getIsDelete());
-
+                getIsDeleted());
     }
 
     public UUID getId() {
@@ -189,12 +188,12 @@ public class FileJpaEntity {
         this.deletedAt = deletedAt;
     }
 
-    public Boolean getIsDelete() {
-        return isDelete;
+    public Boolean getIsDeleted() {
+        return isDeleted;
     }
 
-    public void setIsDelete(Boolean isDelete) {
-        this.isDelete = isDelete;
+    public void setIsDeleted(Boolean isDelete) {
+        this.isDeleted = isDelete;
     }
 
 }
