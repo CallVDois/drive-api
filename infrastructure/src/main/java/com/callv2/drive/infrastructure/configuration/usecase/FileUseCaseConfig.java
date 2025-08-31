@@ -15,6 +15,7 @@ import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.DefaultListFilesUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.member.MemberGateway;
@@ -27,16 +28,19 @@ public class FileUseCaseConfig {
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
     private final StorageService storageService;
+    private final EventDispatcher eventDispatcher;
 
     public FileUseCaseConfig(
             final MemberGateway memberGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
-            final StorageService storageService) {
+            final StorageService storageService,
+            final EventDispatcher eventDispatcher) {
         this.memberGateway = memberGateway;
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.storageService = storageService;
+        this.eventDispatcher = eventDispatcher;
     }
 
     @Bean
@@ -46,7 +50,7 @@ public class FileUseCaseConfig {
 
     @Bean
     DeleteFileUseCase deleteFileUseCase() {
-        return new DefaultDeleteFileUseCase(memberGateway, fileGateway, storageService);
+        return new DefaultDeleteFileUseCase(memberGateway, fileGateway, eventDispatcher);
     }
 
     @Bean
