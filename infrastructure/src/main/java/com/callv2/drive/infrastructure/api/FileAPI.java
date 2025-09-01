@@ -48,21 +48,21 @@ public interface FileAPI {
     @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @DeleteMapping("{id}")
-    ResponseEntity<Void> delete(@PathVariable UUID id);
+    ResponseEntity<Void> delete(@PathVariable("id") UUID id);
 
     @Operation(summary = "Retrive a file", description = "This method retrive a file", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "File retrieved successfully", content = @Content(schema = @Schema(implementation = GetFileResponse.class)))
     @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @GetMapping("{id}")
-    ResponseEntity<GetFileResponse> getById(@PathVariable UUID id);
+    ResponseEntity<GetFileResponse> getById(@PathVariable("id") UUID id);
 
     @Operation(summary = "Download a file", description = "This method downloads a file", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "File downloaded successfully", content = @Content(schema = @Schema(implementation = Resource.class)))
     @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @GetMapping("{id}/content")
-    ResponseEntity<Resource> download(@PathVariable UUID id);
+    ResponseEntity<Resource> download(@PathVariable("id") UUID id);
 
     @Operation(summary = "List files", description = "This method list files", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Files listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {

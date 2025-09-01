@@ -26,7 +26,7 @@ public interface MemberAPI {
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @PostMapping("quotas/requests/{amount}")
     ResponseEntity<Void> requestQuota(
-            @PathVariable(value = "amount", required = true) long amount,
+            @PathVariable("amount") long amount,
             @RequestParam(value = "unit", defaultValue = "GIGABYTE") QuotaUnit unit);
 
     @Operation(summary = "Retrieve actual drive quota", description = "This method retrieve a drive amount quota", security = @SecurityRequirement(name = "bearerAuth"))
