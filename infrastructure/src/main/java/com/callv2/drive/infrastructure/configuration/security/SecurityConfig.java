@@ -2,6 +2,7 @@ package com.callv2.drive.infrastructure.configuration.security;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,8 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(
             final HttpSecurity http,
-            final CorsConfigurationSource corsConfigurationSource) throws Exception {
+            @Qualifier("corsConfigurationSource") final CorsConfigurationSource corsConfigurationSource)
+            throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
