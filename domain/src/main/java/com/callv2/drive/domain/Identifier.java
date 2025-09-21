@@ -13,6 +13,8 @@ public abstract class Identifier<T> implements ValueObject {
         this.id = id;
     }
 
+    public abstract String getStringValue();
+
     public T getValue() {
         return id;
     }

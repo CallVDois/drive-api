@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +52,7 @@ public interface FolderAPI {
     @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @GetMapping("{id}")
-    ResponseEntity<GetFolderResponse> getById(@PathVariable(required = true) UUID id);
+    ResponseEntity<GetFolderResponse> getById(@PathVariable("id") UUID id);
 
     @Operation(summary = "Move a folder", description = "This method moves a folder to a new location", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Folder moved successfully", content = @Content(schema = @Schema(implementation = Void.class)))
@@ -59,7 +60,7 @@ public interface FolderAPI {
     @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @PatchMapping("{id}/parent")
-    ResponseEntity<Void> move(@PathVariable(required = true) UUID id, @RequestBody MoveFolderRequest request);
+    ResponseEntity<Void> move(@PathVariable("id") UUID id, @RequestBody MoveFolderRequest request);
 
     @Operation(summary = "List folders", description = "This method list folders", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Folders listed successfully", content = @Content(schema = @Schema(implementation = Page.class, subTypes = {
@@ -80,6 +81,10 @@ public interface FolderAPI {
     @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @PatchMapping("{id}/name")
-    ResponseEntity<Void> changeName(@PathVariable(required = true) UUID id, @RequestBody String request);
+    ResponseEntity<Void> changeName(@PathVariable("id") UUID id, @RequestBody String request);
+
+    @Operation(summary = "Delete folder", description = "This method delete a folder by id", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping("{id}")
+    ResponseEntity<Void> delete(@PathVariable("id") UUID id);
 
 }

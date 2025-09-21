@@ -12,6 +12,8 @@ public interface FileGateway {
 
     File create(File file);
 
+    File update(File file);
+
     Optional<File> findById(FileID id);
 
     List<File> findByFolder(FolderID folderId);

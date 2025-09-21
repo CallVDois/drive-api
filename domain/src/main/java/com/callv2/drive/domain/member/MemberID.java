@@ -13,6 +13,11 @@ public class MemberID extends Identifier<String> {
     }
 
     @Override
+    public String getStringValue() {
+        return getValue();
+    }
+
+    @Override
     public String toString() {
         return "MemberID [value=" + getValue() + "]";
     }

@@ -19,6 +19,11 @@ public class FileID extends Identifier<UUID> {
     }
 
     @Override
+    public String getStringValue() {
+        return getValue().toString();
+    }
+
+    @Override
     public String toString() {
         return "FileID [value=" + getValue() + "]";
     }

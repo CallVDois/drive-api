@@ -1,14 +1,10 @@
-package com.callv2.drive.infrastructure.messaging.listener.member;
+package com.callv2.drive.infrastructure.member.model;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
 
-public record MemberSyncEvent(
-        String id,
-        String source,
-        MemberSyncEvent.Data data,
-        Instant occurredAt) implements Serializable {
+public record MemberCreatedMessage(Data data) implements Serializable {
 
     public record Data(
             String id,

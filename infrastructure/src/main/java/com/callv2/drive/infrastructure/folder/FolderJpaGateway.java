@@ -92,4 +92,9 @@ public class FolderJpaGateway implements FolderGateway {
                 pageResult.map(FolderJpaEntity::toDomain).toList());
     }
 
+    @Override
+    public void deleteById(FolderID id) {
+        this.folderRepository.deleteById(id.getValue());
+    }
+
 }

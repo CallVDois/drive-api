@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.callv2.drive.application.folder.create.CreateFolderUseCase;
 import com.callv2.drive.application.folder.create.DefaultCreateFolderUseCase;
+import com.callv2.drive.application.folder.delete.DefaultDeleteFolderUseCase;
+import com.callv2.drive.application.folder.delete.DeleteFolderUseCase;
 import com.callv2.drive.application.folder.move.DefaultMoveFolderUseCase;
 import com.callv2.drive.application.folder.move.MoveFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.DefaultGetFolderUseCase;
@@ -15,6 +17,7 @@ import com.callv2.drive.application.folder.retrieve.list.DefaultListFoldersUseCa
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.application.folder.update.name.DefaultUpdateFolderNameUseCase;
 import com.callv2.drive.application.folder.update.name.UpdateFolderNameUseCase;
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.member.MemberGateway;
@@ -25,14 +28,17 @@ public class FolderUseCaseConfig {
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
     private final MemberGateway memberGateway;
+    private final EventDispatcher eventDispatcher;
 
     public FolderUseCaseConfig(
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
-            final MemberGateway memberGateway) {
+            final MemberGateway memberGateway,
+            final EventDispatcher eventDispatcher) {
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.memberGateway = memberGateway;
+        this.eventDispatcher = eventDispatcher;
     }
 
     @Bean
@@ -63,6 +69,11 @@ public class FolderUseCaseConfig {
     @Bean
     UpdateFolderNameUseCase updateFolderNameUseCase() {
         return new DefaultUpdateFolderNameUseCase(folderGateway);
+    }
+
+    @Bean
+    DeleteFolderUseCase deleteFolderUseCase() {
+        return new DefaultDeleteFolderUseCase(folderGateway, fileGateway, eventDispatcher);
     }
 
 }

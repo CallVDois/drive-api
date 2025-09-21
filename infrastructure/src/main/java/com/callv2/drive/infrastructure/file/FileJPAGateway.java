@@ -37,6 +37,11 @@ public class FileJPAGateway implements FileGateway {
     }
 
     @Override
+    public File update(File file) {
+        return fileRepository.save(FileJpaEntity.from(file)).toDomain();
+    }
+
+    @Override
     public Optional<File> findById(FileID id) {
         return fileRepository.findById(id.getValue()).map(FileJpaEntity::toDomain);
     }

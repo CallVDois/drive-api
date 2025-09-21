@@ -33,14 +33,14 @@ public interface MemberAdminAPI {
     @ApiResponse(responseCode = "200", description = "Retrieve successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @GetMapping("{id}/quotas")
-    ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable(value = "id", required = true) String id);
+    ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable("id") String id);
 
     @Operation(summary = "Approve drive quota request", description = "This method approve a drive amount quota request", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Approved successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @PatchMapping("{id}/quotas/requests")
     ResponseEntity<Void> approveQuotaRequest(
-            @PathVariable(value = "id", required = true) String id,
+            @PathVariable("id") String id,
             @RequestParam(value = "approved", defaultValue = "true") boolean approved);
 
     @Operation(summary = "List quotas requests", description = "This method list quotas requests", security = @SecurityRequirement(name = "bearerAuth"))

@@ -3,6 +3,8 @@ package com.callv2.drive.infrastructure.configuration.usecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.callv2.drive.application.file.content.delete.DefaultlDeleteFileContentUseCase;
+import com.callv2.drive.application.file.content.delete.DeleteFileContentUseCase;
 import com.callv2.drive.application.file.content.get.DefaultGetFileContentUseCase;
 import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
@@ -13,6 +15,7 @@ import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.DefaultListFilesUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.member.MemberGateway;
@@ -25,16 +28,19 @@ public class FileUseCaseConfig {
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
     private final StorageService storageService;
+    private final EventDispatcher eventDispatcher;
 
     public FileUseCaseConfig(
             final MemberGateway memberGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
-            final StorageService storageService) {
+            final StorageService storageService,
+            final EventDispatcher eventDispatcher) {
         this.memberGateway = memberGateway;
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.storageService = storageService;
+        this.eventDispatcher = eventDispatcher;
     }
 
     @Bean
@@ -44,7 +50,7 @@ public class FileUseCaseConfig {
 
     @Bean
     DeleteFileUseCase deleteFileUseCase() {
-        return new DefaultDeleteFileUseCase(memberGateway, fileGateway, storageService);
+        return new DefaultDeleteFileUseCase(memberGateway, fileGateway, eventDispatcher);
     }
 
     @Bean
@@ -60,5 +66,10 @@ public class FileUseCaseConfig {
     @Bean
     ListFilesUseCase listFilesUseCase() {
         return new DefaultListFilesUseCase(fileGateway);
+    }
+
+    @Bean
+    DeleteFileContentUseCase deleteFileContentUseCase() {
+        return new DefaultlDeleteFileContentUseCase(fileGateway, storageService);
     }
 }
