@@ -47,7 +47,7 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
                 m.updatedAt = :updatedAt,
                 m.synchronizedVersion = :synchronizedVersion
             where m.id = :id
-            and (m.synchronizedVersion is null or :synchronizedVersion > m.synchronizedVersion)
+            and (m.synchronizedVersion is null or :synchronizedVersion >= m.synchronizedVersion)
             """)
     Integer update(
             @Param("id") String id,
