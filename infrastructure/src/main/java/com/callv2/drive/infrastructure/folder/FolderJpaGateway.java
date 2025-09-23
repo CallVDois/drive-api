@@ -75,7 +75,7 @@ public class FolderJpaGateway implements FolderGateway {
     public Page<Folder> findAll(SearchQuery searchQuery) {
         final var page = QueryAdapter.of(searchQuery.pagination());
 
-        final Specification<FolderJpaEntity> specification = filterService.buildSpecification(
+        final Specification<FolderJpaEntity> specification = filterService.build(
                 FolderJpaEntity.class,
                 searchQuery.filterMethod(),
                 searchQuery.filters());

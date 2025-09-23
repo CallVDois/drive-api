@@ -52,7 +52,7 @@ public class DefaultMemberGateway implements MemberGateway {
 
         final PageRequest pageRequest = QueryAdapter.of(searchQuery.pagination());
 
-        final Specification<MemberJpaEntity> specification = filterService.buildSpecification(
+        final Specification<MemberJpaEntity> specification = filterService.build(
                 MemberJpaEntity.class,
                 searchQuery.filterMethod(),
                 searchQuery.filters());

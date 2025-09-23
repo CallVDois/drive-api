@@ -75,6 +75,6 @@ public interface FileAPI {
             @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
-            @RequestParam(name = "filters", required = false) List<String> filters);
+            @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
 }

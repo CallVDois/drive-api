@@ -1,5 +1,6 @@
 package com.callv2.drive.infrastructure.filter.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,7 +30,50 @@ public interface QueryAdapter {
         return Direction.fromString(direction.name());
     }
 
-    static Filter of(final String source) {
+    static Filter.Group of(final String source, List<? extends Filter.Field> acceptableFields) {
+
+        final var splitedFilters = List.of(source.split("\\|"));
+
+        final var iterator = splitedFilters.iterator();
+        if (!iterator.hasNext())
+            return new Filter.Group(Filter.Operator.AND, List.of());
+
+        final var filters = new ArrayList<Filter>();
+
+        String next = iterator.next();
+        final Filter.Operator operator = Filter.Operator.of(next).orElseThrow();// TODO exception
+
+        while (iterator.hasNext()) {
+            next = iterator.next();
+
+            final Map<String, String> map = next == null ? Map.of()
+                    : List.of(next.split(";"))
+                            .stream()
+                            .map(s -> s.split("="))
+                            .collect(Collectors.toMap(s -> getSafeArrayElement(s, 0), s -> getSafeArrayElement(s, 1)));
+
+            final var field = acceptableFields
+                    .stream()
+                    .filter(f -> f.accepts(map.get("field")))
+                    .findFirst()
+                    .orElseThrow();
+
+            filters.add(
+                    new Filter(
+                            field,
+                            map.get("value"),
+                            map.get("valueToCompare"),
+                            Filter.Type.of(map.get("type")).orElse(null)));
+
+        }
+
+        // AND|field=relatedEntities.type;value=Member;type=EQUALS|field=relatedEntities.type;value=Member;type=EQUALS
+        // field=relatedEntities.type;value=Member;type=EQUALS
+        // field=relatedEntities.id;value=d551a0e2-f798-4807-9872-369b5824f4ac;type=EQUALS
+        return new Filter.Group(operator, filters);
+    }
+
+    static Filter ofOld(final String source, List<? extends Filter.Field> fields) {
 
         final Map<String, String> map = source == null ? Map.of()
                 : List.of(source.split(";"))
@@ -38,7 +82,7 @@ public interface QueryAdapter {
                         .collect(Collectors.toMap(s -> getSafeArrayElement(s, 0), s -> getSafeArrayElement(s, 1)));
 
         return new Filter(
-                map.get("field"),
+                fields.stream().filter(f -> f.getFieldName().equals(map.get("field"))).findFirst().orElse(null),
                 map.get("value"),
                 map.get("valueToCompare"),
                 Filter.Type.of(map.get("type")).orElse(null));

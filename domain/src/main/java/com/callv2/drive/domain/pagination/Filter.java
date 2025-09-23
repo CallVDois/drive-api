@@ -1,13 +1,14 @@
 package com.callv2.drive.domain.pagination;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
-public record Filter(String field, String value, String valueToCompare, Type type) {
+public record Filter(Field field, String value, String valueToCompare, Type type) {
 
     public Filter {
 
@@ -15,7 +16,7 @@ public record Filter(String field, String value, String valueToCompare, Type typ
         if (field == null)
             notification.append(ValidationError.with("Filter.field cannot be null"));
 
-        if (field != null && field.isBlank())
+        if (field != null && field.getFieldName().isBlank())
             notification.append(ValidationError.with("Filter.field cannot be blank"));
 
         if (value == null)
@@ -63,6 +64,17 @@ public record Filter(String field, String value, String valueToCompare, Type typ
                     .filter(it -> it.name().equalsIgnoreCase(type))
                     .findFirst();
         }
+    }
+
+    public record Group(Filter.Operator operator, List<Filter> filters) {
+    }
+
+    public interface Field {
+
+        String getFieldName();
+
+        Boolean accepts(String name);
+
     }
 
 }

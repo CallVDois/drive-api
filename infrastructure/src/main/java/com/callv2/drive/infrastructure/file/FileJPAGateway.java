@@ -60,7 +60,7 @@ public class FileJPAGateway implements FileGateway {
 
         final var page = QueryAdapter.of(searchQuery.pagination());
 
-        final Specification<FileJpaEntity> specification = filterService.buildSpecification(
+        final Specification<FileJpaEntity> specification = filterService.build(
                 FileJpaEntity.class,
                 searchQuery.filterMethod(),
                 searchQuery.filters());

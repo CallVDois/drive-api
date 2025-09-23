@@ -17,7 +17,26 @@ public class FilterService {
         this.filters = List.copyOf(Objects.requireNonNull(filters));
     }
 
-    public <T> Specification<T> buildSpecification(
+    public <T> Specification<T> build(
+            final Class<T> entityClass,
+            final Filter.Operator filterMethod,
+            final List<Filter.Group> filters) {
+
+        final var specifications = filters
+                .stream()
+                .map(group -> buildSpecification(entityClass, group.operator(), group.filters()))
+                .toList();
+
+        if (filterMethod.equals(Filter.Operator.AND))
+            return andSpecifications(specifications);
+
+        if (filterMethod.equals(Filter.Operator.OR))
+            return orSpecifications(specifications);
+
+        return andSpecifications(specifications);
+    }
+
+    private <T> Specification<T> buildSpecification(
             final Class<T> entityClass,
             final Filter.Operator filterMethod,
             final List<Filter> filters) {
@@ -31,7 +50,8 @@ public class FilterService {
         return andSpecifications(buildSpecifications(entityClass, filters));
     }
 
-    private <T> List<Specification<T>> buildSpecifications(Class<T> entityClass,
+    private <T> List<Specification<T>> buildSpecifications(
+            final Class<T> entityClass,
             final List<Filter> filters) {
         if (filters == null)
             return List.of();
@@ -41,7 +61,8 @@ public class FilterService {
                 .toList();
     }
 
-    private <T> Specification<T> buildSpecification(Class<T> entityClass,
+    private <T> Specification<T> buildSpecification(
+            final Class<T> entityClass,
             final Filter filter) {
         final var specification = filters.stream()
                 .filter(f -> f.filterType().equals(filter.type()))

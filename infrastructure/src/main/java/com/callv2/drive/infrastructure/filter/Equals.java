@@ -21,7 +21,7 @@ public class Equals extends SpecificationFilter {
     @Override
     public <T> Specification<T> buildSpecification(Filter filter) {
         return (root, query, criteriaBuilder) -> {
-            final var field = root.get(filter.field());
+            final var field = root.get(filter.field().getFieldName());
             return criteriaBuilder.equal(field, cast(filter.value(), field.getJavaType()));
         };
     }

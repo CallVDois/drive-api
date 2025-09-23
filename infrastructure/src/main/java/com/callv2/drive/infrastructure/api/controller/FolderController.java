@@ -26,6 +26,7 @@ import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.FolderAPI;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.folder.adapter.FolderAdapter;
+import com.callv2.drive.infrastructure.folder.filter.FolderField;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
@@ -98,18 +99,20 @@ public class FolderController implements FolderAPI {
             final String orderField,
             final Pagination.Order.Direction orderDirection,
             final Filter.Operator filterOperator,
-            final List<String> filters) {
+            final List<String> filterGroups) {
 
-        final List<Filter> searchFilters = filters == null ? List.of()
-                : filters
+        final List<Filter.Group> searchFilterGroups = filterGroups == null ? List.of()
+                : filterGroups
                         .stream()
-                        .map(QueryAdapter::of)
+                        .map(source -> QueryAdapter.of(
+                                source,
+                                List.of(FolderField.values())))
                         .toList();
 
         final SearchQuery query = SearchQuery.of(
                 Pagination.of(page, perPage, Pagination.Order.of(orderField, orderDirection)),
                 filterOperator,
-                searchFilters);
+                searchFilterGroups);
 
         return ResponseEntity.ok(listFoldersUseCase.execute(query).map(FolderPresenter::present));
     }

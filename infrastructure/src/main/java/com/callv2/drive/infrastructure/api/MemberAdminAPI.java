@@ -65,7 +65,7 @@ public interface MemberAdminAPI {
             @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
-            @RequestParam(name = "filters", required = false) List<String> filters);
+            @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
     @Operation(summary = "Get quota summary", description = "Returns an aggregated summary of quotas, including total allocated quota, used quota, available quota, and total members.", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Quota summary retrieved successfully", content = @Content(schema = @Schema(implementation = QuotaSummaryResponse.class)))

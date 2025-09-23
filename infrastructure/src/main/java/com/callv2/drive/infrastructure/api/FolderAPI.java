@@ -73,7 +73,7 @@ public interface FolderAPI {
             @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
-            @RequestParam(name = "filters", required = false) List<String> filters);
+            @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
     @Operation(summary = "Change folder name", description = "This method changes the name of a folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Folder name changed successfully", content = @Content(schema = @Schema(implementation = Void.class)))
