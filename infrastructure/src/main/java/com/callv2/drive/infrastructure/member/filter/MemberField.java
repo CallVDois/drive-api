@@ -19,18 +19,13 @@ public enum MemberField implements Field {
         this.fieldName = fieldName;
     }
 
-    public String getFieldName() {
+    public String value() {
         return fieldName;
     }
 
     @Override
     public Boolean accepts(final String name) {
-
-        if (name == null)
-            return false;
-
         return this.name().equalsIgnoreCase(name);
-
     }
 
 }

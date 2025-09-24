@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
+import com.callv2.drive.domain.exception.InvalidFilterFieldException;
+import com.callv2.drive.domain.exception.InvalidFilterOperatorException;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Pagination;
 
@@ -30,7 +32,7 @@ public interface QueryAdapter {
         return Direction.fromString(direction.name());
     }
 
-    static Filter.Group of(final String source, List<? extends Filter.Field> acceptableFields) {
+    static Filter.Group of(final String source, List<Filter.Field> acceptableFields) {
 
         final var splitedFilters = List.of(source.split("\\|"));
 
@@ -38,13 +40,15 @@ public interface QueryAdapter {
         if (!iterator.hasNext())
             return new Filter.Group(Filter.Operator.AND, List.of());
 
+        final String first = iterator.next();
+        final Filter.Operator operator = Filter.Operator
+                .of(first)
+                .orElseThrow(() -> InvalidFilterOperatorException.with(first, List.of(Filter.Operator.values())));
+
         final var filters = new ArrayList<Filter>();
 
-        String next = iterator.next();
-        final Filter.Operator operator = Filter.Operator.of(next).orElseThrow();// TODO exception
-
         while (iterator.hasNext()) {
-            next = iterator.next();
+            final String next = iterator.next();
 
             final Map<String, String> map = next == null ? Map.of()
                     : List.of(next.split(";"))
@@ -56,7 +60,7 @@ public interface QueryAdapter {
                     .stream()
                     .filter(f -> f.accepts(map.get("field")))
                     .findFirst()
-                    .orElseThrow();
+                    .orElseThrow(() -> InvalidFilterFieldException.with(map.get("field"), acceptableFields));
 
             filters.add(
                     new Filter(
@@ -80,7 +84,7 @@ public interface QueryAdapter {
                         .collect(Collectors.toMap(s -> getSafeArrayElement(s, 0), s -> getSafeArrayElement(s, 1)));
 
         return new Filter(
-                fields.stream().filter(f -> f.getFieldName().equals(map.get("field"))).findFirst().orElse(null),
+                fields.stream().filter(f -> f.value().equals(map.get("field"))).findFirst().orElse(null),
                 map.get("value"),
                 map.get("valueToCompare"),
                 Filter.Type.of(map.get("type")).orElse(null));

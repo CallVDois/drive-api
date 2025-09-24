@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.callv2.drive.domain.exception.DomainException;
 import com.callv2.drive.domain.exception.InternalErrorException;
+import com.callv2.drive.domain.exception.InvalidFilterFieldException;
+import com.callv2.drive.domain.exception.InvalidFilterOperatorException;
 import com.callv2.drive.domain.exception.NotAllowedException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.QuotaExceededException;
@@ -55,6 +57,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NotAllowedException.class)
     public ResponseEntity<ApiError> handle(final NotAllowedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiError.from(ex));
+    }
+
+    @ExceptionHandler(value = InvalidFilterFieldException.class)
+    public ResponseEntity<ApiError> handle(final InvalidFilterFieldException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiError.from(ex));
+    }
+
+    @ExceptionHandler(value = InvalidFilterOperatorException.class)
+    public ResponseEntity<ApiError> handle(final InvalidFilterOperatorException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiError.from(ex));
     }
 
 }

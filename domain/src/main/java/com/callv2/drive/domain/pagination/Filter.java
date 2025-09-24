@@ -16,7 +16,7 @@ public record Filter(Field field, String value, String valueToCompare, Type type
         if (field == null)
             notification.append(ValidationError.with("Filter.field cannot be null"));
 
-        if (field != null && field.getFieldName().isBlank())
+        if (field != null && field.value().isBlank())
             notification.append(ValidationError.with("Filter.field cannot be blank"));
 
         if (value == null)
@@ -71,7 +71,9 @@ public record Filter(Field field, String value, String valueToCompare, Type type
 
     public interface Field {
 
-        String getFieldName();
+        String name();
+
+        String value();
 
         Boolean accepts(String name);
 
