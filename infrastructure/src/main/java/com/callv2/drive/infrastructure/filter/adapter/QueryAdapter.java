@@ -67,10 +67,8 @@ public interface QueryAdapter {
 
         }
 
-        // AND|field=relatedEntities.type;value=Member;type=EQUALS|field=relatedEntities.type;value=Member;type=EQUALS
-        // field=relatedEntities.type;value=Member;type=EQUALS
-        // field=relatedEntities.id;value=d551a0e2-f798-4807-9872-369b5824f4ac;type=EQUALS
         return new Filter.Group(operator, filters);
+
     }
 
     static Filter ofOld(final String source, List<? extends Filter.Field> fields) {
