@@ -20,9 +20,4 @@ public enum FolderField implements Field {
         return fieldName;
     }
 
-    @Override
-    public Boolean accepts(final String name) {
-        return this.name().equalsIgnoreCase(name);
-    }
-
 }

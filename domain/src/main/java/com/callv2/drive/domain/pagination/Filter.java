@@ -75,7 +75,9 @@ public record Filter(Field field, String value, String valueToCompare, Type type
 
         String value();
 
-        Boolean accepts(String name);
+        default Boolean matches(String name) {
+            return this.name().equalsIgnoreCase(name);
+        }
 
     }
 

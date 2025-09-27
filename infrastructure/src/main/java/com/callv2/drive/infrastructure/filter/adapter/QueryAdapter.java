@@ -58,7 +58,7 @@ public interface QueryAdapter {
 
             final var field = acceptableFields
                     .stream()
-                    .filter(f -> f.accepts(map.get("field")))
+                    .filter(f -> f.matches(map.get("field")))
                     .findFirst()
                     .orElseThrow(() -> InvalidFilterFieldException.with(map.get("field"), acceptableFields));
 
