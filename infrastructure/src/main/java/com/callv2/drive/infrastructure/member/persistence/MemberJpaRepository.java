@@ -38,26 +38,32 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
             set
                 m.username = :username,
                 m.nickname = :nickname,
+                m.quotaInBytes = :quotaInBytes,
                 m.quotaAmount = :quotaAmount,
                 m.quotaUnit = :quotaUnit,
+                m.quotaRequestInBytes = :quotaRequestInBytes,
                 m.quotaRequestAmount = :quotaRequestAmount,
                 m.quotaRequestUnit = :quotaRequestUnit,
                 m.quotaRequestedAt = :quotaRequestedAt,
+                m.hasSystemAccess = :hasSystemAccess,
                 m.createdAt = :createdAt,
                 m.updatedAt = :updatedAt,
                 m.synchronizedVersion = :synchronizedVersion
             where m.id = :id
-            and (m.synchronizedVersion is null or :synchronizedVersion > m.synchronizedVersion)
+            and (m.synchronizedVersion is null or :synchronizedVersion >= m.synchronizedVersion)
             """)
     Integer update(
             @Param("id") String id,
             @Param("username") String username,
             @Param("nickname") String nickname,
+            @Param("quotaInBytes") Long quotaInBytes,
             @Param("quotaAmount") Long quotaAmount,
             @Param("quotaUnit") QuotaUnit quotaUnit,
+            @Param("quotaRequestInBytes") Long quotaRequestInBytes,
             @Param("quotaRequestAmount") Long quotaRequestAmount,
             @Param("quotaRequestUnit") QuotaUnit quotaRequestUnit,
             @Param("quotaRequestedAt") Instant quotaRequestedAt,
+            @Param("hasSystemAccess") Boolean hasSystemAccess,
             @Param("createdAt") Instant createdAt,
             @Param("updatedAt") Instant updatedAt,
             @Param("synchronizedVersion") Long synchronizedVersion);
