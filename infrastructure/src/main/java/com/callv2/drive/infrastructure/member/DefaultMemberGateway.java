@@ -88,18 +88,21 @@ public class DefaultMemberGateway implements MemberGateway {
                 memberJpa.getId(),
                 memberJpa.getUsername(),
                 memberJpa.getNickname(),
+                memberJpa.getQuotaInBytes(),
                 memberJpa.getQuotaAmount(),
                 memberJpa.getQuotaUnit(),
+                memberJpa.getQuotaRequestInBytes(),
                 memberJpa.getQuotaRequestAmount(),
                 memberJpa.getQuotaRequestUnit(),
                 memberJpa.getQuotaRequestedAt(),
+                memberJpa.getHasSystemAccess(),
                 memberJpa.getCreatedAt(),
                 memberJpa.getUpdatedAt(),
                 memberJpa.getSynchronizedVersion());
 
         if (rowsUpdated != 1)
             throw new OptimisticLockingFailureException(
-                    "Member update failed due to version conflict for id: " + member.getId().getValue());
+                    "Member update failed due to SynchronizedVersion conflict for id: " + member.getId().getValue());
 
         return member;
     }
