@@ -5,22 +5,22 @@ import java.util.List;
 
 import com.callv2.drive.domain.pagination.Filter;
 
-public class InvalidFilterOperatorException extends SilentDomainException {
+public class InvalidFilterOperatorException extends InvalidFilterException {
 
-    protected InvalidFilterOperatorException(String message, List<Error> errors) {
-        super(message, errors);
+    protected InvalidFilterOperatorException(final String filterPassed, final List<Filter.Operator> possibleOperators) {
+        super(
+                "The filter operator is invalid.",
+                List.of(Error.with(
+                        "Invalid filter operator: "
+                                + filterPassed
+                                + ". Possible operators are: "
+                                + Arrays.toString(possibleOperators.toArray()))));
     }
 
-    public static InvalidFilterOperatorException with(final String filterPassed,
+    public static InvalidFilterOperatorException with(
+            final String filterPassed,
             final List<Filter.Operator> possibleOperators) {
-        return new InvalidFilterOperatorException(
-                "The filter operator is invalid.",
-                List.of(
-                        Error.with(
-                                "Invalid filter operator: "
-                                        + filterPassed
-                                        + ". Possible operators are: "
-                                        + Arrays.toString(possibleOperators.toArray()))));
+        return new InvalidFilterOperatorException(filterPassed, possibleOperators);
     }
 
 }
