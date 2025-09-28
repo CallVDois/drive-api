@@ -14,4 +14,9 @@ public enum SharePermission {
     public Integer getLevel() {
         return level;
     }
+
+    public static SharePermission mostPrivileged() {
+        return SHARE_TO_SHARE;
+    }
+
 }

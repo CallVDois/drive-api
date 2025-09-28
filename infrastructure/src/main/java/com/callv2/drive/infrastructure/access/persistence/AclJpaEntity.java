@@ -6,7 +6,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.callv2.drive.domain.access.Acl;
+import com.callv2.drive.domain.access.AclID;
+import com.callv2.drive.domain.access.Entry;
+import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.access.ResourceType;
+import com.callv2.drive.domain.file.FileID;
+import com.callv2.drive.domain.folder.FolderID;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
@@ -63,11 +68,11 @@ public class AclJpaEntity {
 
     public static AclJpaEntity fromDomain(final Acl acl) {
 
-        final var directEntries = acl.getDirectEntries().stream()
+        final Set<EntryJpa> directEntries = acl.getDirectEntries().stream()
                 .map(EntryJpa::fromDomain)
                 .collect(java.util.stream.Collectors.toSet());
 
-        final var inheritedEntries = acl.getInheritedEntries().stream()
+        final Set<EntryJpa> inheritedEntries = acl.getInheritedEntries().stream()
                 .map(EntryJpa::fromDomain)
                 .collect(java.util.stream.Collectors.toSet());
 
@@ -79,6 +84,31 @@ public class AclJpaEntity {
                 inheritedEntries,
                 acl.getCreatedAt(),
                 acl.getUpdatedAt());
+    }
+
+    public Acl toDomain() {
+
+        final Set<Entry> directEntries = this.directEntries.stream()
+                .map(EntryJpa::toDomain)
+                .collect(java.util.stream.Collectors.toSet());
+
+        final Set<Entry> inheritedEntries = this.inheritedEntries.stream()
+                .map(EntryJpa::toDomain)
+                .collect(java.util.stream.Collectors.toSet());
+
+        final Resource<?> resource = switch (this.resourceType) {
+            case FILE -> Resource.file(FileID.of(UUID.fromString(this.resourceId)));
+            case FOLDER -> Resource.folder(FolderID.of(UUID.fromString(this.resourceId)));
+            default -> throw new IllegalStateException("Unexpected value: " + this.resourceId);
+        };
+
+        return Acl.with(
+                AclID.of(this.id),
+                resource,
+                directEntries,
+                inheritedEntries,
+                this.createdAt,
+                this.updatedAt);
     }
 
     public UUID getId() {

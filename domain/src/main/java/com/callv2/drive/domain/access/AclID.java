@@ -14,8 +14,14 @@ public class AclID extends Identifier<UUID> {
         return new AclID(id);
     }
 
+    @Override
     public String getStringValue() {
         return getValue().toString();
+    }
+
+    @Override
+    public AclID fromStringValue(String value) {
+        return AclID.of(UUID.fromString(value));
     }
 
     public static AclID unique() {

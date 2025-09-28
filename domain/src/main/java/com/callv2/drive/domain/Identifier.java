@@ -15,6 +15,8 @@ public abstract class Identifier<T> implements ValueObject {
 
     public abstract String getStringValue();
 
+    public abstract Identifier<T> fromStringValue(String value);
+
     public T getValue() {
         return id;
     }

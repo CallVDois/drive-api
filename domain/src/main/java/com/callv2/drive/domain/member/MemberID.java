@@ -15,6 +15,11 @@ public class MemberID extends Identifier<UUID> {
     }
 
     @Override
+    public MemberID fromStringValue(final String value) {
+        return MemberID.of(UUID.fromString(value));
+    }
+
+    @Override
     public String getStringValue() {
         return getValue().toString();
     }

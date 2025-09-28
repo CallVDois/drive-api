@@ -3,6 +3,9 @@ package com.callv2.drive.application.folder.retrieve.get.root;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.callv2.drive.domain.access.Acl;
+import com.callv2.drive.domain.access.AclGateway;
+import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.Folder;
@@ -13,14 +16,17 @@ import com.callv2.drive.domain.member.MemberID;
 
 public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
 
+    private final AclGateway aclGateway;
     private final MemberGateway memberGateway;
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
 
     public DefaultGetRootFolderUseCase(
+            final AclGateway aclGateway,
             final MemberGateway memberGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway) {
+        this.aclGateway = Objects.requireNonNull(aclGateway);
         this.memberGateway = Objects.requireNonNull(memberGateway);
         this.folderGateway = Objects.requireNonNull(folderGateway);
         this.fileGateway = Objects.requireNonNull(fileGateway);
@@ -34,13 +40,22 @@ public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
         if (!memberGateway.existsById(owner))
             throw NotFoundException.with(Member.class, owner.getValue().toString());
 
-        final Optional<Folder> root = folderGateway.findRoot();
-        final Folder folder = root.isPresent() ? root.get() : folderGateway.create(Folder.createRoot(owner));
+        final Optional<Folder> root = folderGateway.findRoot(owner);
+        final Folder folder = root.isPresent() ? root.get() : createRoot(owner);
 
         return GetRootFolderOutput.from(
                 folder,
                 this.folderGateway.findByParentFolderId(folder.getId()),
                 fileGateway.findByFolder(folder.getId()));
+
+    }
+
+    private Folder createRoot(final MemberID owner) {
+
+        final Folder root = Folder.createRoot(owner);
+        this.aclGateway.create(Acl.create(Resource.folder(root.getId())).grantTotal(owner));
+        return folderGateway.create(root);
+
     }
 
 }

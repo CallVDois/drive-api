@@ -22,4 +22,8 @@ public enum AccessPermission {
         return this.level <= READ.level;
     }
 
+    public static AccessPermission mostPrivileged() {
+        return WRITE;
+    }
+
 }

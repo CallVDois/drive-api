@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.filter.FilterService;
@@ -33,8 +34,8 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     @Override
-    public Optional<Folder> findRoot() {
-        return this.folderRepository.findByRootFolderTrue().map(FolderJpaEntity::toDomain);
+    public Optional<Folder> findRoot(final MemberID owner) {
+        return this.folderRepository.findByRootFolderTrueAndOwnerId(owner.getValue()).map(FolderJpaEntity::toDomain);
     }
 
     @Override

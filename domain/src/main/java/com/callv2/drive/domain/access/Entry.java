@@ -11,6 +11,13 @@ public record Entry(
         SharePermission sharePermission,
         Instant grantedAt) implements ValueObject {
 
+    public static Entry create(
+            final MemberID member,
+            final AccessPermission accessPermission,
+            final SharePermission sharePermission) {
+        return new Entry(member, accessPermission, sharePermission, Instant.now());
+    }
+
     public boolean isEquivalentTo(final Entry other) {
 
         return isNull(other) ? false

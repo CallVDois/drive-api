@@ -88,6 +88,33 @@ public class Acl extends AggregateRoot<AclID> {
 
     }
 
+    public Acl grantTotal(final MemberID member) {
+        return this.grantEntry(member, AccessPermission.mostPrivileged(), SharePermission.mostPrivileged());
+    }
+
+    public Acl grantEntry(
+            MemberID member,
+            AccessPermission accessPermission,
+            SharePermission sharePermission) {
+
+        if (isNull(member))
+            throw new IllegalArgumentException("'member' should not be null");
+        if (isNull(accessPermission))
+            throw new IllegalArgumentException("'accessPermission' should not be null");
+        if (isNull(sharePermission))
+            throw new IllegalArgumentException("'sharePermission' should not be null");
+
+        final Entry entry = Entry.create(member, accessPermission, sharePermission);
+
+        if (this.directEntries.stream().anyMatch(e -> e.isEquivalentTo(entry)))
+            return this;
+
+        this.directEntries.add(entry);
+        this.updatedAt = Instant.now();
+
+        return this;
+    }
+
     public Optional<AccessPermission> effectiveAccessPermission(final MemberID member) {
 
         return Stream.concat(directEntries.stream(), inheritedEntries.stream())
