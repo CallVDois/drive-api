@@ -27,7 +27,7 @@ public class FolderJpaEntity {
     private String name;
 
     @Column(name = "owner_id", nullable = false)
-    private String ownerId;
+    private UUID ownerId;
 
     @Column(name = "parent_folder_id")
     private UUID parentFolderId;
@@ -45,7 +45,7 @@ public class FolderJpaEntity {
             final UUID id,
             final Boolean rootFolder,
             final String name,
-            final String ownerId,
+            final UUID ownerId,
             final UUID parentFolderId,
             final Instant createdAt,
             final Instant updatedAt,
@@ -116,11 +116,11 @@ public class FolderJpaEntity {
         this.name = name;
     }
 
-    public String getOwnerId() {
+    public UUID getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(String ownerId) {
+    public void setOwnerId(UUID ownerId) {
         this.ownerId = ownerId;
     }
 

@@ -60,7 +60,7 @@ public class FileController implements FileAPI {
     @Override
     public ResponseEntity<CreateFileResponse> create(UUID folderId, MultipartFile file) {
 
-        final var ownerId = SecurityContext.getAuthenticatedUser();
+        final var ownerId = SecurityContext.getAuthenticatedUserId();
 
         final var response = FilePresenter
                 .present(createFileUseCase.execute(FileAdapter.adapt(ownerId, folderId, file)));
@@ -72,7 +72,7 @@ public class FileController implements FileAPI {
 
     @Override
     public ResponseEntity<Void> delete(UUID id) {
-        final var deleterId = SecurityContext.getAuthenticatedUser();
+        final var deleterId = SecurityContext.getAuthenticatedUserId();
 
         DeleteFileInput deleteFileInput = DeleteFileInput.of(deleterId, id);
 

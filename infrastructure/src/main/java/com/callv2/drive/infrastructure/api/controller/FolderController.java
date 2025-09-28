@@ -65,12 +65,12 @@ public class FolderController implements FolderAPI {
     @Override
     public ResponseEntity<GetFolderResponse> getRoot() {
         return ResponseEntity.ok(FolderPresenter.present(
-                getRootFolderUseCase.execute(GetRootFolderInput.from(SecurityContext.getAuthenticatedUser()))));
+                getRootFolderUseCase.execute(GetRootFolderInput.from(SecurityContext.getAuthenticatedUserId()))));
     }
 
     @Override
     public ResponseEntity<CreateFolderResponse> create(final CreateFolderRequest request) {
-        final String ownerId = SecurityContext.getAuthenticatedUser();
+        final UUID ownerId = SecurityContext.getAuthenticatedUserId();
         final var response = FolderPresenter
                 .present(createFolderUseCase.execute(FolderAdapter.adapt(request, ownerId)));
 
@@ -126,7 +126,7 @@ public class FolderController implements FolderAPI {
     @Override
     public ResponseEntity<Void> delete(UUID id) {
 
-        final var memberId = SecurityContext.getAuthenticatedUser();
+        final var memberId = SecurityContext.getAuthenticatedUserId();
 
         this.deleteFolderUseCase.execute(new DeleteFolderInput(id, memberId));
 

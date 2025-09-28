@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,8 @@ public class DefaultGetFileUseCaseTest {
     @Test
     void givenAValidId_whenCallsExecute_thenShouldReturnFile() {
 
-        final var ownerId = MemberID.of("owner");
+        final var creatorId = MemberID.of(UUID.randomUUID());
+        final var ownerId = creatorId;
 
         final var expectedFolder = Folder.createRoot(ownerId);
 
@@ -50,7 +52,11 @@ public class DefaultGetFileUseCaseTest {
 
         final var expectedContent = Content.of(expectedContentLocation, expectedContentType, expectedContentSize);
 
-        final var expectedFile = File.create(ownerId, expectedFolder.getId(), FileName.of(expectedName),
+        final var expectedFile = File.create(
+                creatorId,
+                ownerId,
+                expectedFolder.getId(),
+                FileName.of(expectedName),
                 expectedContent);
 
         final var expectedId = expectedFile.getId();

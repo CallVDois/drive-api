@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record FileListResponse(
         UUID id,
-        String ownerId,
+        UUID ownerId,
         UUID folderId,
         String name,
         String contentType,

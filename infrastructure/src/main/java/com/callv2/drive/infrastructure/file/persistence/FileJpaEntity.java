@@ -22,8 +22,11 @@ public class FileJpaEntity {
     @Id
     private UUID id;
 
+    @Column(name = "creator_id", nullable = false)
+    private UUID creatorId;
+
     @Column(name = "owner_id", nullable = false)
-    private String ownerId;
+    private UUID ownerId;
 
     @Column(name = "folder_id", nullable = false)
     private UUID folderId;
@@ -54,7 +57,8 @@ public class FileJpaEntity {
 
     private FileJpaEntity(
             final UUID id,
-            final String ownerId,
+            final UUID creatorId,
+            final UUID ownerId,
             final UUID folderId,
             final String name,
             final String contentType,
@@ -65,6 +69,7 @@ public class FileJpaEntity {
             final Instant deletedAt,
             final Boolean isDeleted) {
         this.id = id;
+        this.creatorId = creatorId;
         this.ownerId = ownerId;
         this.folderId = folderId;
         this.name = name;
@@ -83,6 +88,7 @@ public class FileJpaEntity {
     public static FileJpaEntity from(final File file) {
         return new FileJpaEntity(
                 file.getId().getValue(),
+                file.getCreator().getValue(),
                 file.getOwner().getValue(),
                 file.getFolder().getValue(),
                 file.getName().value(),
@@ -98,6 +104,7 @@ public class FileJpaEntity {
     public File toDomain() {
         return File.with(
                 FileID.of(getId()),
+                MemberID.of(getCreatorId()),
                 MemberID.of(getOwnerId()),
                 FolderID.of(getFolderId()),
                 FileName.of(getName()),
@@ -116,11 +123,19 @@ public class FileJpaEntity {
         this.id = id;
     }
 
-    public String getOwnerId() {
+    public UUID getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(UUID creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public UUID getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(String ownerId) {
+    public void setOwnerId(UUID ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -192,8 +207,8 @@ public class FileJpaEntity {
         return isDeleted;
     }
 
-    public void setIsDeleted(Boolean isDelete) {
-        this.isDeleted = isDelete;
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
 }

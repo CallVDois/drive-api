@@ -25,7 +25,7 @@ public class DefaultCreateRequestQuotaUseCase extends CreateRequestQuotaUseCase 
 
         final Member member = memberGateway
                 .findById(memberId)
-                .orElseThrow(() -> NotFoundException.with(Member.class, input.memberId()));
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.memberId().toString()));
 
         final Notification notification = Notification.create();
         notification.validate(() -> member.requestQuota(Quota.of(input.amount(), input.unit())));

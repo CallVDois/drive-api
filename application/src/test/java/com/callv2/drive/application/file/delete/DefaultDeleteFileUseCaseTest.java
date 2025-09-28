@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +57,7 @@ public class DefaultDeleteFileUseCaseTest {
     void givenAValidParam_whenCallsExecute_thenShouldDeleteFile() {
 
         final var deleter = Member.with(
-                MemberID.of("deleter"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -69,6 +70,7 @@ public class DefaultDeleteFileUseCaseTest {
                 .approveQuotaRequest();
 
         final FileID expectedFileId = FileID.unique();
+        final MemberID expectedCreatorId = deleter.getId();
         final MemberID expectedDeleterId = deleter.getId();
         final FolderID expectedFolderId = FolderID.unique();
         final FileName expectedFileName = FileName.of("file.txt");
@@ -81,6 +83,7 @@ public class DefaultDeleteFileUseCaseTest {
         final Instant expectedUpdatedAt = Instant.now();
         final var file = File.with(
                 expectedFileId,
+                expectedCreatorId,
                 expectedDeleterId,
                 expectedFolderId,
                 expectedFileName,
@@ -117,7 +120,7 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidMemberId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedDeleterId = MemberID.of("deleter");
+        final MemberID expectedDeleterId = MemberID.of(UUID.randomUUID());
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "[Member] not found.";
@@ -150,7 +153,7 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidFileId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedDeleterId = MemberID.of("deleter");
+        final MemberID expectedDeleterId = MemberID.of(UUID.randomUUID());
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "[File] not found.";
@@ -158,7 +161,7 @@ public class DefaultDeleteFileUseCaseTest {
         final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedFileId.getValue());
 
         final var deleter = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -198,7 +201,7 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAValidMemberIdButNotHaveSystemAccess_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedDeleterId = MemberID.of("deleter");
+        final MemberID expectedDeleterId = MemberID.of(UUID.randomUUID());
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "The requested action is not allowed.";
@@ -206,7 +209,7 @@ public class DefaultDeleteFileUseCaseTest {
         final var expectedErrorMessage = "Member does not have permission to delete files.";
 
         final var deleter = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),

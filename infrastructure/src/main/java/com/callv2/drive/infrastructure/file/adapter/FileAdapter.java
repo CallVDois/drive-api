@@ -11,7 +11,7 @@ import com.callv2.drive.infrastructure.file.model.DeleteFileContentMessage;
 
 public interface FileAdapter {
 
-    static CreateFileInput adapt(String ownerId, UUID folderId, final MultipartFile aFile) {
+    static CreateFileInput adapt(UUID ownerId, UUID folderId, final MultipartFile aFile) {
         try {
             return CreateFileInput.of(
                     ownerId,

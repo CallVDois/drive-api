@@ -1,9 +1,10 @@
 package com.callv2.drive.application.member.synchronize;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record SynchronizeMemberInput(
-        String id,
+        UUID id,
         String username,
         String nickname,
         Boolean hasSystemAccess,
@@ -12,7 +13,7 @@ public record SynchronizeMemberInput(
         Long synchronizedVersion) {
 
     public static SynchronizeMemberInput from(
-            final String id,
+            final UUID id,
             final String username,
             final String nickname,
             final Boolean hasSystemAccess,

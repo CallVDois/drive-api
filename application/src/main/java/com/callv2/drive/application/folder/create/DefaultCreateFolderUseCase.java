@@ -26,10 +26,10 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
 
     @Override
     public CreateFolderOutput execute(final CreateFolderInput input) {
-        final MemberID ownerId = MemberID.of(input.ownerId());
+        final MemberID ownerId = MemberID.of(input.creatorId());
 
         if (!memberGateway.existsById(ownerId))
-            throw NotFoundException.with(Member.class, input.ownerId().toString());
+            throw NotFoundException.with(Member.class, input.creatorId().toString());
 
         final Folder parentFolder = folderGateway
                 .findById(FolderID.of(input.parentFolderId()))

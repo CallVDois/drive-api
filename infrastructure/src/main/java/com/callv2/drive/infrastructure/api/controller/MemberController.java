@@ -1,5 +1,7 @@
 package com.callv2.drive.infrastructure.api.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -29,7 +31,7 @@ public class MemberController implements MemberAPI {
     @Override
     public ResponseEntity<Void> requestQuota(final long amount, final QuotaUnit unit) {
 
-        final String memberId = SecurityContext.getAuthenticatedUser();
+        final UUID memberId = SecurityContext.getAuthenticatedUserId();
 
         this.createRequestQuotaUseCase.execute(CreateRequestQuotaInput.of(memberId, amount, unit));
 
@@ -40,7 +42,7 @@ public class MemberController implements MemberAPI {
     public ResponseEntity<MemberQuotaResponse> getQuota() {
         return ResponseEntity
                 .ok(MemberPresenter.present(
-                        this.getQuotaUseCase.execute(GetQuotaInput.of(SecurityContext.getAuthenticatedUser()))));
+                        this.getQuotaUseCase.execute(GetQuotaInput.of(SecurityContext.getAuthenticatedUserId()))));
     }
 
 }

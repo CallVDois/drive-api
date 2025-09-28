@@ -8,17 +8,30 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.StorageKeyAlreadyExistsException;
-import com.callv2.drive.domain.storage.StorageService;
+import com.callv2.drive.domain.storage.StorageGateway;
+import com.callv2.drive.domain.storage.StorageKeyGenerator;
 
-public class FileSystemStorageService implements StorageService {
+public class FileSystemStorage implements StorageGateway, StorageKeyGenerator {
 
     private final Path rootLocation;
 
-    public FileSystemStorageService(final Path rootLocation) {
+    public FileSystemStorage(final Path rootLocation) {
         this.rootLocation = Objects.requireNonNull(rootLocation).toAbsolutePath().normalize();
+    }
+
+    @Override
+    public String generate() {
+        while (true) {
+            final String key = UUID.randomUUID().toString();
+            final Path destinationFile = this.rootLocation.resolve(Paths.get(key)).normalize().toAbsolutePath();
+            if (!Files.exists(destinationFile)) {
+                return key;
+            }
+        }
     }
 
     @Override

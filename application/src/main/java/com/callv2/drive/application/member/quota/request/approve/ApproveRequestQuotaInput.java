@@ -1,8 +1,10 @@
 package com.callv2.drive.application.member.quota.request.approve;
 
-public record ApproveRequestQuotaInput(String memberId, boolean approved) {
+import java.util.UUID;
 
-    public static ApproveRequestQuotaInput of(String memberId, boolean approved) {
+public record ApproveRequestQuotaInput(UUID memberId, boolean approved) {
+
+    public static ApproveRequestQuotaInput of(UUID memberId, boolean approved) {
         return new ApproveRequestQuotaInput(memberId, approved);
     }
 

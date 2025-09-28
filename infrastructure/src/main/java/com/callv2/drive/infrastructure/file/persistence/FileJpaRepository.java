@@ -15,7 +15,7 @@ public interface FileJpaRepository extends JpaRepository<FileJpaEntity, UUID> {
 
     List<FileJpaEntity> findByFolderId(UUID folderId);
 
-    List<FileJpaEntity> findByOwnerId(String ownerId);
+    List<FileJpaEntity> findByOwnerId(UUID ownerId);
 
     @Query("select coalesce(sum(f.contentSize), 0) from File f")
     Long sumAllContentSize();

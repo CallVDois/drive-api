@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +36,7 @@ public class DefaultMoveFolderUseCaseTest {
     @Test
     void givenVAlidInput_whenCallsExecute_thenMoveFolder() {
 
-        final var ownerId = MemberID.of("owner");
+        final var ownerId = MemberID.of(UUID.randomUUID());
 
         final var expectedRootFolder = Folder.createRoot(ownerId);
 

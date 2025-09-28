@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.callv2.drive.domain.AggregateRoot;
@@ -68,6 +69,23 @@ public class Acl extends AggregateRoot<AclID> {
                 null,
                 now,
                 now);
+    }
+
+    public Acl createInherited(final Resource<?> resource) {
+        final Instant now = Instant.now();
+
+        final Set<Entry> inheritedEntries = Stream
+                .concat(this.directEntries.stream(), this.inheritedEntries.stream())
+                .collect(Collectors.toSet());
+
+        return new Acl(
+                AclID.unique(),
+                resource,
+                null,
+                inheritedEntries,
+                now,
+                now);
+
     }
 
     public Optional<AccessPermission> effectiveAccessPermission(final MemberID member) {

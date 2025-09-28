@@ -33,7 +33,7 @@ public class DefaultDeleteFileUseCase extends DeleteFileUseCase {
         final FileID fileId = FileID.of(input.fileId());
 
         final Member member = memberGateway.findById(ownerId)
-                .orElseThrow(() -> NotFoundException.with(Member.class, input.deleterId()));
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.deleterId().toString()));
 
         if (!member.hasSystemAccess())
             throw NotAllowedException.with("Member does not have permission to delete files.");

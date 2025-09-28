@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.member.persistence;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberID;
@@ -22,7 +23,7 @@ import jakarta.persistence.Table;
 public class MemberJpaEntity {
 
     @Id
-    private String id;
+    private UUID id;
 
     private String username;
 
@@ -57,7 +58,7 @@ public class MemberJpaEntity {
     private Long synchronizedVersion;
 
     public MemberJpaEntity(
-            final String id,
+            final UUID id,
             final String username,
             final String nickname,
             final Long quotaInBytes,
@@ -128,11 +129,11 @@ public class MemberJpaEntity {
                 member.getSynchronizedVersion());
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

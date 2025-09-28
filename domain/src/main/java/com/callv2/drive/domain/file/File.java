@@ -18,6 +18,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     private Queue<Event<?>> events;
 
+    private MemberID creator;
     private MemberID owner;
 
     private FolderID folder;
@@ -33,6 +34,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     private File(
             final FileID anId,
+            final MemberID creator,
             final MemberID owner,
             final FolderID folder,
             final FileName name,
@@ -44,6 +46,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         super(anId);
 
         this.folder = folder;
+        this.creator = creator;
         this.owner = owner;
         this.name = name;
         this.content = content;
@@ -64,6 +67,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     public static File with(
             final FileID id,
+            final MemberID creator,
             final MemberID owner,
             final FolderID folder,
             final FileName name,
@@ -72,12 +76,13 @@ public class File extends AggregateRoot<FileID> implements EventSource {
             final Instant updatedAt,
             final Instant deletedAt,
             final Boolean isDeleted) {
-        return new File(id, owner, folder, name, content, createdAt, updatedAt, deletedAt, isDeleted);
+        return new File(id, creator, owner, folder, name, content, createdAt, updatedAt, deletedAt, isDeleted);
     }
 
     public static File with(final File file) {
         return File.with(
                 file.getId(),
+                file.getCreator(),
                 file.getOwner(),
                 file.getFolder(),
                 file.getName(),
@@ -94,6 +99,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
     }
 
     public static File create(
+            final MemberID creator,
             final MemberID owner,
             final FolderID folder,
             final FileName name,
@@ -103,6 +109,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
         return new File(
                 FileID.unique(),
+                creator,
                 owner,
                 folder,
                 name,
@@ -153,6 +160,10 @@ public class File extends AggregateRoot<FileID> implements EventSource {
             throw ValidationException.with("Validation fail has occoured", notification);
     }
 
+    public MemberID getCreator() {
+        return creator;
+    }
+
     public MemberID getOwner() {
         return owner;
     }
@@ -187,9 +198,16 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     @Override
     public String toString() {
-        return "File [id=" + id + ", owner=" + owner + ", folder=" + folder + ", name=" + name + ", content=" + content
-                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", isDeleted="
-                + isDeleted + "]";
+        return "File [id=" + id
+                + ", creator=" + creator
+                + ", owner=" + owner
+                + ", folder=" + folder
+                + ", name=" + name
+                + ", content=" + content
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + ", deletedAt=" + deletedAt
+                + ", isDeleted=" + isDeleted + "]";
     }
 
 }

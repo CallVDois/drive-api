@@ -29,7 +29,7 @@ public class FileDeletedEvent extends Event<FileDeletedEvent.Data> {
 
     public record Data(
             UUID fileId,
-            String ownerId,
+            UUID ownerId,
             UUID folderId,
             String name,
             String storageKey,

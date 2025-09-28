@@ -6,16 +6,16 @@ import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
-import com.callv2.drive.domain.storage.StorageService;
+import com.callv2.drive.domain.storage.StorageGateway;
 
 public class DefaultGetFileContentUseCase extends GetFileContentUseCase {
 
     private final FileGateway fileGateway;
-    private final StorageService storageService;
+    private final StorageGateway storageService;
 
     public DefaultGetFileContentUseCase(
             final FileGateway fileGateway,
-            final StorageService storageService) {
+            final StorageGateway storageService) {
         this.fileGateway = Objects.requireNonNull(fileGateway);
         this.storageService = Objects.requireNonNull(storageService);
     }

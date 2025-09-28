@@ -14,4 +14,12 @@ public enum AccessPermission {
         return level;
     }
 
+    public Boolean canWrite() {
+        return this.level <= WRITE.level;
+    }
+
+    public Boolean canRead() {
+        return this.level <= READ.level;
+    }
+
 }

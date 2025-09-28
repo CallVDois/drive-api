@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,7 @@ public class DefaultGetFolderUseCaseTest {
         @Test
         void givenAValidFolderId_whenCallsExecute_thenShouldReturnFolder() {
 
-                final var ownerId = MemberID.of("owner");
+                final var ownerId = MemberID.of(UUID.randomUUID());
 
                 final var expectedFolderName = "folder";
                 final var expectedFolder = Folder.create(

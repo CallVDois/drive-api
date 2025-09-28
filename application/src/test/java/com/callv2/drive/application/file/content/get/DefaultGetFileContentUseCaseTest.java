@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,7 @@ import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
-import com.callv2.drive.domain.storage.StorageService;
+import com.callv2.drive.domain.storage.StorageGateway;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultGetFileContentUseCaseTest {
@@ -37,16 +38,17 @@ public class DefaultGetFileContentUseCaseTest {
     FileGateway fileGateway;
 
     @Mock
-    StorageService storageService;
+    StorageGateway storageService;
 
     @Test
     void givenAValidParam_whenCallsExecute_shouldReturnContent() {
 
-        final var ownerId = MemberID.of("owner");
+        final var creatorId = MemberID.of(UUID.randomUUID());
+        final var ownerId = MemberID.of(UUID.randomUUID());
         final var expectedFolder = FolderID.unique();
         final var expectedFileName = FileName.of("file.txt");
         final var expectedContent = Content.of("key", "text", 10);
-        final var expectedFile = File.create(ownerId, expectedFolder, expectedFileName, expectedContent);
+        final var expectedFile = File.create(creatorId, ownerId, expectedFolder, expectedFileName, expectedContent);
         final var expectedFileId = expectedFile.getId();
         final var expectedInputStream = new ByteArrayInputStream(new byte[] {});
 

@@ -1,8 +1,10 @@
 package com.callv2.drive.application.member.quota.retrieve.get;
 
+import java.util.UUID;
+
 import com.callv2.drive.domain.member.Member;
 
-public record GetQuotaOutput(String memberId, String username, Long used, Long total, Long available) {
+public record GetQuotaOutput(UUID memberId, String username, Long used, Long total, Long available) {
 
     public static GetQuotaOutput from(final Member member, final Long usedQuotaInBytes) {
         return new GetQuotaOutput(

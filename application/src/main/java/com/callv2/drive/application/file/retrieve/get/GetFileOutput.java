@@ -7,7 +7,7 @@ import com.callv2.drive.domain.file.File;
 
 public record GetFileOutput(
         UUID id,
-        String ownerId,
+        UUID ownerId,
         UUID folderId,
         String name,
         String contentType,

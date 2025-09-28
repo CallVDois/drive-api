@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +43,7 @@ import com.callv2.drive.domain.member.Nickname;
 import com.callv2.drive.domain.member.Quota;
 import com.callv2.drive.domain.member.QuotaUnit;
 import com.callv2.drive.domain.member.Username;
-import com.callv2.drive.domain.storage.StorageService;
+import com.callv2.drive.domain.storage.StorageGateway;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultCreateFileUseCaseTest {
@@ -57,7 +58,7 @@ class DefaultCreateFileUseCaseTest {
     FolderGateway folderGateway;
 
     @Mock
-    StorageService storageService;
+    StorageGateway storageService;
 
     @Mock
     FileGateway fileGateway;
@@ -66,7 +67,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecute_thenShouldCreateFile() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -144,7 +145,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAnInvalidFolderId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -207,7 +208,7 @@ class DefaultCreateFileUseCaseTest {
     @Test
     void givenAnInvalidMemberId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final var expectedOwnerId = MemberID.of("inexistent");
+        final var expectedOwnerId = MemberID.of(UUID.randomUUID());
         final var expectedFolderId = FolderID.unique();
 
         final var expectedFileName = FileName.of("file");
@@ -253,8 +254,19 @@ class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParamsWithAlreadyExistingFileNameOnSameFolder_whenCallsExecute_thenShouldThrowValidationException() {
 
+        final var creator = Member.with(
+                MemberID.of(UUID.randomUUID()),
+                Username.of("creator"),
+                Nickname.of("creator"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                true,
+                Instant.now(),
+                Instant.now(),
+                0L);
+
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -266,6 +278,7 @@ class DefaultCreateFileUseCaseTest {
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
+        final var creatorId = creator.getId();
         final var ownerId = owner.getId();
 
         final var folder = Folder.createRoot(ownerId);
@@ -279,7 +292,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
-        final var fileWithSameName = File.create(ownerId, folder.getId(), expectedFileName,
+        final var fileWithSameName = File.create(creatorId, ownerId, folder.getId(), expectedFileName,
                 Content.of("location", "text", 10));
 
         final var expectedExceptionMessage = "Could not create Aggregate File";
@@ -321,7 +334,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateThrowsRandomException_thenShouldThrowInternalErrorException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -406,7 +419,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateAndContentGatewayDeleteThrowsRandomException_thenShouldThrowInternalErrorException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -491,7 +504,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndContentGatewayStoreThrowsRandomException_thenShouldThrowInternalErrorException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -555,7 +568,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAnInvalidFileName_whenCallsExecute_thenShouldThrowValidationException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -616,7 +629,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndMemberQuotaIsExceeded_thenShouldThrowsQuotaExceededException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -673,7 +686,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAnInvalidParamsWithContentTypeNull_whenCallsExecute_thenShouldThrowsValidationException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
