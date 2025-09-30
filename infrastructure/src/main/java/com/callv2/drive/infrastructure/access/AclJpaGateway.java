@@ -20,7 +20,6 @@ import com.callv2.drive.infrastructure.access.persistence.FolderAclRepository;
 public class AclJpaGateway implements AclGateway {
 
     private final AclJpaRepository aclJpaRepository;
-
     private final FolderAclRepository folderAclRepository;
 
     public AclJpaGateway(
@@ -32,14 +31,12 @@ public class AclJpaGateway implements AclGateway {
 
     @Override
     public Acl create(final Acl acl) {
+        return save(acl);
+    }
 
-        switch (acl.getResource().type()) {
-            case FOLDER -> saveFolderAcl(acl);
-            case FILE -> {
-            }
-        }
-
-        return aclJpaRepository.save(AclJpaEntity.fromDomain(acl)).toDomain();
+    @Override
+    public Acl update(Acl acl) {
+        return save(acl);
     }
 
     @Transactional(readOnly = true)
@@ -54,14 +51,26 @@ public class AclJpaGateway implements AclGateway {
 
     }
 
+    private Acl save(final Acl acl) {
+        switch (acl.getResource().type()) {
+            case FOLDER -> saveFolderAcl(acl);
+            case FILE -> {
+            }
+        }
+
+        return aclJpaRepository.save(AclJpaEntity.fromDomain(acl)).toDomain();
+    }
+
     private void saveFolderAcl(final Acl acl) {
+
         final Resource<FolderID> resource = Resource
                 .folder(FolderID.fromStringValue(acl.getResource().id().getStringValue()));
 
-        Stream
+        this.folderAclRepository.saveAll(Stream
                 .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
-                .collect(Collectors.toSet())
-                .forEach(entry -> folderAclRepository.save(FolderAclJpaEntity.from(resource, entry)));
+                .map(entry -> FolderAclJpaEntity.from(resource, entry))
+                .collect(Collectors.toSet()));
+
     }
 
 }

@@ -6,6 +6,8 @@ public interface AclGateway {
 
     Acl create(Acl acl);
 
+    Acl update(Acl acl);
+
     Optional<Acl> findByResource(Resource<?> resource);
 
 }

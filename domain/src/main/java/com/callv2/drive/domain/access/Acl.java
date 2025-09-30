@@ -101,6 +101,24 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     }
 
+    public Acl inheritFrom(final Acl parentAcl) {
+        if (isNull(parentAcl))
+            throw new IllegalArgumentException("'parentAcl' should not be null");
+
+        final Instant now = Instant.now();
+
+        final Set<Entry> inheritedEntries = Stream
+                .concat(parentAcl.directEntries.stream(), parentAcl.inheritedEntries.stream())
+                .collect(Collectors.toSet());
+
+        this.inheritedEntries = inheritedEntries;
+        this.updatedAt = now;
+
+        this.events.add(AclUpdatedEvent.create(this));
+
+        return this;
+    }
+
     public Acl grantTotal(final MemberID member) {
         return this.grantEntry(member, AccessPermission.mostPrivileged(), SharePermission.mostPrivileged());
     }

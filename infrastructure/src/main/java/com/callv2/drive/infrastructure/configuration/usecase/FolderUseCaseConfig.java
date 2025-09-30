@@ -62,7 +62,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     MoveFolderUseCase moveFolderUseCase() {
-        return new DefaultMoveFolderUseCase(folderGateway);
+        return new DefaultMoveFolderUseCase(aclGateway, folderGateway);
     }
 
     @Bean
