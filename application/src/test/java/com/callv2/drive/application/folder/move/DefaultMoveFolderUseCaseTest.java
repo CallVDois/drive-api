@@ -19,6 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.domain.access.Acl;
+import com.callv2.drive.domain.access.AclGateway;
+import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderName;
@@ -31,10 +34,13 @@ public class DefaultMoveFolderUseCaseTest {
     DefaultMoveFolderUseCase useCase;
 
     @Mock
+    AclGateway aclGateway;
+
+    @Mock
     FolderGateway folderGateway;
 
     @Test
-    void givenVAlidInput_whenCallsExecute_thenMoveFolder() {
+    void givenValidInput_whenCallsExecute_thenMoveFolder() {
 
         final var ownerId = MemberID.of(UUID.randomUUID());
         final var actorId = ownerId;
@@ -43,6 +49,21 @@ public class DefaultMoveFolderUseCaseTest {
 
         final var expectedFolderToMove = Folder.create(ownerId, ownerId, FolderName.of("folder1"), expectedRootFolder);
         final var expectedFolderTarget = Folder.create(ownerId, ownerId, FolderName.of("folder2"), expectedRootFolder);
+
+        final var expectedFolderToMoveResource = Resource.folder(expectedFolderToMove.getId());
+        final var expectedFolderTargetResource = Resource.folder(expectedFolderTarget.getId());
+
+        final var expectedFolderToMoveAcl = Acl.create(expectedFolderToMoveResource);
+        final var expectedFolderTargetAcl = Acl.create(expectedFolderTargetResource);
+
+        expectedFolderToMoveAcl.grantTotal(actorId);
+        expectedFolderTargetAcl.grantTotal(actorId);
+
+        when(aclGateway.findByResource(expectedFolderToMoveResource))
+                .thenReturn(Optional.of(expectedFolderToMoveAcl));
+
+        when(aclGateway.findByResource(expectedFolderTargetResource))
+                .thenReturn(Optional.of(expectedFolderTargetAcl));
 
         when(folderGateway.findByIdWithMemberAccess(expectedFolderToMove.getId(), ownerId))
                 .thenReturn(Optional.of(expectedFolderToMove));

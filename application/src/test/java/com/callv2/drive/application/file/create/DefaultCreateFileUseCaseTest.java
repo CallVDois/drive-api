@@ -219,7 +219,7 @@ class DefaultCreateFileUseCaseTest {
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
 
-        when(folderGateway.findByIdWithMemberAccess(any(), ownerId))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.empty());
 
         final var input = CreateFileInput.of(

@@ -110,7 +110,7 @@ public class DefaultGetFolderUseCaseTest {
         when(folderGateway.findByIdWithMemberAccess(expectedFolderId, expectActorId))
                 .thenReturn(Optional.empty());
 
-        final var input = GetFolderInput.with(expectedFolderId.getValue(), UUID.randomUUID());
+        final var input = GetFolderInput.with(expectedFolderId.getValue(), expectActorId.getValue());
 
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
 

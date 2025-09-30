@@ -1,6 +1,5 @@
 package com.callv2.drive.infrastructure.folder.persistence;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,7 +11,5 @@ public interface FolderJpaRepository extends
         JpaSpecificationExecutor<FolderJpaEntity> {
 
     Optional<FolderJpaEntity> findByRootFolderTrueAndOwnerId(UUID ownerId);
-
-    List<FolderJpaEntity> findAllByParentFolderId(UUID parentFolderId);
 
 }
