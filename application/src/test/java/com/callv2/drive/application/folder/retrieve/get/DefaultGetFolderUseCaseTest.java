@@ -43,6 +43,7 @@ public class DefaultGetFolderUseCaseTest {
     void givenAValidFolderId_whenCallsExecute_thenShouldReturnFolder() {
 
         final var ownerId = MemberID.of(UUID.randomUUID());
+        final var actorId = ownerId;
 
         final var expectedFolderName = "folder";
         final var expectedFolder = Folder.create(
@@ -72,7 +73,7 @@ public class DefaultGetFolderUseCaseTest {
         when(folderGateway.findByIdWithMemberAccess(expectedFolderId, ownerId))
                 .thenReturn(Optional.of(expectedFolder));
 
-        when(folderGateway.findByParentFolderId(expectedFolder.getId()))
+        when(folderGateway.findByParentFolderIdWithMemberAccess(expectedFolder.getId(), actorId))
                 .thenReturn(expectedSubFolders);
 
         final var input = GetFolderInput.with(expectedFolderId.getValue(), ownerId.getValue());
@@ -90,8 +91,8 @@ public class DefaultGetFolderUseCaseTest {
         verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
         verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
 
-        verify(folderGateway, times(1)).findByParentFolderId(any());
-        verify(folderGateway, times(1)).findByParentFolderId(eq(expectedFolder.getId()));
+        verify(folderGateway, times(1)).findByParentFolderIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByParentFolderIdWithMemberAccess(eq(expectedFolder.getId()), eq(actorId));
 
     }
 

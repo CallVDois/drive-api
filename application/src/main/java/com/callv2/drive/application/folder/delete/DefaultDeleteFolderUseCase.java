@@ -38,7 +38,7 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
                 .findByIdWithMemberAccess(folderId, actorId)
                 .orElseThrow(() -> NotFoundException.with(Folder.class, folderId.getValue().toString()));
 
-        final List<File> deletedFiles = deleteRecursively(folder.getId());
+        final List<File> deletedFiles = deleteRecursively(folder.getId(), actorId);
 
         for (File deletedFile : deletedFiles) {
             eventDispatcher.notify(deletedFile);
@@ -46,13 +46,13 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
 
     }
 
-    private List<File> deleteRecursively(final FolderID folderId) {
+    private List<File> deleteRecursively(final FolderID folderId, final MemberID actorId) {
 
         final List<File> storageKeysToBeDeleted = new ArrayList<>(deleteFiles(folderId));
-        final Set<Folder> childrenFolders = folderGateway.findByParentFolderId(folderId);
+        final Set<Folder> childrenFolders = folderGateway.findByParentFolderIdWithMemberAccess(folderId, actorId);
 
         for (Folder children : childrenFolders) {
-            storageKeysToBeDeleted.addAll(deleteRecursively(children.getId()));
+            storageKeysToBeDeleted.addAll(deleteRecursively(children.getId(), actorId));
         }
 
         this.folderGateway.deleteById(folderId);

@@ -50,7 +50,7 @@ public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
 
         return GetRootFolderOutput.from(
                 folder,
-                this.folderGateway.findByParentFolderId(folder.getId()),
+                this.folderGateway.findByParentFolderIdWithMemberAccess(folder.getId(), owner),
                 fileGateway.findByFolder(folder.getId()));
 
     }

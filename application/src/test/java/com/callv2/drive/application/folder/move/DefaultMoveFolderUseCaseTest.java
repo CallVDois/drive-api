@@ -53,7 +53,7 @@ public class DefaultMoveFolderUseCaseTest {
         when(folderGateway.findByIdWithMemberAccess(expectedRootFolder.getId(), ownerId))
                 .thenReturn(Optional.of(expectedRootFolder));
 
-        when(folderGateway.findByParentFolderId(expectedFolderTarget.getId()))
+        when(folderGateway.findByParentFolderIdWithMemberAccess(expectedFolderTarget.getId(), actorId))
                 .thenReturn(Set.of());
 
         final var input = new MoveFolderInput(
@@ -65,7 +65,7 @@ public class DefaultMoveFolderUseCaseTest {
 
         verify(folderGateway, never()).updateAll(anyList());
         verify(folderGateway, times(1)).update(eq(expectedFolderToMove));
-        verify(folderGateway, times(1)).findByParentFolderId(any());
+        verify(folderGateway, times(1)).findByParentFolderIdWithMemberAccess(any(), any());
 
     }
 

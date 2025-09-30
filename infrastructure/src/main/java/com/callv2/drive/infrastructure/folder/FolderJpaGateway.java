@@ -43,9 +43,11 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     @Override
-    public Set<Folder> findByParentFolderId(FolderID parentFolderId) {
+    public Set<Folder> findByParentFolderIdWithMemberAccess(FolderID parentFolderId, final MemberID actorId) {
         return this.folderRepository
-                .findAllByParentFolderId(parentFolderId.getValue())
+                .findAll(
+                        findByParentFolderIdSpecification(parentFolderId.getValue())
+                                .and(folderAclSpecification(actorId.getValue())))
                 .stream()
                 .map(FolderJpaEntity::toDomain)
                 .collect(Collectors.toSet());
@@ -70,8 +72,11 @@ public class FolderJpaGateway implements FolderGateway {
     @Override
     public Optional<Folder> findByIdWithMemberAccess(final FolderID id, final MemberID actorId) {
 
+        final var specification = folderByIdSpecification(id.getValue())
+                .and(folderAclSpecification(actorId.getValue()));
+
         return this.folderRepository
-                .findOne(folderAclByIdSpecification(id.getValue(), actorId.getValue()))
+                .findOne(specification)
                 .map(FolderJpaEntity::toDomain);
 
     }
@@ -113,7 +118,7 @@ public class FolderJpaGateway implements FolderGateway {
             if (query == null)
                 return criteriaBuilder.conjunction();
 
-            Root<FolderAclJpaEntity> aclRoot = query.from(FolderAclJpaEntity.class);
+            final Root<FolderAclJpaEntity> aclRoot = query.from(FolderAclJpaEntity.class);
 
             return criteriaBuilder.and(
                     criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("folderId")),
@@ -122,20 +127,16 @@ public class FolderJpaGateway implements FolderGateway {
         };
     }
 
-    private static Specification<FolderJpaEntity> folderAclByIdSpecification(final UUID folderId, final UUID actorId) {
-
+    private static Specification<FolderJpaEntity> folderByIdSpecification(final UUID folderId) {
         return (root, query, criteriaBuilder) -> {
-            if (query == null)
-                return criteriaBuilder.conjunction();
-
-            Root<FolderAclJpaEntity> aclRoot = query.from(FolderAclJpaEntity.class);
-
-            return criteriaBuilder.and(
-                    criteriaBuilder.equal(root.get("id"), folderId),
-                    criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("folderId")),
-                    criteriaBuilder.equal(aclRoot.get("id").get("memberId"), actorId));
+            return criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), folderId));
         };
+    }
 
+    private static Specification<FolderJpaEntity> findByParentFolderIdSpecification(final UUID parentFolderId) {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.and(criteriaBuilder.equal(root.get("parentFolderId"), parentFolderId));
+        };
     }
 
 }

@@ -52,7 +52,8 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
             final MemberID actorId,
             final Notification notification) {
 
-        final Set<Folder> newParentFolderSubFolders = this.folderGateway.findByParentFolderId(newParentFolder.getId());
+        final Set<Folder> newParentFolderSubFolders = this.folderGateway
+                .findByParentFolderIdWithMemberAccess(newParentFolder.getId(), actorId);
 
         if (newParentFolderSubFolders.stream().anyMatch(sf -> sf.getName().equals(folder.getName())))
             notification.append(

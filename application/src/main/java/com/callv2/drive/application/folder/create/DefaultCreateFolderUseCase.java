@@ -59,7 +59,9 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
 
         final Notification notification = Notification.create();
 
-        final Set<Folder> subFolders = folderGateway.findByParentFolderId(parentFolder.getId());
+        final Set<Folder> subFolders = folderGateway.findByParentFolderIdWithMemberAccess(
+                parentFolder.getId(),
+                creatorId);
 
         if (subFolders.stream().anyMatch(subFolder -> subFolder.getName().equals(name)))
             notification.append(ValidationError.with("Folder with the same name already exists"));
