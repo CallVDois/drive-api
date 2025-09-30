@@ -57,7 +57,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     GetFolderUseCase getFolderUseCase() {
-        return new DefaultGetFolderUseCase(aclGateway, folderGateway, fileGateway);
+        return new DefaultGetFolderUseCase(folderGateway, fileGateway);
     }
 
     @Bean

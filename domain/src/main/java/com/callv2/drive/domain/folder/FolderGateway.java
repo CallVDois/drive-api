@@ -10,7 +10,7 @@ import com.callv2.drive.domain.pagination.SearchQuery;
 
 public interface FolderGateway {
 
-    Optional<Folder> findRoot(MemberID owner);
+    Optional<Folder> findMemberRootFolder(MemberID owner);
 
     Set<Folder> findByParentFolderId(FolderID parentFolderId);
 

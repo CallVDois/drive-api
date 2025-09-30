@@ -38,7 +38,7 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     @Override
-    public Optional<Folder> findRoot(final MemberID owner) {
+    public Optional<Folder> findMemberRootFolder(final MemberID owner) {
         return this.folderRepository.findByRootFolderTrueAndOwnerId(owner.getValue()).map(FolderJpaEntity::toDomain);
     }
 

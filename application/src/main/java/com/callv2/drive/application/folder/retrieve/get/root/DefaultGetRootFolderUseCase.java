@@ -45,7 +45,7 @@ public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
         if (!memberGateway.existsById(owner))
             throw NotFoundException.with(Member.class, owner.getValue().toString());
 
-        final Optional<Folder> root = folderGateway.findRoot(owner);
+        final Optional<Folder> root = folderGateway.findMemberRootFolder(owner);
         final Folder folder = root.isPresent() ? root.get() : createRoot(owner);
 
         return GetRootFolderOutput.from(
