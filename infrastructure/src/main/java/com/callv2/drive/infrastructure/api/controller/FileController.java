@@ -21,6 +21,7 @@ import com.callv2.drive.application.file.delete.DeleteFileInput;
 import com.callv2.drive.application.file.delete.DeleteFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
+import com.callv2.drive.application.file.retrieve.list.FileListInput;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
@@ -118,7 +119,10 @@ public class FileController implements FileAPI {
                 filterOperator,
                 searchFilters);
 
-        return ResponseEntity.ok(listFilesUseCase.execute(query).map(FilePresenter::present));
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        return ResponseEntity
+                .ok(listFilesUseCase.execute(new FileListInput(actorId, query)).map(FilePresenter::present));
     }
 
 }

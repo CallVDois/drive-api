@@ -1,7 +1,7 @@
 package com.callv2.drive.domain.access;
 
 public enum SharePermission {
-    SHARE_TO_SHARE(0),
+    SHARE_TO_SHARE(0), // TODO verirify if this is correct
     SHARE_WRITE(1),
     SHARE_READ(2);
 

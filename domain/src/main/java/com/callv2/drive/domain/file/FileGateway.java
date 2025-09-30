@@ -20,7 +20,7 @@ public interface FileGateway {
 
     List<File> findByOwner(MemberID ownerId);
 
-    Page<File> findAll(SearchQuery searchQuery);
+    Page<File> findAllWithMemberAccess(SearchQuery searchQuery, MemberID memberId);
 
     void deleteById(FileID id);
 

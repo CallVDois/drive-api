@@ -98,7 +98,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
             throw ValidationException.with("Could not create Aggregate File",
                     ValidationError.with("File with same name already exists on this folder"));
 
-        final Content content = storeContentFile(input);
+        final Content content = storeContentFile(input);//TODO handle exception and delete content if necessary
 
         final File file = notification
                 .validate(() -> File.create(creatorId, folder.getOwner(), folderId, fileName, content));

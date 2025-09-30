@@ -2,6 +2,7 @@ package com.callv2.drive.infrastructure.file;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,13 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
+import com.callv2.drive.infrastructure.access.persistence.FileAclJpaEntity;
 import com.callv2.drive.infrastructure.file.persistence.FileJpaEntity;
 import com.callv2.drive.infrastructure.file.persistence.FileJpaRepository;
 import com.callv2.drive.infrastructure.filter.FilterService;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
+
+import jakarta.persistence.criteria.Root;
 
 @Component
 public class FileJPAGateway implements FileGateway {
@@ -56,14 +60,15 @@ public class FileJPAGateway implements FileGateway {
     }
 
     @Override
-    public Page<File> findAll(final SearchQuery searchQuery) {
+    public Page<File> findAllWithMemberAccess(final SearchQuery searchQuery, final MemberID memberId) {
 
         final var page = QueryAdapter.of(searchQuery.pagination());
 
-        final Specification<FileJpaEntity> specification = filterService.buildSpecification(
-                FileJpaEntity.class,
-                searchQuery.filterMethod(),
-                searchQuery.filters());
+        final Specification<FileJpaEntity> specification = fileAclSpecification(memberId.getValue())
+                .and(filterService.buildSpecification(
+                        FileJpaEntity.class,
+                        searchQuery.filterMethod(),
+                        searchQuery.filters()));
 
         final org.springframework.data.domain.Page<FileJpaEntity> pageResult = this.fileRepository
                 .findAll(specification, page);
@@ -94,6 +99,21 @@ public class FileJPAGateway implements FileGateway {
     @Override
     public Long sumAllContentSize() {
         return this.fileRepository.sumAllContentSize();
+    }
+
+    private static Specification<FileJpaEntity> fileAclSpecification(final UUID actorId) {
+        return (root, query, criteriaBuilder) -> {
+
+            if (query == null)
+                return criteriaBuilder.conjunction();
+
+            final Root<FileAclJpaEntity> aclRoot = query.from(FileAclJpaEntity.class);
+
+            return criteriaBuilder.and(
+                    criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("fileId")),
+                    criteriaBuilder.equal(aclRoot.get("id").get("memberId"), actorId));
+
+        };
     }
 
 }
