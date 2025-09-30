@@ -52,7 +52,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     CreateFolderUseCase createFolderUseCase() {
-        return new DefaultCreateFolderUseCase(memberGateway, folderGateway);
+        return new DefaultCreateFolderUseCase(eventDispatcher, aclGateway, memberGateway, folderGateway);
     }
 
     @Bean

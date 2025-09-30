@@ -71,7 +71,7 @@ public class FolderJpaGateway implements FolderGateway {
     public Optional<Folder> findByIdWithMemberAccess(final FolderID id, final MemberID actorId) {
 
         return this.folderRepository
-                .findOne(folderAclSpecification(actorId.getValue()))
+                .findOne(folderAclByIdSpecification(id.getValue(), actorId.getValue()))
                 .map(FolderJpaEntity::toDomain);
 
     }
@@ -120,6 +120,22 @@ public class FolderJpaGateway implements FolderGateway {
                     criteriaBuilder.equal(aclRoot.get("id").get("memberId"), actorId));
 
         };
+    }
+
+    private static Specification<FolderJpaEntity> folderAclByIdSpecification(final UUID folderId, final UUID actorId) {
+
+        return (root, query, criteriaBuilder) -> {
+            if (query == null)
+                return criteriaBuilder.conjunction();
+
+            Root<FolderAclJpaEntity> aclRoot = query.from(FolderAclJpaEntity.class);
+
+            return criteriaBuilder.and(
+                    criteriaBuilder.equal(root.get("id"), folderId),
+                    criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("folderId")),
+                    criteriaBuilder.equal(aclRoot.get("id").get("memberId"), actorId));
+        };
+
     }
 
 }
