@@ -26,7 +26,7 @@ public interface FileAdapter {
     }
 
     static DeleteFileContentInput adapt(DeleteFileContentMessage message) {
-        return DeleteFileContentInput.of(message.data().fileId());
+        return DeleteFileContentInput.of(message.data().fileId(), message.data().deleterId());
     }
 
 }

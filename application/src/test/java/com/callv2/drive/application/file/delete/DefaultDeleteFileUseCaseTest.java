@@ -88,6 +88,8 @@ public class DefaultDeleteFileUseCaseTest {
                 expectedFolderId,
                 expectedFileName,
                 expectedContent,
+                expectedCreatorId,
+                null,
                 expectedCreatedAt,
                 expectedUpdatedAt,
                 null,
@@ -96,7 +98,7 @@ public class DefaultDeleteFileUseCaseTest {
         when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.of(deleter));
 
-        when(fileGateway.findById(expectedFileId))
+        when(fileGateway.findByIdWithMemberAccess(expectedFileId, deleter.getId()))
                 .thenReturn(Optional.of(file));
 
         when(fileGateway.update(any()))
@@ -110,8 +112,8 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedFileId), eq(deleter.getId()));
         verify(fileGateway, times(0)).deleteById(any());
         verify(eventDispatcher, times(1)).notify(any(File.class));
         verify(eventDispatcher, times(1)).notify(any(EventSource.class));
@@ -145,7 +147,7 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, never()).findById(any());
+        verify(fileGateway, never()).findByIdWithMemberAccess(any(), any());
         verify(fileGateway, never()).deleteById(any());
         verify(eventDispatcher, never()).notify(any(EventSource.class));
     }
@@ -176,7 +178,7 @@ public class DefaultDeleteFileUseCaseTest {
         when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.of(deleter));
 
-        when(fileGateway.findById(expectedFileId))
+        when(fileGateway.findByIdWithMemberAccess(expectedFileId, deleter.getId()))
                 .thenReturn(Optional.empty());
 
         final var input = DeleteFileInput.of(
@@ -191,8 +193,8 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedFileId), eq(deleter.getId()));
         verify(fileGateway, never()).deleteById(any());
         verify(eventDispatcher, never()).notify(any(EventSource.class));
 
@@ -236,7 +238,7 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, never()).findById(any());
+        verify(fileGateway, never()).findByIdWithMemberAccess(any(), any());
         verify(fileGateway, never()).deleteById(any());
         verify(eventDispatcher, never()).notify(any(EventSource.class));
 

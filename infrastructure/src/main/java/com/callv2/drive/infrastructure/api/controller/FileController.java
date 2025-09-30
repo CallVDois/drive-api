@@ -83,14 +83,19 @@ public class FileController implements FileAPI {
 
     @Override
     public ResponseEntity<GetFileResponse> getById(UUID id) {
-        return ResponseEntity.ok(FilePresenter.present(getFileUseCase.execute(GetFileInput.from(id))));
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        return ResponseEntity.ok(FilePresenter.present(getFileUseCase.execute(GetFileInput.from(id, actorId))));
     }
 
     @Override
     @Async
     public ResponseEntity<Resource> download(UUID id) {
 
-        final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id));
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id, actorId));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.name() + "\"")

@@ -8,6 +8,7 @@ public record DeleteFileContentMessage(Data data) implements Serializable {
 
     public record Data(
             UUID fileId,
+            UUID deleterId,
             String ownerId,
             UUID folderId,
             String name,

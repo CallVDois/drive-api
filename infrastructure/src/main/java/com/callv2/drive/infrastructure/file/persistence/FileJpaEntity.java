@@ -43,6 +43,12 @@ public class FileJpaEntity {
     @Column(name = "content_size", nullable = false)
     private Long contentSize;
 
+    @Column(name = "deleted_by")
+    private UUID deletedBy;
+
+    @Column(name = "updated_by", nullable = false)
+    private UUID updatedBy;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -64,6 +70,8 @@ public class FileJpaEntity {
             final String contentType,
             final String contentLocation,
             final Long contentSize,
+            final UUID updatedBy,
+            final UUID deletedBy,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
@@ -76,6 +84,8 @@ public class FileJpaEntity {
         this.contentType = contentType;
         this.contentStorageKey = contentLocation;
         this.contentSize = contentSize;
+        this.updatedBy = updatedBy;
+        this.deletedBy = deletedBy;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
@@ -95,6 +105,8 @@ public class FileJpaEntity {
                 file.getContent().type(),
                 file.getContent().storageKey(),
                 file.getContent().size(),
+                file.getUpdatedBy().getValue(),
+                file.getDeletedBy() != null ? file.getDeletedBy().getValue() : null,
                 file.getCreatedAt(),
                 file.getUpdatedAt(),
                 file.getDeletedAt(),
@@ -109,6 +121,8 @@ public class FileJpaEntity {
                 FolderID.of(getFolderId()),
                 FileName.of(getName()),
                 Content.of(getContentStorageKey(), getContentType(), getContentSize()),
+                MemberID.of(getUpdatedBy()),
+                getDeletedBy() != null ? MemberID.of(getDeletedBy()) : null,
                 getCreatedAt(),
                 getUpdatedAt(),
                 getDeletedAt(),
@@ -177,6 +191,22 @@ public class FileJpaEntity {
 
     public void setContentSize(Long contentSize) {
         this.contentSize = contentSize;
+    }
+
+    public UUID getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(UUID deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public UUID getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(UUID updatedBy) {
+        this.updatedBy = updatedBy;
     }
 
     public Instant getCreatedAt() {

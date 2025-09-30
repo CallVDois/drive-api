@@ -52,13 +52,13 @@ public class DefaultGetFileContentUseCaseTest {
         final var expectedFileId = expectedFile.getId();
         final var expectedInputStream = new ByteArrayInputStream(new byte[] {});
 
-        when(fileGateway.findById(any()))
+        when(fileGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.of(expectedFile));
 
         when(storageService.retrieve(expectedContent.storageKey()))
                 .thenReturn(expectedInputStream);
 
-        final var input = GetFileContentInput.with(expectedFileId.getValue());
+        final var input = GetFileContentInput.with(expectedFileId.getValue(), creatorId.getValue());
 
         final var actualOutput = useCase.execute(input);
 
@@ -66,13 +66,15 @@ public class DefaultGetFileContentUseCaseTest {
         assertEquals(expectedContent.size(), actualOutput.size());
         assertEquals(expectedInputStream, actualOutput.inputStream());
 
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedFileId), eq(creatorId));
 
     }
 
     @Test
     void givenAnInexistentId_whenCallsExecute_shouldThrowNotFoundException() {
+
+        final var actorId = MemberID.of(UUID.randomUUID());
 
         final var expectedFileId = FileID.unique();
 
@@ -80,10 +82,10 @@ public class DefaultGetFileContentUseCaseTest {
         final var expectedErrorsCount = 1;
         final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedFileId.getValue());
 
-        when(fileGateway.findById(any()))
+        when(fileGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.empty());
 
-        final var input = GetFileContentInput.with(expectedFileId.getValue());
+        final var input = GetFileContentInput.with(expectedFileId.getValue(), actorId.getValue());
 
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(input));
 
@@ -91,8 +93,8 @@ public class DefaultGetFileContentUseCaseTest {
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedFileId), eq(actorId));
 
     }
 

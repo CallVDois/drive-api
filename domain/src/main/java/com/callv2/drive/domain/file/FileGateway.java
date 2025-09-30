@@ -14,7 +14,7 @@ public interface FileGateway {
 
     File update(File file);
 
-    Optional<File> findById(FileID id);
+    Optional<File> findByIdWithMemberAccess(final FileID id, final MemberID memberId);
 
     List<File> findByFolder(FolderID folderId);
 

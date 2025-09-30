@@ -48,7 +48,7 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
 
     private List<File> deleteRecursively(final FolderID folderId, final MemberID actorId) {
 
-        final List<File> storageKeysToBeDeleted = new ArrayList<>(deleteFiles(folderId));
+        final List<File> storageKeysToBeDeleted = new ArrayList<>(deleteFiles(folderId, actorId));
         final Set<Folder> childrenFolders = folderGateway.findByParentFolderIdWithMemberAccess(folderId, actorId);
 
         for (Folder children : childrenFolders) {
@@ -61,12 +61,12 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
 
     }
 
-    private List<File> deleteFiles(final FolderID folderId) {
+    private List<File> deleteFiles(final FolderID folderId, MemberID deleterId) {
 
         final List<File> fileList = fileGateway.findByFolder(folderId);
 
         for (File file : fileList) {
-            fileGateway.update(file.delete());
+            fileGateway.update(file.delete(deleterId));
         }
 
         return fileList;

@@ -211,6 +211,7 @@ public class FileTest {
         final var expectedCreator = MemberID.of(UUID.randomUUID());
         final var expectedOwner = MemberID.of(UUID.randomUUID());
         final var expectedFolder = Folder.createRoot(expectedOwner).getId();
+        final var expectedActorId = expectedOwner;
 
         final var expectedName = FileName.of("File");
 
@@ -227,7 +228,7 @@ public class FileTest {
                 Content.of("loc", "typo", 0));
 
         final var actualUpdatedFile = assertDoesNotThrow(
-                () -> File.with(aFile).update(expectedFolder, expectedName, content));
+                () -> File.with(aFile).update(expectedActorId, expectedFolder, expectedName, content));
 
         assertEquals(expectedName, actualUpdatedFile.getName());
         assertEquals(expectedContentType, actualUpdatedFile.getContent().type());
@@ -244,6 +245,7 @@ public class FileTest {
         final var expectedCreator = MemberID.of(UUID.randomUUID());
         final var expectedOwner = MemberID.of(UUID.randomUUID());
         final var expectedFolder = Folder.createRoot(expectedOwner).getId();
+        final var expectedActorId = expectedOwner;
 
         final var expectedName = "";
 
@@ -259,7 +261,7 @@ public class FileTest {
         final var aFile = File.create(expectedCreator, expectedOwner, expectedFolder, FileName.of("file"), content);
 
         final var actualException = assertThrows(ValidationException.class,
-                () -> File.with(aFile).update(expectedFolder, FileName.of(expectedName), content));
+                () -> File.with(aFile).update(expectedActorId, expectedFolder, FileName.of(expectedName), content));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -272,6 +274,7 @@ public class FileTest {
         final var expectedCreator = MemberID.of(UUID.randomUUID());
         final var expectedOwner = MemberID.of(UUID.randomUUID());
         final var expectedFolder = Folder.createRoot(expectedOwner).getId();
+        final var expectedActorId = expectedOwner;
 
         final String expectedName = null;
 
@@ -287,7 +290,7 @@ public class FileTest {
         final var aFile = File.create(expectedCreator, expectedOwner, expectedFolder, FileName.of("file"), content);
 
         final var actualException = assertThrows(ValidationException.class,
-                () -> File.with(aFile).update(expectedFolder, FileName.of(expectedName), content));
+                () -> File.with(aFile).update(expectedActorId, expectedFolder, FileName.of(expectedName), content));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -301,6 +304,7 @@ public class FileTest {
         final var expectedCreator = MemberID.of(UUID.randomUUID());
         final var expectedOwner = MemberID.of(UUID.randomUUID());
         final var expectedFolder = Folder.createRoot(expectedOwner).getId();
+        final var expectedActorId = expectedOwner;
 
         final var expectedName = """
                 filefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefilefile
@@ -318,7 +322,7 @@ public class FileTest {
         final var aFile = File.create(expectedCreator, expectedOwner, expectedFolder, FileName.of("file"), content);
 
         final var actualException = assertThrows(ValidationException.class,
-                () -> File.with(aFile).update(expectedFolder, FileName.of(expectedName), content));
+                () -> File.with(aFile).update(expectedActorId, expectedFolder, FileName.of(expectedName), content));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
@@ -332,6 +336,7 @@ public class FileTest {
         final var expectedCreator = MemberID.of(UUID.randomUUID());
         final var expectedOwner = MemberID.of(UUID.randomUUID());
         final var expectedFolder = Folder.createRoot(expectedOwner).getId();
+        final var expectedActorId = expectedOwner;
 
         final var expectedName = "nul";
 
@@ -347,7 +352,7 @@ public class FileTest {
         final var aFile = File.create(expectedCreator, expectedOwner, expectedFolder, FileName.of("file"), content);
 
         final var actualException = assertThrows(ValidationException.class,
-                () -> File.with(aFile).update(expectedFolder, FileName.of(expectedName), content));
+                () -> File.with(aFile).update(expectedActorId, expectedFolder, FileName.of(expectedName), content));
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorsCount, actualException.getErrors().size());

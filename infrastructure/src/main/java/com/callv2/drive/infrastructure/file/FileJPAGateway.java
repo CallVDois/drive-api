@@ -46,8 +46,13 @@ public class FileJPAGateway implements FileGateway {
     }
 
     @Override
-    public Optional<File> findById(FileID id) {
-        return fileRepository.findById(id.getValue()).map(FileJpaEntity::toDomain);
+    public Optional<File> findByIdWithMemberAccess(final FileID id, final MemberID memberId) {
+
+        return fileRepository
+                .findOne(fileByIdSpecification(id.getValue())
+                        .and(fileAclSpecification(memberId.getValue())))
+                .map(FileJpaEntity::toDomain);
+
     }
 
     @Override
@@ -99,6 +104,12 @@ public class FileJPAGateway implements FileGateway {
     @Override
     public Long sumAllContentSize() {
         return this.fileRepository.sumAllContentSize();
+    }
+
+    private static Specification<FileJpaEntity> fileByIdSpecification(final UUID fileId) {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), fileId));
+        };
     }
 
     private static Specification<FileJpaEntity> fileAclSpecification(final UUID actorId) {
