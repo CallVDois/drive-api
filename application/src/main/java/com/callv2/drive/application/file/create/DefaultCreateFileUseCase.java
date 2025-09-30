@@ -9,6 +9,7 @@ import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.InternalErrorException;
+import com.callv2.drive.domain.exception.NotAllowedException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.QuotaExceededException;
 import com.callv2.drive.domain.exception.ValidationException;
@@ -70,9 +71,14 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
         final Acl folderAcl = this.aclGateway
                 .findByResource(Resource.folder(folderId))
-                .orElseThrow();// TODO throw some exception
+                .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
-        checkAccessPermission(creatorId, folderAcl);
+        final AccessPermission folderAclPermission = folderAcl
+                .effectiveAccessPermission(creatorId)
+                .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
+
+        if (!folderAclPermission.canWrite())
+            throw NotAllowedException.with("You don't have permission to create files in this folder");
 
         final Member owner = memberGateway
                 .findById(folder.getOwner())
@@ -108,17 +114,6 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         eventDispatcher.notify(file);
 
         return CreateFileOutput.from(file);
-    }
-
-    private void checkAccessPermission(final MemberID memberId, final Acl folderAcl) {
-
-        final AccessPermission folderAclPermission = folderAcl
-                .effectiveAccessPermission(memberId)
-                .orElseThrow();// TODO throw some exception
-
-        if (!folderAclPermission.canWrite())
-            throw new RuntimeException("You don't have permission to create files in this folder");// TODO domain
-
     }
 
     private void checkQuota(final Member owner, final Long newFileSize) {
