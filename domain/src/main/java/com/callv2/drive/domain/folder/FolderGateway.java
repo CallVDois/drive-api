@@ -20,9 +20,9 @@ public interface FolderGateway {
 
     void updateAll(List<Folder> folders);
 
-    Optional<Folder> findById(FolderID id);
+    Optional<Folder> findByIdWithMemberAccess(FolderID id, MemberID actorId);
 
-    Page<Folder> findAll(final SearchQuery searchQuery);
+    Page<Folder> findAllWithMemberAccess(SearchQuery searchQuery, MemberID actorId);
 
     void deleteById(FolderID id);
 

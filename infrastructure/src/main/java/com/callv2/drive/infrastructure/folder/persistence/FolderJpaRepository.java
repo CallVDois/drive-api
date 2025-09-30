@@ -8,13 +8,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
-public interface FolderJpaRepository extends JpaRepository<FolderJpaEntity, UUID> {
+public interface FolderJpaRepository extends
+        JpaRepository<FolderJpaEntity, UUID>,
+        JpaSpecificationExecutor<FolderJpaEntity> {
 
     Optional<FolderJpaEntity> findByRootFolderTrueAndOwnerId(UUID ownerId);
 
     List<FolderJpaEntity> findAllByParentFolderId(UUID parentFolderId);
 
-    Page<FolderJpaEntity> findAll(Specification<FolderJpaEntity> whereClause, Pageable page);
+    // @NonNull
+    // Page<FolderJpaEntity> findAll(@Nullable Specification<FolderJpaEntity> whereClause, @NonNull Pageable page);
 
 }

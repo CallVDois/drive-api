@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.callv2.drive.domain.access.Acl;
 import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.Folder;
@@ -16,16 +17,20 @@ import com.callv2.drive.domain.member.MemberID;
 
 public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
 
+    private final EventDispatcher eventDispatcher;
+
     private final AclGateway aclGateway;
     private final MemberGateway memberGateway;
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
 
     public DefaultGetRootFolderUseCase(
+            final EventDispatcher eventDispatcher,
             final AclGateway aclGateway,
             final MemberGateway memberGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway) {
+        this.eventDispatcher = Objects.requireNonNull(eventDispatcher);
         this.aclGateway = Objects.requireNonNull(aclGateway);
         this.memberGateway = Objects.requireNonNull(memberGateway);
         this.folderGateway = Objects.requireNonNull(folderGateway);
@@ -53,7 +58,7 @@ public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
     private Folder createRoot(final MemberID owner) {
 
         final Folder root = Folder.createRoot(owner);
-        this.aclGateway.create(Acl.create(Resource.folder(root.getId())).grantTotal(owner));
+        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(root.getId())).grantTotal(owner)));
         return folderGateway.create(root);
 
     }

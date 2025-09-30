@@ -16,6 +16,7 @@ import com.callv2.drive.application.folder.move.MoveFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.GetFolderUseCase;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderInput;
 import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderUseCase;
+import com.callv2.drive.application.folder.retrieve.list.FolderListInput;
 import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.application.folder.update.name.UpdateFolderNameInput;
 import com.callv2.drive.application.folder.update.name.UpdateFolderNameUseCase;
@@ -81,13 +82,17 @@ public class FolderController implements FolderAPI {
 
     @Override
     public ResponseEntity<GetFolderResponse> getById(final UUID id) {
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
         return ResponseEntity
-                .ok(FolderPresenter.present(getFolderUseCase.execute(FolderAdapter.adapt(id))));
+                .ok(FolderPresenter.present(getFolderUseCase.execute(FolderAdapter.adapt(id, actorId))));
     }
 
     @Override
     public ResponseEntity<Void> move(final UUID id, final MoveFolderRequest request) {
-        moveFolderUseCase.execute(MoveFolderInput.with(id, request.newParentId()));
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+        moveFolderUseCase.execute(MoveFolderInput.with(id, request.newParentId(), actorId));
         return ResponseEntity.noContent().build();
     }
 
@@ -111,13 +116,18 @@ public class FolderController implements FolderAPI {
                 filterOperator,
                 searchFilters);
 
-        return ResponseEntity.ok(listFoldersUseCase.execute(query).map(FolderPresenter::present));
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        return ResponseEntity
+                .ok(listFoldersUseCase.execute(new FolderListInput(actorId, query)).map(FolderPresenter::present));
     }
 
     @Override
     public ResponseEntity<Void> changeName(UUID id, String newName) {
 
-        this.updateFolderNameUseCase.execute(new UpdateFolderNameInput(id, newName));
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        this.updateFolderNameUseCase.execute(new UpdateFolderNameInput(id, newName, actorId));
 
         return ResponseEntity.noContent().build();
     }

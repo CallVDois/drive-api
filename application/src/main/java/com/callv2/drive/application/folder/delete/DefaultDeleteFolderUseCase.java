@@ -11,6 +11,7 @@ import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 
 public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
 
@@ -31,9 +32,10 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
     public void execute(final DeleteFolderInput input) {
 
         final FolderID folderId = FolderID.of(input.id());
+        final MemberID actorId = MemberID.of(input.actorId());
 
         final Folder folder = folderGateway
-                .findById(FolderID.of(input.id()))
+                .findByIdWithMemberAccess(folderId, actorId)
                 .orElseThrow(() -> NotFoundException.with(Folder.class, folderId.getValue().toString()));
 
         final List<File> deletedFiles = deleteRecursively(folder.getId());

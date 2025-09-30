@@ -4,8 +4,8 @@ import java.util.UUID;
 
 public record CreateFolderInput(UUID creatorId, String name, UUID parentFolderId) {
 
-    public static CreateFolderInput from(UUID ownerdId, String name, UUID parentFolderId) {
-        return new CreateFolderInput(ownerdId, name, parentFolderId);
+    public static CreateFolderInput from(UUID creatorId, String name, UUID parentFolderId) {
+        return new CreateFolderInput(creatorId, name, parentFolderId);
     }
 
 }

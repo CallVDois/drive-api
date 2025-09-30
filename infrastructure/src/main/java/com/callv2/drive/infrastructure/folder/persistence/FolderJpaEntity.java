@@ -26,6 +26,9 @@ public class FolderJpaEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "creator_id", nullable = false)
+    private UUID creatorId;
+
     @Column(name = "owner_id", nullable = false)
     private UUID ownerId;
 
@@ -45,6 +48,7 @@ public class FolderJpaEntity {
             final UUID id,
             final Boolean rootFolder,
             final String name,
+            final UUID creatorId,
             final UUID ownerId,
             final UUID parentFolderId,
             final Instant createdAt,
@@ -53,6 +57,7 @@ public class FolderJpaEntity {
         this.id = id;
         this.rootFolder = rootFolder;
         this.name = name;
+        this.creatorId = creatorId;
         this.ownerId = ownerId;
         this.parentFolderId = parentFolderId;
         this.createdAt = createdAt;
@@ -71,6 +76,7 @@ public class FolderJpaEntity {
                 folder.getId().getValue(),
                 folder.isRootFolder(),
                 folder.getName().value(),
+                folder.getCreator().getValue(),
                 folder.getOwner().getValue(),
                 parentFolderId,
                 folder.getCreatedAt(),
@@ -83,6 +89,7 @@ public class FolderJpaEntity {
     public Folder toDomain() {
         return Folder.with(
                 FolderID.of(id),
+                MemberID.of(creatorId),
                 MemberID.of(ownerId),
                 FolderName.of(name),
                 FolderID.of(parentFolderId),
@@ -124,6 +131,14 @@ public class FolderJpaEntity {
         this.ownerId = ownerId;
     }
 
+    public UUID getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(UUID creatorId) {
+        this.creatorId = creatorId;
+    }
+
     public UUID getParentFolderId() {
         return parentFolderId;
     }
@@ -155,4 +170,5 @@ public class FolderJpaEntity {
     public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
     }
+
 }

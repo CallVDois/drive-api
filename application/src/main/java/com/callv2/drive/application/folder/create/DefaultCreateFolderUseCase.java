@@ -26,21 +26,21 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
 
     @Override
     public CreateFolderOutput execute(final CreateFolderInput input) {
-        final MemberID ownerId = MemberID.of(input.creatorId());
+        final MemberID creatorId = MemberID.of(input.creatorId());
 
-        if (!memberGateway.existsById(ownerId))
+        if (!memberGateway.existsById(creatorId))
             throw NotFoundException.with(Member.class, input.creatorId().toString());
 
         final Folder parentFolder = folderGateway
-                .findById(FolderID.of(input.parentFolderId()))
+                .findByIdWithMemberAccess(FolderID.of(input.parentFolderId()), creatorId)
                 .orElseThrow(() -> NotFoundException.with(
                         Folder.class,
                         "Parent folder with id %s not found".formatted(input.parentFolderId().toString())));
 
-        return CreateFolderOutput.from(createFolder(ownerId, FolderName.of(input.name()), parentFolder));
+        return CreateFolderOutput.from(createFolder(creatorId, FolderName.of(input.name()), parentFolder));
     }
 
-    private Folder createFolder(final MemberID ownerId, FolderName name, final Folder parentFolder) {
+    private Folder createFolder(final MemberID creatorId, FolderName name, final Folder parentFolder) {
 
         final Notification notification = Notification.create();
 
@@ -49,7 +49,8 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
         if (subFolders.stream().anyMatch(subFolder -> subFolder.getName().equals(name)))
             notification.append(ValidationError.with("Folder with the same name already exists"));
 
-        final Folder folder = notification.validate(() -> Folder.create(ownerId, name, parentFolder));
+        final Folder folder = notification
+                .validate(() -> Folder.create(creatorId, parentFolder.getOwner(), name, parentFolder));
 
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate Folder", notification);

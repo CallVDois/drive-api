@@ -37,19 +37,20 @@ public class DefaultMoveFolderUseCaseTest {
     void givenVAlidInput_whenCallsExecute_thenMoveFolder() {
 
         final var ownerId = MemberID.of(UUID.randomUUID());
+        final var actorId = ownerId;
 
         final var expectedRootFolder = Folder.createRoot(ownerId);
 
-        final var expectedFolderToMove = Folder.create(ownerId, FolderName.of("folder1"), expectedRootFolder);
-        final var expectedFolderTarget = Folder.create(ownerId, FolderName.of("folder2"), expectedRootFolder);
+        final var expectedFolderToMove = Folder.create(ownerId, ownerId, FolderName.of("folder1"), expectedRootFolder);
+        final var expectedFolderTarget = Folder.create(ownerId, ownerId, FolderName.of("folder2"), expectedRootFolder);
 
-        when(folderGateway.findById(expectedFolderToMove.getId()))
+        when(folderGateway.findByIdWithMemberAccess(expectedFolderToMove.getId(), ownerId))
                 .thenReturn(Optional.of(expectedFolderToMove));
 
-        when(folderGateway.findById(expectedFolderTarget.getId()))
+        when(folderGateway.findByIdWithMemberAccess(expectedFolderTarget.getId(), ownerId))
                 .thenReturn(Optional.of(expectedFolderTarget));
 
-        when(folderGateway.findById(expectedRootFolder.getId()))
+        when(folderGateway.findByIdWithMemberAccess(expectedRootFolder.getId(), ownerId))
                 .thenReturn(Optional.of(expectedRootFolder));
 
         when(folderGateway.findByParentFolderId(expectedFolderTarget.getId()))
@@ -57,7 +58,8 @@ public class DefaultMoveFolderUseCaseTest {
 
         final var input = new MoveFolderInput(
                 expectedFolderToMove.getId().getValue(),
-                expectedFolderTarget.getId().getValue());
+                expectedFolderTarget.getId().getValue(),
+                actorId.getValue());
 
         assertDoesNotThrow(() -> useCase.execute(input));
 

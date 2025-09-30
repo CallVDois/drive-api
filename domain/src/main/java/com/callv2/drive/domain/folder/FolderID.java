@@ -19,8 +19,7 @@ public class FolderID extends Identifier<UUID> {
         return getValue().toString();
     }
 
-    @Override
-    public FolderID fromStringValue(String value) {
+    public static FolderID fromStringValue(String value) {
         return FolderID.of(UUID.fromString(value));
     }
 

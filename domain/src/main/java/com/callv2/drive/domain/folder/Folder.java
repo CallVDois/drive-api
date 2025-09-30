@@ -13,6 +13,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
     private boolean rootFolder;
 
+    private MemberID creator;
     private MemberID owner;
 
     private FolderName name;
@@ -24,6 +25,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
     private Folder(
             final FolderID id,
+            final MemberID creator,
             final MemberID owner,
             final FolderName name,
             final FolderID parentFolder,
@@ -34,6 +36,7 @@ public class Folder extends AggregateRoot<FolderID> {
         super(id);
 
         this.owner = owner;
+        this.creator = creator;
         this.name = name;
         this.parentFolder = parentFolder;
         this.createdAt = createdAt;
@@ -46,6 +49,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
     public static Folder with(
             final FolderID id,
+            final MemberID creator,
             final MemberID owner,
             final FolderName name,
             final FolderID parentFolder,
@@ -53,15 +57,16 @@ public class Folder extends AggregateRoot<FolderID> {
             final Instant updatedAt,
             final Instant deletedAt,
             final boolean rootFolder) {
-        return new Folder(id, owner, name, parentFolder, createdAt, updatedAt, deletedAt, rootFolder);
+        return new Folder(id, creator, owner, name, parentFolder, createdAt, updatedAt, deletedAt, rootFolder);
     }
 
-    public static Folder createRoot(final MemberID owner) {
+    public static Folder createRoot(final MemberID creator) {
         Instant now = Instant.now();
 
         return Folder.with(
                 FolderID.unique(),
-                owner,
+                creator,
+                creator,
                 FolderName.of("Root"),
                 null,
                 now,
@@ -71,6 +76,7 @@ public class Folder extends AggregateRoot<FolderID> {
     }
 
     public static Folder create(
+            final MemberID creator,
             final MemberID owner,
             final FolderName name,
             final Folder parentFolder) {
@@ -79,6 +85,7 @@ public class Folder extends AggregateRoot<FolderID> {
 
         final var folder = Folder.with(
                 FolderID.unique(),
+                creator,
                 owner,
                 name,
                 parentFolder.getId(),
@@ -123,20 +130,32 @@ public class Folder extends AggregateRoot<FolderID> {
         return this;
     }
 
+    private void selfValidate() {
+        final var notification = Notification.create();
+        validate(notification);
+
+        if (notification.hasError())
+            throw ValidationException.with("Validation fail has occoured", notification);
+    }
+
     public boolean isRootFolder() {
         return rootFolder;
+    }
+
+    public MemberID getCreator() {
+        return creator;
     }
 
     public MemberID getOwner() {
         return owner;
     }
 
-    public FolderID getParentFolder() {
-        return parentFolder;
-    }
-
     public FolderName getName() {
         return name;
+    }
+
+    public FolderID getParentFolder() {
+        return parentFolder;
     }
 
     public Instant getCreatedAt() {
@@ -151,19 +170,18 @@ public class Folder extends AggregateRoot<FolderID> {
         return deletedAt;
     }
 
-    private void selfValidate() {
-        final var notification = Notification.create();
-        validate(notification);
-
-        if (notification.hasError())
-            throw ValidationException.with("Validation fail has occoured", notification);
-    }
-
     @Override
     public String toString() {
-        return "Folder [id=" + id + ", rootFolder=" + rootFolder + ", owner=" + owner + ", name=" + name
-                + ", parentFolder=" + parentFolder + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-                + ", deletedAt=" + deletedAt + "]";
+        return "Folder [id=" + id
+                + ", rootFolder=" + rootFolder
+                + ", creator=" + creator
+                + ", owner=" + owner
+                + ", name=" + name
+                + ", parentFolder=" + parentFolder
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + ", deletedAt=" + deletedAt
+                + "]";
     }
 
 }

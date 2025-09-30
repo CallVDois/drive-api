@@ -8,6 +8,7 @@ import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
@@ -20,16 +21,17 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
     }
 
     @Override
-    public void execute(MoveFolderInput input) {
+    public void execute(final MoveFolderInput input) {
 
         final FolderID folderId = FolderID.of(input.id());
         final FolderID newParentFolderId = FolderID.of(input.newParentId());
+        final MemberID actorId = MemberID.of(input.actorId());
 
-        final Folder folder = findFolder(folderId);
-        final Folder newParentFolder = findFolder(newParentFolderId);
+        final Folder folder = findFolder(folderId, actorId);
+        final Folder newParentFolder = findFolder(newParentFolderId, actorId);
 
         final Notification notification = Notification.create();
-        validateMove(folder, newParentFolder, notification);
+        validateMove(folder, newParentFolder, actorId, notification);
         if (notification.hasError())
             throw ValidationException.with("Invalid move operation", notification);
 
@@ -38,13 +40,17 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
         folderGateway.update(folder);
     }
 
-    private Folder findFolder(FolderID id) {
+    private Folder findFolder(FolderID id, MemberID actorId) {
         return folderGateway
-                .findById(id)
+                .findByIdWithMemberAccess(id, actorId)
                 .orElseThrow(() -> NotFoundException.with(Folder.class, id.getValue().toString()));
     }
 
-    private void validateMove(final Folder folder, final Folder newParentFolder, final Notification notification) {
+    private void validateMove(
+            final Folder folder,
+            final Folder newParentFolder,
+            final MemberID actorId,
+            final Notification notification) {
 
         final Set<Folder> newParentFolderSubFolders = this.folderGateway.findByParentFolderId(newParentFolder.getId());
 
@@ -69,10 +75,9 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
                 break;
             }
 
-            actualParent = findFolder(actualParent.getParentFolder());
+            actualParent = findFolder(actualParent.getParentFolder(), actorId);
         }
 
-        return;
     }
 
 }

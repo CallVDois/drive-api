@@ -7,6 +7,7 @@ import com.callv2.drive.domain.access.AccessPermission;
 import com.callv2.drive.domain.access.Acl;
 import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.QuotaExceededException;
@@ -28,6 +29,8 @@ import com.callv2.drive.domain.validation.handler.Notification;
 
 public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
+    private final EventDispatcher eventDispatcher;
+
     private final MemberGateway memberGateway;
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
@@ -36,12 +39,14 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
     private final AclGateway aclGateway;
 
     public DefaultCreateFileUseCase(
+            final EventDispatcher eventDispatcher,
             final MemberGateway memberGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
             final StorageKeyGenerator storageKeyGenerator,
             final StorageGateway storageGateway,
             final AclGateway aclGateway) {
+        this.eventDispatcher = Objects.requireNonNull(eventDispatcher);
         this.memberGateway = Objects.requireNonNull(memberGateway);
         this.folderGateway = Objects.requireNonNull(folderGateway);
         this.fileGateway = Objects.requireNonNull(fileGateway);
@@ -54,13 +59,13 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
     public CreateFileOutput execute(final CreateFileInput input) {
 
         final MemberID creatorId = memberGateway
-                .findById(MemberID.of(input.ownerId()))
+                .findById(MemberID.of(input.creatorId()))
                 .map(Member::getId)
-                .orElseThrow(() -> NotFoundException.with(Member.class, input.ownerId().toString()));
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.creatorId().toString()));
 
         final FolderID folderId = FolderID.of(input.folderId());
         final Folder folder = folderGateway
-                .findById(folderId)
+                .findByIdWithMemberAccess(folderId, creatorId)
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
         final Acl folderAcl = this.aclGateway
@@ -97,9 +102,10 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
 
         final Acl fileInheritedAcl = folderAcl.createInherited(Resource.file(file.getId()));
 
-        aclGateway.create(fileInheritedAcl);
-
+        eventDispatcher.notify(aclGateway.create(fileInheritedAcl));
         storeFile(file);
+
+        eventDispatcher.notify(file);
 
         return CreateFileOutput.from(file);
     }

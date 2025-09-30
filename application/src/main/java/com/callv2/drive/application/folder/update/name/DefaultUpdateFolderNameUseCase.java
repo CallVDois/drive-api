@@ -8,6 +8,7 @@ import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
@@ -23,7 +24,7 @@ public class DefaultUpdateFolderNameUseCase extends UpdateFolderNameUseCase {
     public void execute(final UpdateFolderNameInput input) {
 
         final Folder folder = this.folderGateway
-                .findById(FolderID.of(input.folderId()))
+                .findByIdWithMemberAccess(FolderID.of(input.folderId()), MemberID.of(input.actorId()))
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
         final FolderName folderName = FolderName.of(input.name());

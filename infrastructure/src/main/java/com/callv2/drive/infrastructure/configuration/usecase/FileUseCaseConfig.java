@@ -54,6 +54,7 @@ public class FileUseCaseConfig {
     @Bean
     CreateFileUseCase createFileUseCase() {
         return new DefaultCreateFileUseCase(
+                eventDispatcher,
                 memberGateway,
                 folderGateway,
                 fileGateway,

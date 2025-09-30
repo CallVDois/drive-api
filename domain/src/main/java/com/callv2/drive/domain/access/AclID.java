@@ -19,8 +19,7 @@ public class AclID extends Identifier<UUID> {
         return getValue().toString();
     }
 
-    @Override
-    public AclID fromStringValue(String value) {
+    public static AclID fromStringValue(String value) {
         return AclID.of(UUID.fromString(value));
     }
 

@@ -5,17 +5,23 @@ import static java.util.Objects.nonNull;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.callv2.drive.domain.AggregateRoot;
+import com.callv2.drive.domain.event.Event;
+import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
-public class Acl extends AggregateRoot<AclID> {
+public class Acl extends AggregateRoot<AclID> implements EventSource {
+
+    private Queue<Event<?>> events;
 
     private final Resource<?> resource;
     private Set<Entry> directEntries;
@@ -37,6 +43,8 @@ public class Acl extends AggregateRoot<AclID> {
         this.inheritedEntries = nonNull(inheritedEntries) ? new HashSet<>(inheritedEntries) : new HashSet<>();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+
+        this.events = new LinkedList<>();
     }
 
     @Override
@@ -50,14 +58,19 @@ public class Acl extends AggregateRoot<AclID> {
 
     }
 
+    @Override
+    public Optional<Event<?>> nextEvent() {
+        return Optional.ofNullable(this.events.poll());
+    }
+
     public static Acl with(
             final AclID id,
             final Resource<?> resource,
-            final Set<Entry> entries,
+            final Set<Entry> directEntries,
             final Set<Entry> inheritedEntries,
             final Instant createdAt,
             final Instant updatedAt) {
-        return new Acl(id, resource, entries, inheritedEntries, createdAt, updatedAt);
+        return new Acl(id, resource, directEntries, inheritedEntries, createdAt, updatedAt);
     }
 
     public static Acl create(final Resource<?> resource) {
@@ -112,6 +125,8 @@ public class Acl extends AggregateRoot<AclID> {
         this.directEntries.add(entry);
         this.updatedAt = Instant.now();
 
+        this.events.add(AclUpdatedEvent.create(this));
+
         return this;
     }
 
@@ -138,11 +153,11 @@ public class Acl extends AggregateRoot<AclID> {
     }
 
     public Set<Entry> getDirectEntries() {
-        return directEntries;
+        return Set.copyOf(directEntries);
     }
 
     public Set<Entry> getInheritedEntries() {
-        return inheritedEntries;
+        return Set.copyOf(inheritedEntries);
     }
 
     public Instant getCreatedAt() {

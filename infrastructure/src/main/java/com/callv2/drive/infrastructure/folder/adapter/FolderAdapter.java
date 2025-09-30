@@ -12,8 +12,8 @@ public interface FolderAdapter {
         return CreateFolderInput.from(ownerId, request.name(), request.parentFolderId());
     }
 
-    static GetFolderInput adapt(UUID id) {
-        return GetFolderInput.with(id);
+    static GetFolderInput adapt(UUID folderId, UUID actorId) {
+        return GetFolderInput.with(folderId, actorId);
     }
 
 }

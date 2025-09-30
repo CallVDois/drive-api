@@ -14,8 +14,7 @@ public class MemberID extends Identifier<UUID> {
         return new MemberID(id);
     }
 
-    @Override
-    public MemberID fromStringValue(final String value) {
+    public static MemberID fromStringValue(final String value) {
         return MemberID.of(UUID.fromString(value));
     }
 
