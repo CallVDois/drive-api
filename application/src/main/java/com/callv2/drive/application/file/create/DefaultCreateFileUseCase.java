@@ -93,12 +93,12 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate File", notification);
 
-        final List<File> filesOnSameFolder = fileGateway.findByFolder(folderId);
+        final List<File> filesOnSameFolder = fileGateway.findAllActiveByFolder(folderId);
         if (filesOnSameFolder.stream().map(File::getName).anyMatch(fileName::equals))
             throw ValidationException.with("Could not create Aggregate File",
                     ValidationError.with("File with same name already exists on this folder"));
 
-        final Content content = storeContentFile(input);//TODO handle exception and delete content if necessary
+        final Content content = storeContentFile(input);// TODO handle exception and delete content if necessary
 
         final File file = notification
                 .validate(() -> File.create(creatorId, folder.getOwner(), folderId, fileName, content));

@@ -170,7 +170,12 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         if (this.isDeleted)
             return this;
 
-        this.deletedAt = Instant.now();
+        final Instant now = Instant.now();
+
+        this.updatedBy = deleterId;
+        this.updatedAt = now;
+        this.deletedBy = deleterId;
+        this.deletedAt = now;
         this.isDeleted = true;
 
         this.events.add(FileDeletedEvent.create(this, deleterId));

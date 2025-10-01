@@ -63,7 +63,7 @@ public class DefaultDeleteFolderUseCase extends DeleteFolderUseCase {
 
     private List<File> deleteFiles(final FolderID folderId, MemberID deleterId) {
 
-        final List<File> fileList = fileGateway.findByFolder(folderId);
+        final List<File> fileList = fileGateway.findAllActiveByFolder(folderId);
 
         for (File file : fileList) {
             fileGateway.update(file.delete(deleterId));

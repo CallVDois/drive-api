@@ -56,9 +56,9 @@ public class FileJPAGateway implements FileGateway {
     }
 
     @Override
-    public List<File> findByFolder(FolderID folderId) {
+    public List<File> findAllActiveByFolder(FolderID folderId) {
         return this.fileRepository
-                .findByFolderId(folderId.getValue())
+                .findByFolderIdAndIsDeletedFalse(folderId.getValue())
                 .stream()
                 .map(FileJpaEntity::toDomain)
                 .toList();

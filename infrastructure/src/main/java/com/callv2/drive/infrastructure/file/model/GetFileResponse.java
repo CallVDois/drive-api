@@ -10,7 +10,11 @@ public record GetFileResponse(
         String name,
         String contentType,
         Long contentSize,
+        UUID createdBy,
         Instant createdAt,
-        Instant updatedAt) {
+        UUID updatedBy,
+        Instant updatedAt,
+        UUID deletedBy,
+        Instant deletedAt) {
 
 }

@@ -51,7 +51,7 @@ public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
         return GetRootFolderOutput.from(
                 folder,
                 this.folderGateway.findByParentFolderIdWithMemberAccess(folder.getId(), owner),
-                fileGateway.findByFolder(folder.getId()));
+                fileGateway.findAllActiveByFolder(folder.getId()));
 
     }
 

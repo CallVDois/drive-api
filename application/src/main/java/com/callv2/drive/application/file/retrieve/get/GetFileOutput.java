@@ -12,19 +12,27 @@ public record GetFileOutput(
         String name,
         String contentType,
         Long contentSize,
+        UUID creatorId,
         Instant createdAt,
-        Instant updatedAt) {
+        UUID updaterId,
+        Instant updatedAt,
+        UUID deleterId,
+        Instant deletedAt) {
 
-    public static GetFileOutput from(final File aFile) {
+    public static GetFileOutput from(final File file) {
         return new GetFileOutput(
-                aFile.getId().getValue(),
-                aFile.getOwner().getValue(),
-                aFile.getFolder().getValue(),
-                aFile.getName().value(),
-                aFile.getContent().type(),
-                aFile.getContent().size(),
-                aFile.getCreatedAt(),
-                aFile.getUpdatedAt());
+                file.getId().getValue(),
+                file.getOwner().getValue(),
+                file.getFolder().getValue(),
+                file.getName().value(),
+                file.getContent().type(),
+                file.getContent().size(),
+                file.getCreator().getValue(),
+                file.getCreatedAt(),
+                file.getUpdatedBy().getValue(),
+                file.getUpdatedAt(),
+                file.getDeletedBy() != null ? file.getDeletedBy().getValue() : null,
+                file.getDeletedAt());
     }
 
 }
