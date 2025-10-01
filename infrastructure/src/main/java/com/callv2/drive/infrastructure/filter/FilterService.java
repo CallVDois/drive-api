@@ -39,29 +39,17 @@ public class FilterService {
             final Class<T> entityClass,
             final Filter.Group group) {
 
-        final Specification<T> groupSpecification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
-
         final var elementsIterator = group.elements().iterator();
 
         if (!elementsIterator.hasNext())
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
         final var firstElement = elementsIterator.next();
-        groupSpecification.and(buildSpecification(entityClass, firstElement.filter()));
+        Specification<T> groupSpecification = buildSpecification(entityClass, firstElement.filter());
 
-        elementsIterator
-                .forEachRemaining(nextElement -> {
-
-                    switch (nextElement.operator()) {
-                        case AND -> {
-                            groupSpecification.and(buildSpecification(entityClass, nextElement.filter()));
-                        }
-                        case OR -> {
-                            groupSpecification.or(buildSpecification(entityClass, nextElement.filter()));
-                        }
-                    }
-
-                });
+        while (elementsIterator.hasNext()) {
+            groupSpecification = buildElementSpecification(entityClass, groupSpecification, elementsIterator.next());
+        }
 
         return groupSpecification;
 
