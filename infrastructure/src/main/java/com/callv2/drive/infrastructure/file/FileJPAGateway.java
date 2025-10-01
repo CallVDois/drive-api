@@ -37,12 +37,12 @@ public class FileJPAGateway implements FileGateway {
 
     @Override
     public File create(File file) {
-        return fileRepository.save(FileJpaEntity.from(file)).toDomain();
+        return save(file);
     }
 
     @Override
-    public File update(File file) {
-        return fileRepository.save(FileJpaEntity.from(file)).toDomain();
+    public File update(final File file) {
+        return save(file);
     }
 
     @Override
@@ -104,6 +104,11 @@ public class FileJPAGateway implements FileGateway {
     @Override
     public Long sumAllContentSize() {
         return this.fileRepository.sumAllContentSize();
+    }
+
+    private File save(File file) {
+        this.fileRepository.save(FileJpaEntity.from(file));
+        return file;
     }
 
     private static Specification<FileJpaEntity> fileByIdSpecification(final UUID fileId) {
