@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +57,7 @@ public class DefaultDeleteFileUseCaseTest {
     void givenAValidParam_whenCallsExecute_thenShouldDeleteFile() {
 
         final var deleter = Member.with(
-                MemberID.of("deleter"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -69,6 +70,7 @@ public class DefaultDeleteFileUseCaseTest {
                 .approveQuotaRequest();
 
         final FileID expectedFileId = FileID.unique();
+        final MemberID expectedCreatorId = deleter.getId();
         final MemberID expectedDeleterId = deleter.getId();
         final FolderID expectedFolderId = FolderID.unique();
         final FileName expectedFileName = FileName.of("file.txt");
@@ -81,10 +83,13 @@ public class DefaultDeleteFileUseCaseTest {
         final Instant expectedUpdatedAt = Instant.now();
         final var file = File.with(
                 expectedFileId,
+                expectedCreatorId,
                 expectedDeleterId,
                 expectedFolderId,
                 expectedFileName,
                 expectedContent,
+                expectedCreatorId,
+                null,
                 expectedCreatedAt,
                 expectedUpdatedAt,
                 null,
@@ -93,7 +98,7 @@ public class DefaultDeleteFileUseCaseTest {
         when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.of(deleter));
 
-        when(fileGateway.findById(expectedFileId))
+        when(fileGateway.findByIdWithMemberAccess(expectedFileId, deleter.getId()))
                 .thenReturn(Optional.of(file));
 
         when(fileGateway.update(any()))
@@ -107,8 +112,8 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedFileId), eq(deleter.getId()));
         verify(fileGateway, times(0)).deleteById(any());
         verify(eventDispatcher, times(1)).notify(any(File.class));
         verify(eventDispatcher, times(1)).notify(any(EventSource.class));
@@ -117,12 +122,13 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidMemberId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedDeleterId = MemberID.of("deleter");
+        final MemberID expectedDeleterId = MemberID.of(UUID.randomUUID());
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "[Member] not found.";
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = "[Member] with id [%s] not found.".formatted(expectedDeleterId.getValue());
+        final var expectedErrorMessage = "[Member] with id [%s] not found."
+                .formatted(expectedDeleterId.getValue());
 
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.empty());
@@ -142,7 +148,7 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, never()).findById(any());
+        verify(fileGateway, never()).findByIdWithMemberAccess(any(), any());
         verify(fileGateway, never()).deleteById(any());
         verify(eventDispatcher, never()).notify(any(EventSource.class));
     }
@@ -150,7 +156,6 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidFileId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedDeleterId = MemberID.of("deleter");
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "[File] not found.";
@@ -158,7 +163,7 @@ public class DefaultDeleteFileUseCaseTest {
         final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedFileId.getValue());
 
         final var deleter = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -170,10 +175,12 @@ public class DefaultDeleteFileUseCaseTest {
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
+        final MemberID expectedDeleterId = deleter.getId();
+
         when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.of(deleter));
 
-        when(fileGateway.findById(expectedFileId))
+        when(fileGateway.findByIdWithMemberAccess(expectedFileId, deleter.getId()))
                 .thenReturn(Optional.empty());
 
         final var input = DeleteFileInput.of(
@@ -188,8 +195,8 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedFileId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedFileId), eq(deleter.getId()));
         verify(fileGateway, never()).deleteById(any());
         verify(eventDispatcher, never()).notify(any(EventSource.class));
 
@@ -198,7 +205,7 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAValidMemberIdButNotHaveSystemAccess_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedDeleterId = MemberID.of("deleter");
+        final MemberID expectedDeleterId = MemberID.of(UUID.randomUUID());
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "The requested action is not allowed.";
@@ -206,7 +213,7 @@ public class DefaultDeleteFileUseCaseTest {
         final var expectedErrorMessage = "Member does not have permission to delete files.";
 
         final var deleter = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -233,7 +240,7 @@ public class DefaultDeleteFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedDeleterId));
-        verify(fileGateway, never()).findById(any());
+        verify(fileGateway, never()).findByIdWithMemberAccess(any(), any());
         verify(fileGateway, never()).deleteById(any());
         verify(eventDispatcher, never()).notify(any(EventSource.class));
 

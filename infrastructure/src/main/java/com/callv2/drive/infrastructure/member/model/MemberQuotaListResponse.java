@@ -1,5 +1,7 @@
 package com.callv2.drive.infrastructure.member.model;
 
-public record MemberQuotaListResponse(String memberId, String username, Long total) {
+import java.util.UUID;
+
+public record MemberQuotaListResponse(UUID memberId, String username, Long total) {
 
 }

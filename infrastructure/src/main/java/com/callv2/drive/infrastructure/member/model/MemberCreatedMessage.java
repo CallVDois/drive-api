@@ -3,11 +3,12 @@ package com.callv2.drive.infrastructure.member.model;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 public record MemberCreatedMessage(Data data) implements Serializable {
 
     public record Data(
-            String id,
+            UUID id,
             String username,
             String email,
             String nickname,

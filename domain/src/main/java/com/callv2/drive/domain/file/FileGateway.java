@@ -14,13 +14,13 @@ public interface FileGateway {
 
     File update(File file);
 
-    Optional<File> findById(FileID id);
+    Optional<File> findByIdWithMemberAccess(final FileID id, final MemberID memberId);
 
-    List<File> findByFolder(FolderID folderId);
+    List<File> findAllActiveByFolder(FolderID folderId);
 
     List<File> findByOwner(MemberID ownerId);
 
-    Page<File> findAll(SearchQuery searchQuery);
+    Page<File> findAllWithMemberAccess(SearchQuery searchQuery, MemberID memberId);
 
     void deleteById(FileID id);
 

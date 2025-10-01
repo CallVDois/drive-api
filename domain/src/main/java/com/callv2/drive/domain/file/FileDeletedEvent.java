@@ -9,6 +9,7 @@ import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventEntity;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.member.Member;
+import com.callv2.drive.domain.member.MemberID;
 
 public class FileDeletedEvent extends Event<FileDeletedEvent.Data> {
 
@@ -28,8 +29,9 @@ public class FileDeletedEvent extends Event<FileDeletedEvent.Data> {
     }
 
     public record Data(
+            UUID deleterId,
             UUID fileId,
-            String ownerId,
+            UUID ownerId,
             UUID folderId,
             String name,
             String storageKey,
@@ -39,8 +41,9 @@ public class FileDeletedEvent extends Event<FileDeletedEvent.Data> {
             Instant updatedAt,
             Instant deletedAt) implements Serializable {
 
-        public static Data of(final File file) {
+        public static Data of(final File file, final MemberID deleterId) {
             return new Data(
+                    deleterId.getValue(),
                     file.getId().getValue(),
                     file.getOwner().getValue(),
                     file.getFolder().getValue(),
@@ -54,14 +57,14 @@ public class FileDeletedEvent extends Event<FileDeletedEvent.Data> {
         }
     }
 
-    public static FileDeletedEvent create(final File file) {
+    public static FileDeletedEvent create(final File file, final MemberID deleterId) {
         return new FileDeletedEvent(
                 Instant.now(),
                 Set.of(
                         EventEntity.of(file),
                         EventEntity.of(Member.class, file.getOwner()),
                         EventEntity.of(Folder.class, file.getFolder())),
-                Data.of(file));
+                Data.of(file, deleterId));
     }
 
     public static String eventKey() {

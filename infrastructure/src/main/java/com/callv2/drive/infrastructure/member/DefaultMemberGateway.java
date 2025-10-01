@@ -37,7 +37,7 @@ public class DefaultMemberGateway implements MemberGateway {
     @Override
     public Member create(final Member member) {
         if (this.memberJpaRepository.existsById(member.getId().getValue()))
-            throw AlreadyExistsException.with(Member.class, member.getId().getValue());
+            throw AlreadyExistsException.with(Member.class, member.getId().getStringValue());
 
         return this.memberJpaRepository.save(MemberJpaEntity.fromDomain(member)).toDomain();
     }
@@ -81,7 +81,7 @@ public class DefaultMemberGateway implements MemberGateway {
     public Member update(final Member member) {
 
         if (!this.memberJpaRepository.existsById(member.getId().getValue()))
-            throw NotFoundException.with(Member.class, member.getId().getValue());
+            throw NotFoundException.with(Member.class, member.getId().getStringValue());
 
         final MemberJpaEntity memberJpa = MemberJpaEntity.fromDomain(member);
         final Integer rowsUpdated = memberJpaRepository.update(

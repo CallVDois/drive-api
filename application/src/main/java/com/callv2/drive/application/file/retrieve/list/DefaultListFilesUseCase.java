@@ -3,8 +3,8 @@ package com.callv2.drive.application.file.retrieve.list;
 import java.util.Objects;
 
 import com.callv2.drive.domain.file.FileGateway;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
-import com.callv2.drive.domain.pagination.SearchQuery;
 
 public class DefaultListFilesUseCase extends ListFilesUseCase {
 
@@ -15,9 +15,9 @@ public class DefaultListFilesUseCase extends ListFilesUseCase {
     }
 
     @Override
-    public Page<FileListOutput> execute(final SearchQuery query) {
+    public Page<FileListOutput> execute(final FileListInput input) {
         return this.fileGateway
-                .findAll(query)
+                .findAllWithMemberAccess(input.query(), MemberID.of(input.actorId()))
                 .map(FileListOutput::from);
     }
 

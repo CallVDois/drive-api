@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.api.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -49,12 +50,12 @@ public class MemberAdminController implements MemberAdminAPI {
     }
 
     @Override
-    public ResponseEntity<MemberQuotaResponse> getQuota(String id) {
+    public ResponseEntity<MemberQuotaResponse> getQuota(UUID id) {
         return ResponseEntity.ok(MemberPresenter.present(getQuotaUseCase.execute(GetQuotaInput.of(id))));
     }
 
     @Override
-    public ResponseEntity<Void> approveQuotaRequest(final String id, final boolean approved) {
+    public ResponseEntity<Void> approveQuotaRequest(final UUID id, final boolean approved) {
         this.approveRequestQuotaUseCase.execute(ApproveRequestQuotaInput.of(id, approved));
         return ResponseEntity.noContent().build();
     }

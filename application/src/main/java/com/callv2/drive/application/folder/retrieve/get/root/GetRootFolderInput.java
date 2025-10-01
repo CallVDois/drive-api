@@ -1,7 +1,10 @@
 package com.callv2.drive.application.folder.retrieve.get.root;
-public record GetRootFolderInput(String ownerId) {
 
-    public static GetRootFolderInput from(final String ownerId) {
+import java.util.UUID;
+
+public record GetRootFolderInput(UUID ownerId) {
+
+    public static GetRootFolderInput from(final UUID ownerId) {
         return new GetRootFolderInput(ownerId);
     }
 

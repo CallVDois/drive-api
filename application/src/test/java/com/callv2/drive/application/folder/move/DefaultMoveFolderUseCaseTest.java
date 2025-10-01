@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.domain.access.Acl;
+import com.callv2.drive.domain.access.AclGateway;
+import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderName;
@@ -30,39 +34,59 @@ public class DefaultMoveFolderUseCaseTest {
     DefaultMoveFolderUseCase useCase;
 
     @Mock
+    AclGateway aclGateway;
+
+    @Mock
     FolderGateway folderGateway;
 
     @Test
-    void givenVAlidInput_whenCallsExecute_thenMoveFolder() {
+    void givenValidInput_whenCallsExecute_thenMoveFolder() {
 
-        final var ownerId = MemberID.of("owner");
+        final var ownerId = MemberID.of(UUID.randomUUID());
+        final var actorId = ownerId;
 
         final var expectedRootFolder = Folder.createRoot(ownerId);
 
-        final var expectedFolderToMove = Folder.create(ownerId, FolderName.of("folder1"), expectedRootFolder);
-        final var expectedFolderTarget = Folder.create(ownerId, FolderName.of("folder2"), expectedRootFolder);
+        final var expectedFolderToMove = Folder.create(ownerId, ownerId, FolderName.of("folder1"), expectedRootFolder);
+        final var expectedFolderTarget = Folder.create(ownerId, ownerId, FolderName.of("folder2"), expectedRootFolder);
 
-        when(folderGateway.findById(expectedFolderToMove.getId()))
+        final var expectedFolderToMoveResource = Resource.folder(expectedFolderToMove.getId());
+        final var expectedFolderTargetResource = Resource.folder(expectedFolderTarget.getId());
+
+        final var expectedFolderToMoveAcl = Acl.create(expectedFolderToMoveResource);
+        final var expectedFolderTargetAcl = Acl.create(expectedFolderTargetResource);
+
+        expectedFolderToMoveAcl.grantTotal(actorId);
+        expectedFolderTargetAcl.grantTotal(actorId);
+
+        when(aclGateway.findByResource(expectedFolderToMoveResource))
+                .thenReturn(Optional.of(expectedFolderToMoveAcl));
+
+        when(aclGateway.findByResource(expectedFolderTargetResource))
+                .thenReturn(Optional.of(expectedFolderTargetAcl));
+
+        when(folderGateway.findByIdWithMemberAccess(expectedFolderToMove.getId(), ownerId))
                 .thenReturn(Optional.of(expectedFolderToMove));
 
-        when(folderGateway.findById(expectedFolderTarget.getId()))
+        when(folderGateway.findByIdWithMemberAccess(expectedFolderTarget.getId(), ownerId))
                 .thenReturn(Optional.of(expectedFolderTarget));
 
-        when(folderGateway.findById(expectedRootFolder.getId()))
+        when(folderGateway.findByIdWithMemberAccess(expectedRootFolder.getId(), ownerId))
                 .thenReturn(Optional.of(expectedRootFolder));
 
-        when(folderGateway.findByParentFolderId(expectedFolderTarget.getId()))
+        when(folderGateway.findByParentFolderIdWithMemberAccess(expectedFolderTarget.getId(), actorId))
                 .thenReturn(Set.of());
 
         final var input = new MoveFolderInput(
                 expectedFolderToMove.getId().getValue(),
-                expectedFolderTarget.getId().getValue());
+                expectedFolderTarget.getId().getValue(),
+                actorId.getValue());
 
         assertDoesNotThrow(() -> useCase.execute(input));
 
         verify(folderGateway, never()).updateAll(anyList());
         verify(folderGateway, times(1)).update(eq(expectedFolderToMove));
-        verify(folderGateway, times(1)).findByParentFolderId(any());
+        verify(folderGateway, times(1)).findByParentFolderIdWithMemberAccess(any(), any());
 
     }
 

@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.member.persistence;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 import com.callv2.drive.domain.member.QuotaRequestPreview;
 import com.callv2.drive.domain.member.QuotaUnit;
 
-public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, String> {
+public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, UUID> {
 
     Page<MemberJpaEntity> findAll(Specification<MemberJpaEntity> whereClause, Pageable page);
 
@@ -53,7 +54,7 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Stri
             and (m.synchronizedVersion is null or :synchronizedVersion >= m.synchronizedVersion)
             """)
     Integer update(
-            @Param("id") String id,
+            @Param("id") UUID id,
             @Param("username") String username,
             @Param("nickname") String nickname,
             @Param("quotaInBytes") Long quotaInBytes,

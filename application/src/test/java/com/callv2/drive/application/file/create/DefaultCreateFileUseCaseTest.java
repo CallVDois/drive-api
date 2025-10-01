@@ -17,6 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +26,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.domain.access.AccessPermission;
+import com.callv2.drive.domain.access.Acl;
+import com.callv2.drive.domain.access.AclGateway;
+import com.callv2.drive.domain.access.AclID;
+import com.callv2.drive.domain.access.Entry;
+import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.access.SharePermission;
+import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.QuotaExceededException;
@@ -42,7 +52,8 @@ import com.callv2.drive.domain.member.Nickname;
 import com.callv2.drive.domain.member.Quota;
 import com.callv2.drive.domain.member.QuotaUnit;
 import com.callv2.drive.domain.member.Username;
-import com.callv2.drive.domain.storage.StorageService;
+import com.callv2.drive.domain.storage.StorageGateway;
+import com.callv2.drive.domain.storage.StorageKeyGenerator;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultCreateFileUseCaseTest {
@@ -51,22 +62,31 @@ class DefaultCreateFileUseCaseTest {
     DefaultCreateFileUseCase useCase;
 
     @Mock
+    EventDispatcher eventDispatcher;
+
+    @Mock
     MemberGateway memberGateway;
 
     @Mock
     FolderGateway folderGateway;
 
     @Mock
-    StorageService storageService;
+    StorageKeyGenerator storageKeyGenerator;
+
+    @Mock
+    StorageGateway storageService;
 
     @Mock
     FileGateway fileGateway;
+
+    @Mock
+    AclGateway aclGateway;
 
     @Test
     void givenAValidParams_whenCallsExecute_thenShouldCreateFile() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -90,14 +110,36 @@ class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
+        final var expectedStorageKey = UUID.randomUUID().toString();
+
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findByFolder(any()))
+        when(fileGateway.findAllActiveByFolder(any()))
                 .thenReturn(List.of());
 
-        when(folderGateway.findById(any()))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.of(folder));
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
+
+        when(storageKeyGenerator.generate())
+                .thenReturn(expectedStorageKey);
 
         doNothing()
                 .when(storageService).store(any(), any());
@@ -117,13 +159,13 @@ class DefaultCreateFileUseCaseTest {
 
         assertNotNull(actualOuptut.id());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(1)).findByFolder(any());
-        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllActiveByFolder(any());
+        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
@@ -144,7 +186,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAnInvalidFolderId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -177,7 +219,7 @@ class DefaultCreateFileUseCaseTest {
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
 
-        when(folderGateway.findById(any()))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.empty());
 
         final var input = CreateFileInput.of(
@@ -194,12 +236,12 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedErrorCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(0)).store(any(), any());
         verify(storageService, times(0)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(0)).findByFolder(any());
+        verify(fileGateway, times(0)).findAllActiveByFolder(any());
         verify(fileGateway, times(0)).create(any());
 
     }
@@ -207,7 +249,7 @@ class DefaultCreateFileUseCaseTest {
     @Test
     void givenAnInvalidMemberId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final var expectedOwnerId = MemberID.of("inexistent");
+        final var expectedOwnerId = MemberID.of(UUID.randomUUID());
         final var expectedFolderId = FolderID.unique();
 
         final var expectedFileName = FileName.of("file");
@@ -241,11 +283,11 @@ class DefaultCreateFileUseCaseTest {
 
         verify(memberGateway, times(1)).findById(any());
         verify(memberGateway, times(1)).findById(eq(expectedOwnerId));
-        verify(folderGateway, times(0)).findById(any());
+        verify(folderGateway, times(0)).findByIdWithMemberAccess(any(), any());
         verify(storageService, times(0)).store(any(), any());
         verify(storageService, times(0)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(0)).findByFolder(any());
+        verify(fileGateway, times(0)).findAllActiveByFolder(any());
         verify(fileGateway, times(0)).create(any());
 
     }
@@ -253,8 +295,19 @@ class DefaultCreateFileUseCaseTest {
     @Test
     void givenAValidParamsWithAlreadyExistingFileNameOnSameFolder_whenCallsExecute_thenShouldThrowValidationException() {
 
+        final var creator = Member.with(
+                MemberID.of(UUID.randomUUID()),
+                Username.of("creator"),
+                Nickname.of("creator"),
+                Quota.of(0, QuotaUnit.BYTE),
+                null,
+                true,
+                Instant.now(),
+                Instant.now(),
+                0L);
+
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -266,6 +319,7 @@ class DefaultCreateFileUseCaseTest {
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
 
+        final var creatorId = creator.getId();
         final var ownerId = owner.getId();
 
         final var folder = Folder.createRoot(ownerId);
@@ -279,20 +333,37 @@ class DefaultCreateFileUseCaseTest {
         final var expectedContent = new ByteArrayInputStream(contentBytes);
         final var expectedContentSize = (long) contentBytes.length;
 
-        final var fileWithSameName = File.create(ownerId, folder.getId(), expectedFileName,
+        final var fileWithSameName = File.create(creatorId, ownerId, folder.getId(), expectedFileName,
                 Content.of("location", "text", 10));
 
         final var expectedExceptionMessage = "Could not create Aggregate File";
         final var expectedErrorMessage = "File with same name already exists on this folder";
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findByFolder(any()))
+        when(fileGateway.findAllActiveByFolder(any()))
                 .thenReturn(List.of(fileWithSameName));
 
-        when(folderGateway.findById(any()))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.of(folder));
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -307,12 +378,12 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(0)).store(any(), any());
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(1)).findByFolder(any());
-        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllActiveByFolder(any());
+        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
         verify(fileGateway, times(0)).create(any());
 
     }
@@ -321,7 +392,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateThrowsRandomException_thenShouldThrowInternalErrorException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -347,13 +418,23 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedExceptionMessage = "Could not store File";
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
+        final var expectedStorageKey = UUID.randomUUID().toString();
+
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findByFolder(any()))
+        when(fileGateway.findAllActiveByFolder(any()))
                 .thenReturn(List.of());
 
-        when(folderGateway.findById(any()))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.of(folder));
 
         doNothing()
@@ -365,6 +446,18 @@ class DefaultCreateFileUseCaseTest {
         doNothing()
                 .when(storageService)
                 .delete(any());
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
+
+        when(storageKeyGenerator.generate())
+                .thenReturn(expectedStorageKey);
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -379,13 +472,13 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals("FileGateway Exception", actualException.getCause().getMessage());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(1)).delete(any());
-        verify(fileGateway, times(1)).findByFolder(any());
-        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllActiveByFolder(any());
+        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
@@ -406,7 +499,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndFileGatewayCreateAndContentGatewayDeleteThrowsRandomException_thenShouldThrowInternalErrorException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -432,13 +525,23 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedExceptionMessage = "Could not delete BinaryContent";
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
+        final var expectedStorageKey = UUID.randomUUID().toString();
+
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findByFolder(any()))
+        when(fileGateway.findAllActiveByFolder(any()))
                 .thenReturn(List.of());
 
-        when(folderGateway.findById(any()))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.of(folder));
 
         doNothing()
@@ -450,6 +553,18 @@ class DefaultCreateFileUseCaseTest {
         doThrow(new IllegalStateException("ContentGateway Exception"))
                 .when(storageService)
                 .delete(any());
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
+
+        when(storageKeyGenerator.generate())
+                .thenReturn(expectedStorageKey);
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -464,13 +579,13 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals("ContentGateway Exception", actualException.getCause().getMessage());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(1)).delete(any());
-        verify(fileGateway, times(1)).findByFolder(any());
-        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllActiveByFolder(any());
+        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
@@ -491,7 +606,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndContentGatewayStoreThrowsRandomException_thenShouldThrowInternalErrorException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -517,15 +632,37 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedExceptionMessage = "Could not store BinaryContent";
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
+        final var expectedStorageKey = UUID.randomUUID().toString();
+
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(folderGateway.findById(any()))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.of(folder));
 
         doThrow(new IllegalStateException("ContentGateway Exception"))
                 .when(storageService)
                 .store(any(), any());
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
+
+        when(storageKeyGenerator.generate())
+                .thenReturn(expectedStorageKey);
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -540,12 +677,12 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedExceptionMessage, actualException.getMessage());
         assertEquals("ContentGateway Exception", actualException.getCause().getMessage());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
-        verify(fileGateway, times(1)).findByFolder(any());
-        verify(fileGateway, times(1)).findByFolder(eq(expectedFolderId));
+        verify(fileGateway, times(1)).findAllActiveByFolder(any());
+        verify(fileGateway, times(1)).findAllActiveByFolder(eq(expectedFolderId));
         verify(storageService, times(0)).delete(any());
         verify(fileGateway, times(0)).create(any());
 
@@ -555,7 +692,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAnInvalidFileName_whenCallsExecute_thenShouldThrowValidationException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -583,11 +720,28 @@ class DefaultCreateFileUseCaseTest {
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "'name' cannot be a reserved name: NUL";
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(folderGateway.findById(expectedFolderId))
+        when(folderGateway.findByIdWithMemberAccess(expectedFolderId, ownerId))
                 .thenReturn(Optional.of(folder));
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -603,10 +757,10 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedErrorCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(0)).store(any(), any());
-        verify(fileGateway, times(0)).findByFolder(any());
+        verify(fileGateway, times(0)).findAllActiveByFolder(any());
         verify(storageService, times(0)).delete(any());
         verify(fileGateway, times(0)).create(any());
 
@@ -616,7 +770,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAValidParams_whenCallsExecuteAndMemberQuotaIsExceeded_thenShouldThrowsQuotaExceededException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -644,8 +798,28 @@ class DefaultCreateFileUseCaseTest {
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "You have exceeded your current quota of 1 BYTE";
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
+
+        when(folderGateway.findByIdWithMemberAccess(expectedFolderId, ownerId))
+                .thenReturn(Optional.of(folder));
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -661,9 +835,9 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedErrorCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
-        verify(folderGateway, times(0)).findById(any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
         verify(storageService, times(0)).store(any(), any());
-        verify(fileGateway, times(0)).findByFolder(any());
+        verify(fileGateway, times(0)).findAllActiveByFolder(any());
         verify(storageService, times(0)).delete(any());
         verify(fileGateway, times(0)).create(any());
 
@@ -673,7 +847,7 @@ class DefaultCreateFileUseCaseTest {
     void givenAnInvalidParamsWithContentTypeNull_whenCallsExecute_thenShouldThrowsValidationException() {
 
         final var owner = Member.with(
-                MemberID.of("owner"),
+                MemberID.of(UUID.randomUUID()),
                 Username.of("username"),
                 Nickname.of("nickname"),
                 Quota.of(0, QuotaUnit.BYTE),
@@ -701,17 +875,42 @@ class DefaultCreateFileUseCaseTest {
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "'type' cannot be null.";
 
+        final var expectedAclId = AclID.unique();
+        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclDirectEntries = Set.of(Entry.create(ownerId, AccessPermission.mostPrivileged(),
+                SharePermission.mostPrivileged()));
+        final var expectedAclInheritedEntries = Set.<Entry>of();
+        final var expectedAclCreatedAt = Instant.now();
+        final var expectedAclUpdatedAt = expectedAclCreatedAt;
+
+        final var expectedStorageKey = UUID.randomUUID().toString();
+
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findByFolder(any()))
+        when(fileGateway.findAllActiveByFolder(any()))
                 .thenReturn(List.of());
 
-        when(folderGateway.findById(any()))
+        when(folderGateway.findByIdWithMemberAccess(any(), any()))
+                .thenReturn(Optional.of(folder));
+
+        when(folderGateway.findByIdWithMemberAccess(expectedFolderId, ownerId))
                 .thenReturn(Optional.of(folder));
 
         doNothing()
                 .when(storageService).store(any(), any());
+
+        when(aclGateway.findByResource(any()))
+                .thenReturn(Optional.of(Acl.with(
+                        expectedAclId,
+                        expectedAclResource,
+                        expectedAclDirectEntries,
+                        expectedAclInheritedEntries,
+                        expectedAclCreatedAt,
+                        expectedAclUpdatedAt)));
+
+        when(storageKeyGenerator.generate())
+                .thenReturn(expectedStorageKey);
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -727,13 +926,13 @@ class DefaultCreateFileUseCaseTest {
         assertEquals(expectedErrorCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
-        verify(folderGateway, times(1)).findById(any());
-        verify(folderGateway, times(1)).findById(eq(expectedFolderId));
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(1)).findByFolder(any());
-        verify(fileGateway, times(1)).findByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllActiveByFolder(any());
+        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
         verify(fileGateway, times(0)).create(any());
 
     }

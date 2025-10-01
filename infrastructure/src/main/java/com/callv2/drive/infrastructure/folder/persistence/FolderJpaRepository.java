@@ -1,20 +1,15 @@
 package com.callv2.drive.infrastructure.folder.persistence;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface FolderJpaRepository extends JpaRepository<FolderJpaEntity, UUID> {
+public interface FolderJpaRepository extends
+        JpaRepository<FolderJpaEntity, UUID>,
+        JpaSpecificationExecutor<FolderJpaEntity> {
 
-    Optional<FolderJpaEntity> findByRootFolderTrue();
-
-    List<FolderJpaEntity> findAllByParentFolderId(UUID parentFolderId);
-
-    Page<FolderJpaEntity> findAll(Specification<FolderJpaEntity> whereClause, Pageable page);
+    Optional<FolderJpaEntity> findByRootFolderTrueAndOwnerId(UUID ownerId);
 
 }
