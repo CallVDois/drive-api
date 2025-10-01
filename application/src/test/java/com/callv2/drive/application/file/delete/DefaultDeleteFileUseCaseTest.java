@@ -127,7 +127,8 @@ public class DefaultDeleteFileUseCaseTest {
 
         final String expectedExceptionMessage = "[Member] not found.";
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = "[Member] with id [%s] not found.".formatted(expectedDeleterId.getValue());
+        final var expectedErrorMessage = "[Member] with id [%s] not found."
+                .formatted(expectedDeleterId.getValue());
 
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.empty());
@@ -155,7 +156,6 @@ public class DefaultDeleteFileUseCaseTest {
     @Test
     void givenAInvalidFileId_whenCallsExecute_thenShouldThrowNotFoundException() {
 
-        final MemberID expectedDeleterId = MemberID.of(UUID.randomUUID());
         final FileID expectedFileId = FileID.unique();
 
         final String expectedExceptionMessage = "[File] not found.";
@@ -174,6 +174,8 @@ public class DefaultDeleteFileUseCaseTest {
                 0L)
                 .requestQuota(Quota.of(1, QuotaUnit.GIGABYTE))
                 .approveQuotaRequest();
+
+        final MemberID expectedDeleterId = deleter.getId();
 
         when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.of(deleter));
