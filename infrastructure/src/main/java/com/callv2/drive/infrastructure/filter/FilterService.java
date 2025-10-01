@@ -19,46 +19,64 @@ public class FilterService {
 
     public <T> Specification<T> build(
             final Class<T> entityClass,
-            final Filter.Operator filterMethod,
-            final List<Filter.Group> filters) {
+            final Filter.Operator groupOperator,
+            final List<Filter.Group> filterGroups) {
 
-        final var specifications = filters
-                .stream()
-                .map(group -> buildSpecification(entityClass, group.operator(), group.filters()))
-                .toList();
+        return switch (groupOperator) {
+            case AND -> andSpecifications(filterGroups
+                    .stream()
+                    .map(group -> buildGroupSpecification(entityClass, group))
+                    .toList());
+            case OR -> orSpecifications(filterGroups
+                    .stream()
+                    .map(group -> buildGroupSpecification(entityClass, group))
+                    .toList());
+        };
 
-        if (filterMethod.equals(Filter.Operator.AND))
-            return andSpecifications(specifications);
-
-        if (filterMethod.equals(Filter.Operator.OR))
-            return orSpecifications(specifications);
-
-        return andSpecifications(specifications);
     }
 
-    private <T> Specification<T> buildSpecification(
+    private <T> Specification<T> buildGroupSpecification(
             final Class<T> entityClass,
-            final Filter.Operator filterMethod,
-            final List<Filter> filters) {
+            final Filter.Group group) {
 
-        if (filterMethod.equals(Filter.Operator.AND))
-            return andSpecifications(buildSpecifications(entityClass, filters));
+        final Specification<T> groupSpecification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
-        if (filterMethod.equals(Filter.Operator.OR))
-            return orSpecifications(buildSpecifications(entityClass, filters));
+        final var elementsIterator = group.elements().iterator();
 
-        return andSpecifications(buildSpecifications(entityClass, filters));
+        if (!elementsIterator.hasNext())
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+
+        final var firstElement = elementsIterator.next();
+        groupSpecification.and(buildSpecification(entityClass, firstElement.filter()));
+
+        elementsIterator
+                .forEachRemaining(nextElement -> {
+
+                    switch (nextElement.operator()) {
+                        case AND -> {
+                            groupSpecification.and(buildSpecification(entityClass, nextElement.filter()));
+                        }
+                        case OR -> {
+                            groupSpecification.or(buildSpecification(entityClass, nextElement.filter()));
+                        }
+                    }
+
+                });
+
+        return groupSpecification;
+
     }
 
-    private <T> List<Specification<T>> buildSpecifications(
+    private <T> Specification<T> buildElementSpecification(
             final Class<T> entityClass,
-            final List<Filter> filters) {
-        if (filters == null)
-            return List.of();
+            final Specification<T> groupSpecification,
+            final Filter.Group.Element element) {
 
-        return filters.stream()
-                .map(filter -> buildSpecification(entityClass, filter))
-                .toList();
+        return switch (element.operator()) {
+            case AND -> groupSpecification.and(buildSpecification(entityClass, element.filter()));
+            case OR -> groupSpecification.or(buildSpecification(entityClass, element.filter()));
+        };
+
     }
 
     private <T> Specification<T> buildSpecification(

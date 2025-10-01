@@ -66,7 +66,11 @@ public record Filter(Field field, String value, String valueToCompare, Type type
         }
     }
 
-    public record Group(Filter.Operator operator, List<Filter> filters) {
+    public record Group(List<Group.Element> elements) {
+
+        public record Element(Filter.Operator operator, Filter filter) {
+        }
+
     }
 
     public interface Field {

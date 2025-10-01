@@ -3,18 +3,22 @@ package com.callv2.drive.infrastructure.filter.adapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import com.callv2.drive.domain.exception.InvalidFilterFieldException;
-import com.callv2.drive.domain.exception.InvalidFilterOperatorException;
+import com.callv2.drive.domain.exception.InvalidFilterException;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Pagination;
 
 public interface QueryAdapter {
+
+    static final String FILTER_PATTERN = "(?i)(AND|OR)\\((.*?)\\)";
+    static final Pattern FILTER_REGEX = Pattern.compile(FILTER_PATTERN);
 
     static PageRequest of(final Pagination pagination) {
         return PageRequest.of(pagination.page(), pagination.perPage(), of(pagination.order()));
@@ -32,62 +36,50 @@ public interface QueryAdapter {
         return Direction.fromString(direction.name());
     }
 
-    static Filter.Group of(final String source, List<Filter.Field> acceptableFields) {
+    static Filter.Group of(final String source, final List<Filter.Field> acceptableFields) {
 
-        final var splitedFilters = List.of(source.split("\\|"));
+        final Matcher matcher = FILTER_REGEX.matcher(source);
 
-        final var iterator = splitedFilters.iterator();
-        if (!iterator.hasNext())
-            return new Filter.Group(Filter.Operator.AND, List.of());
+        final List<Filter.Group.Element> filterGroupElements = new ArrayList<Filter.Group.Element>();
 
-        final String first = iterator.next();
-        final Filter.Operator operator = Filter.Operator
-                .of(first)
-                .orElseThrow(() -> InvalidFilterOperatorException.with(first, List.of(Filter.Operator.values())));
+        while (matcher.find()) {
 
-        final var filters = new ArrayList<Filter>();
+            if (matcher.groupCount() != 2)
+                throw InvalidFilterException.filter(matcher.group());
 
-        while (iterator.hasNext()) {
-            final String next = iterator.next();
+            final String operatorGroup = matcher.group(1);
+            final String filterGroup = matcher.group(2);
 
-            final Map<String, String> map = next == null ? Map.of()
-                    : List.of(next.split(";"))
-                            .stream()
-                            .map(s -> s.split("="))
-                            .collect(Collectors.toMap(s -> getSafeArrayElement(s, 0), s -> getSafeArrayElement(s, 1)));
+            final Filter.Operator operator = Filter.Operator
+                    .of(operatorGroup)
+                    .orElseThrow(
+                            () -> InvalidFilterException.operator(operatorGroup, List.of(Filter.Operator.values())));
+
+            final Map<String, String> map = List.of(filterGroup.split(";"))
+                    .stream()
+                    .map(s -> s.split("="))
+                    .collect(Collectors.toMap(s -> getSafeArrayElement(s, 0), s -> getSafeArrayElement(s, 1)));
 
             final var field = acceptableFields
                     .stream()
                     .filter(f -> f.matches(map.get("field")))
                     .findFirst()
-                    .orElseThrow(() -> InvalidFilterFieldException.with(map.get("field"), acceptableFields));
+                    .orElseThrow(() -> InvalidFilterException.field(map.get("field"), acceptableFields));
 
-            filters.add(
-                    new Filter(
-                            field,
-                            map.get("value"),
-                            map.get("valueToCompare"),
-                            Filter.Type.of(map.get("type")).orElse(null)));
+            final var type = Filter.Type
+                    .of(map.get("type"))
+                    .orElseThrow(() -> InvalidFilterException.type(map.get("type"), List.of(Filter.Type.values())));
 
+            final Filter filter = new Filter(
+                    field,
+                    map.get("value"),
+                    map.get("valueToCompare"),
+                    type);
+
+            filterGroupElements.add(new Filter.Group.Element(operator, filter));
         }
 
-        return new Filter.Group(operator, filters);
-
-    }
-
-    static Filter ofOld(final String source, List<? extends Filter.Field> fields) {
-
-        final Map<String, String> map = source == null ? Map.of()
-                : List.of(source.split(";"))
-                        .stream()
-                        .map(s -> s.split("="))
-                        .collect(Collectors.toMap(s -> getSafeArrayElement(s, 0), s -> getSafeArrayElement(s, 1)));
-
-        return new Filter(
-                fields.stream().filter(f -> f.value().equals(map.get("field"))).findFirst().orElse(null),
-                map.get("value"),
-                map.get("valueToCompare"),
-                Filter.Type.of(map.get("type")).orElse(null));
+        return new Filter.Group(filterGroupElements);
     }
 
     private static String getSafeArrayElement(String[] array, int index) {
