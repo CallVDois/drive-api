@@ -15,7 +15,7 @@ public record GetFolderOutput(
         UUID parentFolder,
         Set<GetFolderOutput.SubFolder> subFolders,
         Set<GetFolderOutput.File> files,
-        String ownerId,
+        UUID ownerId,
         Instant createdAt,
         Instant updatedAt,
         Instant deletedAt) {

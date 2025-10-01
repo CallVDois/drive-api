@@ -21,6 +21,7 @@ import com.callv2.drive.application.file.delete.DeleteFileInput;
 import com.callv2.drive.application.file.delete.DeleteFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
+import com.callv2.drive.application.file.retrieve.list.FileListInput;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
@@ -61,7 +62,7 @@ public class FileController implements FileAPI {
     @Override
     public ResponseEntity<CreateFileResponse> create(UUID folderId, MultipartFile file) {
 
-        final var ownerId = SecurityContext.getAuthenticatedUser();
+        final var ownerId = SecurityContext.getAuthenticatedUserId();
 
         final var response = FilePresenter
                 .present(createFileUseCase.execute(FileAdapter.adapt(ownerId, folderId, file)));
@@ -73,7 +74,7 @@ public class FileController implements FileAPI {
 
     @Override
     public ResponseEntity<Void> delete(UUID id) {
-        final var deleterId = SecurityContext.getAuthenticatedUser();
+        final var deleterId = SecurityContext.getAuthenticatedUserId();
 
         DeleteFileInput deleteFileInput = DeleteFileInput.of(deleterId, id);
 
@@ -83,14 +84,19 @@ public class FileController implements FileAPI {
 
     @Override
     public ResponseEntity<GetFileResponse> getById(UUID id) {
-        return ResponseEntity.ok(FilePresenter.present(getFileUseCase.execute(GetFileInput.from(id))));
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        return ResponseEntity.ok(FilePresenter.present(getFileUseCase.execute(GetFileInput.from(id, actorId))));
     }
 
     @Override
     @Async
     public ResponseEntity<Resource> download(UUID id) {
 
-        final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id));
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id, actorId));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.name() + "\"")
@@ -121,7 +127,10 @@ public class FileController implements FileAPI {
                 filterOperator,
                 searchFilterGroups);
 
-        return ResponseEntity.ok(listFilesUseCase.execute(query).map(FilePresenter::present));
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        return ResponseEntity
+                .ok(listFilesUseCase.execute(new FileListInput(actorId, query)).map(FilePresenter::present));
 
     }
 

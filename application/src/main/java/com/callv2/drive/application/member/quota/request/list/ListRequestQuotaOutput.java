@@ -1,12 +1,13 @@
 package com.callv2.drive.application.member.quota.request.list;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import com.callv2.drive.domain.member.QuotaRequestPreview;
 import com.callv2.drive.domain.member.QuotaUnit;
 
 public record ListRequestQuotaOutput(
-        String memberId,
+        UUID memberId,
         String memberUsername,
         String memberNickname,
         long quotaAmount,

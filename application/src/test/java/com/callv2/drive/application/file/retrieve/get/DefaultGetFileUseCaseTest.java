@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,8 @@ public class DefaultGetFileUseCaseTest {
     @Test
     void givenAValidId_whenCallsExecute_thenShouldReturnFile() {
 
-        final var ownerId = MemberID.of("owner");
+        final var creatorId = MemberID.of(UUID.randomUUID());
+        final var ownerId = creatorId;
 
         final var expectedFolder = Folder.createRoot(ownerId);
 
@@ -50,15 +52,19 @@ public class DefaultGetFileUseCaseTest {
 
         final var expectedContent = Content.of(expectedContentLocation, expectedContentType, expectedContentSize);
 
-        final var expectedFile = File.create(ownerId, expectedFolder.getId(), FileName.of(expectedName),
+        final var expectedFile = File.create(
+                creatorId,
+                ownerId,
+                expectedFolder.getId(),
+                FileName.of(expectedName),
                 expectedContent);
 
         final var expectedId = expectedFile.getId();
 
-        when(fileGateway.findById(any()))
+        when(fileGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.of(File.with(expectedFile)));
 
-        final var aCommand = GetFileInput.from(expectedId.getValue());
+        final var aCommand = GetFileInput.from(expectedId.getValue(), creatorId.getValue());
 
         final var actualOuput = assertDoesNotThrow(() -> useCase.execute(aCommand));
 
@@ -67,8 +73,8 @@ public class DefaultGetFileUseCaseTest {
         assertEquals(expectedFile.getCreatedAt(), actualOuput.createdAt());
         assertEquals(expectedFile.getUpdatedAt(), actualOuput.updatedAt());
 
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedId), eq(creatorId));
     }
 
     @Test
@@ -76,14 +82,16 @@ public class DefaultGetFileUseCaseTest {
 
         final var expectedId = FileID.unique();
 
+        final var actorId = MemberID.of(UUID.randomUUID());
+
         final var expectedExceptionMessage = "[File] not found.";
         final var expectedErrorsCount = 1;
         final var expectedErrorMessage = "[File] with id [%s] not found.".formatted(expectedId.getValue().toString());
 
-        when(fileGateway.findById(any()))
+        when(fileGateway.findByIdWithMemberAccess(any(), any()))
                 .thenReturn(Optional.empty());
 
-        final var aCommand = GetFileInput.from(expectedId.getValue());
+        final var aCommand = GetFileInput.from(expectedId.getValue(), actorId.getValue());
 
         final var actualException = assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
 
@@ -91,8 +99,8 @@ public class DefaultGetFileUseCaseTest {
         assertEquals(expectedErrorsCount, actualException.getErrors().size());
         assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
-        verify(fileGateway, times(1)).findById(any());
-        verify(fileGateway, times(1)).findById(eq(expectedId));
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(any(), any());
+        verify(fileGateway, times(1)).findByIdWithMemberAccess(eq(expectedId), eq(actorId));
     }
 
 }

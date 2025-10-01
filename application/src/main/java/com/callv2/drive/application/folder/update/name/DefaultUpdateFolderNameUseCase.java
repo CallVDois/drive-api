@@ -8,6 +8,7 @@ import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;
 
@@ -22,15 +23,19 @@ public class DefaultUpdateFolderNameUseCase extends UpdateFolderNameUseCase {
     @Override
     public void execute(final UpdateFolderNameInput input) {
 
+        final MemberID actorId = MemberID.of(input.actorId());
+
         final Folder folder = this.folderGateway
-                .findById(FolderID.of(input.folderId()))
+                .findByIdWithMemberAccess(FolderID.of(input.folderId()), actorId)
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
         final FolderName folderName = FolderName.of(input.name());
 
         final Notification notification = Notification.create();
 
-        final Set<Folder> subFolders = folderGateway.findByParentFolderId(folder.getParentFolder());
+        final Set<Folder> subFolders = folderGateway.findByParentFolderIdWithMemberAccess(
+                folder.getParentFolder(),
+                actorId);
 
         if (subFolders.stream().anyMatch(subFolder -> subFolder.getName().equals(folderName)))
             notification.append(ValidationError.with("Folder with the same name already exists"));

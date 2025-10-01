@@ -21,8 +21,12 @@ public interface FilePresenter {
                 output.name(),
                 output.contentType(),
                 output.contentSize(),
+                output.creatorId(),
                 output.createdAt(),
-                output.updatedAt());
+                output.updaterId(),
+                output.updatedAt(),
+                output.deleterId(),
+                output.deletedAt());
     }
 
     static FileListResponse present(final FileListOutput output) {

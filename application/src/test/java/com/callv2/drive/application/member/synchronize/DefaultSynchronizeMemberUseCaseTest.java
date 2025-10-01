@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
     @Test
     void givenAnValidInput_whenCallsExecute_thenShouldSynchonizeMember() {
 
-        final var expectedIdVAlue = "123";
+        final var expectedIdVAlue = UUID.randomUUID();
         final var expectedUsernameValue = "username";
         final var expectedNicknameValue = "nickname";
         final var expectedCreatedAt = java.time.Instant.now();
@@ -101,7 +102,7 @@ public class DefaultSynchronizeMemberUseCaseTest {
     @Test
     void givenAnValidInputWhitNonExistentMember_whenCallsExecute_thenShouldCreateMember() {
 
-        final var expectedIdVAlue = "123";
+        final var expectedIdVAlue = UUID.randomUUID();
         final var expectedUsernameValue = "username";
         final var expectedNicknameValue = "nickname";
         final var expectedCreatedAt = java.time.Instant.now();

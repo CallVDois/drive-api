@@ -1,8 +1,10 @@
 package com.callv2.drive.application.member.quota.retrieve.get;
 
-public record GetQuotaInput(String memberId) {
+import java.util.UUID;
 
-    public static GetQuotaInput of(final String memberId) {
+public record GetQuotaInput(UUID memberId) {
+
+    public static GetQuotaInput of(final UUID memberId) {
         return new GetQuotaInput(memberId);
     }
 

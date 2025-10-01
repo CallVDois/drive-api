@@ -18,12 +18,16 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     private Queue<Event<?>> events;
 
+    private MemberID creator;
     private MemberID owner;
 
     private FolderID folder;
 
     private FileName name;
     private Content content;
+
+    private MemberID updatedBy;
+    private MemberID deletedBy;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -33,10 +37,13 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     private File(
             final FileID anId,
+            final MemberID creator,
             final MemberID owner,
             final FolderID folder,
             final FileName name,
             final Content content,
+            final MemberID updatedBy,
+            final MemberID deletedBy,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
@@ -44,9 +51,12 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         super(anId);
 
         this.folder = folder;
+        this.creator = creator;
         this.owner = owner;
         this.name = name;
         this.content = content;
+        this.updatedBy = updatedBy;
+        this.deletedBy = deletedBy;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
@@ -64,24 +74,42 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     public static File with(
             final FileID id,
+            final MemberID creator,
             final MemberID owner,
             final FolderID folder,
             final FileName name,
             final Content content,
+            final MemberID updatedBy,
+            final MemberID deletedBy,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
             final Boolean isDeleted) {
-        return new File(id, owner, folder, name, content, createdAt, updatedAt, deletedAt, isDeleted);
+        return new File(
+                id,
+                creator,
+                owner,
+                folder,
+                name,
+                content,
+                updatedBy,
+                deletedBy,
+                createdAt,
+                updatedAt,
+                deletedAt,
+                isDeleted);
     }
 
     public static File with(final File file) {
         return File.with(
                 file.getId(),
+                file.getCreator(),
                 file.getOwner(),
                 file.getFolder(),
                 file.getName(),
                 file.getContent(),
+                file.getUpdatedBy(),
+                file.getDeletedBy(),
                 file.getCreatedAt(),
                 file.getUpdatedAt(),
                 file.getDeletedAt(),
@@ -94,6 +122,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
     }
 
     public static File create(
+            final MemberID creator,
             final MemberID owner,
             final FolderID folder,
             final FileName name,
@@ -103,10 +132,13 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
         return new File(
                 FileID.unique(),
+                creator,
                 owner,
                 folder,
                 name,
                 content,
+                creator,
+                null,
                 now,
                 now,
                 null,
@@ -114,6 +146,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
     }
 
     public File update(
+            final MemberID updater,
             final FolderID folder,
             final FileName name,
             final Content content) {
@@ -125,21 +158,27 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         this.name = name;
         this.content = content;
 
+        this.updatedBy = updater;
         this.updatedAt = Instant.now();
 
         selfValidate();
         return this;
     }
 
-    public File delete() {
+    public File delete(final MemberID deleterId) {
 
         if (this.isDeleted)
             return this;
 
-        this.deletedAt = Instant.now();
+        final Instant now = Instant.now();
+
+        this.updatedBy = deleterId;
+        this.updatedAt = now;
+        this.deletedBy = deleterId;
+        this.deletedAt = now;
         this.isDeleted = true;
 
-        this.events.add(FileDeletedEvent.create(this));
+        this.events.add(FileDeletedEvent.create(this, deleterId));
 
         return this;
 
@@ -151,6 +190,14 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
         if (notification.hasError())
             throw ValidationException.with("Validation fail has occoured", notification);
+    }
+
+    public Queue<Event<?>> getEvents() {
+        return events;
+    }
+
+    public MemberID getCreator() {
+        return creator;
     }
 
     public MemberID getOwner() {
@@ -167,6 +214,14 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     public Content getContent() {
         return content;
+    }
+
+    public MemberID getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public MemberID getDeletedBy() {
+        return deletedBy;
     }
 
     public Instant getCreatedAt() {
@@ -187,9 +242,19 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     @Override
     public String toString() {
-        return "File [id=" + id + ", owner=" + owner + ", folder=" + folder + ", name=" + name + ", content=" + content
-                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", isDeleted="
-                + isDeleted + "]";
+        return "File [id=" + id
+                + ", creator=" + creator
+                + ", owner=" + owner
+                + ", folder=" + folder
+                + ", name=" + name
+                + ", content=" + content
+                + ", updatedBy=" + updatedBy
+                + ", deletedBy=" + deletedBy
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + ", deletedAt=" + deletedAt
+                + ", isDeleted=" + isDeleted
+                + "]";
     }
 
 }

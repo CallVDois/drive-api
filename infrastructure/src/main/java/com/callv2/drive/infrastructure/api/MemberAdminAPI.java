@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.api;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,14 +34,14 @@ public interface MemberAdminAPI {
     @ApiResponse(responseCode = "200", description = "Retrieve successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @GetMapping("{id}/quotas")
-    ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable("id") String id);
+    ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable("id") UUID id);
 
     @Operation(summary = "Approve drive quota request", description = "This method approve a drive amount quota request", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Approved successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @PatchMapping("{id}/quotas/requests")
     ResponseEntity<Void> approveQuotaRequest(
-            @PathVariable("id") String id,
+            @PathVariable("id") UUID id,
             @RequestParam(value = "approved", defaultValue = "true") boolean approved);
 
     @Operation(summary = "List quotas requests", description = "This method list quotas requests", security = @SecurityRequirement(name = "bearerAuth"))

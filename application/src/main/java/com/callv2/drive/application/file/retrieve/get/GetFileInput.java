@@ -2,10 +2,10 @@ package com.callv2.drive.application.file.retrieve.get;
 
 import java.util.UUID;
 
-public record GetFileInput(UUID id) {
+public record GetFileInput(UUID fileId, UUID actorId) {
 
-    public static GetFileInput from(UUID id) {
-        return new GetFileInput(id);
+    public static GetFileInput from(final UUID id, final UUID actorId) {
+        return new GetFileInput(id, actorId);
     }
 
 }

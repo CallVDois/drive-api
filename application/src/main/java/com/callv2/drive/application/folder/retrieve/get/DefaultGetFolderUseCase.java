@@ -7,6 +7,7 @@ import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 
 public class DefaultGetFolderUseCase extends GetFolderUseCase {
 
@@ -21,17 +22,20 @@ public class DefaultGetFolderUseCase extends GetFolderUseCase {
     }
 
     @Override
-    public GetFolderOutput execute(GetFolderInput input) {
+    public GetFolderOutput execute(final GetFolderInput input) {
+
+        final MemberID actorId = MemberID.of(input.actorId());
+        final FolderID folderId = FolderID.of(input.folderId());
 
         final Folder folder = folderGateway
-                .findById(FolderID.of(input.id()))
-                .orElseThrow(() -> NotFoundException.with(Folder.class, input.id().toString()));
+                .findByIdWithMemberAccess(folderId, actorId)
+                .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
         return GetFolderOutput
                 .from(
                         folder,
-                        folderGateway.findByParentFolderId(folder.getId()),
-                        fileGateway.findByFolder(folder.getId()));
+                        folderGateway.findByParentFolderIdWithMemberAccess(folder.getId(), actorId),
+                        fileGateway.findAllActiveByFolder(folder.getId()));
     }
 
 }

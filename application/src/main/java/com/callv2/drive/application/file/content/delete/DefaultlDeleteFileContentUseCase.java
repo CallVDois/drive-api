@@ -3,16 +3,17 @@ package com.callv2.drive.application.file.content.delete;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
-import com.callv2.drive.domain.storage.StorageService;
+import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.storage.StorageGateway;
 
 public class DefaultlDeleteFileContentUseCase extends DeleteFileContentUseCase {
 
     private final FileGateway fileGateway;
-    private final StorageService storageService;
+    private final StorageGateway storageService;
 
     public DefaultlDeleteFileContentUseCase(
             FileGateway fileGateway,
-            StorageService storageService) {
+            StorageGateway storageService) {
         this.fileGateway = fileGateway;
         this.storageService = storageService;
     }
@@ -21,7 +22,7 @@ public class DefaultlDeleteFileContentUseCase extends DeleteFileContentUseCase {
     public void execute(final DeleteFileContentInput input) {
 
         fileGateway
-                .findById(FileID.of(input.id()))
+                .findByIdWithMemberAccess(FileID.of(input.fileId()), MemberID.of(input.deleterId()))
                 .ifPresent(this::fullFileDeletion);
 
     }

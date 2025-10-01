@@ -20,7 +20,7 @@ public class DefaultApproveRequestQuotaUseCase extends ApproveRequestQuotaUseCas
 
         final Member member = memberGateway
                 .findById(MemberID.of(input.memberId()))
-                .orElseThrow(() -> NotFoundException.with(Member.class, input.memberId()));
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.memberId().toString()));
 
         if (input.approved())
             member.approveQuotaRequest();

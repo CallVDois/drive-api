@@ -12,7 +12,7 @@ public record GetRootFolderOutput(
         String name,
         List<GetRootFolderOutput.SubFolder> subFolders,
         List<GetRootFolderOutput.File> files,
-        String ownerId,
+        UUID ownerId,
         Instant createdAt,
         Instant updatedAt) {
 

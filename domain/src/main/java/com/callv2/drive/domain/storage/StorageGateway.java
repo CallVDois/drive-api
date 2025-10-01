@@ -2,7 +2,7 @@ package com.callv2.drive.domain.storage;
 
 import java.io.InputStream;
 
-public interface StorageService {
+public interface StorageGateway {
 
     void store(String key, InputStream content);
 
