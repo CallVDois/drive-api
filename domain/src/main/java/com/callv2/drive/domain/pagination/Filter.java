@@ -3,6 +3,7 @@ package com.callv2.drive.domain.pagination;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.validation.ValidationError;
@@ -79,8 +80,14 @@ public record Filter(Field field, String value, String valueToCompare, Type type
 
         String value();
 
+        Set<Filter.Type> supportedTypes();
+
         default Boolean matches(String name) {
             return this.name().equalsIgnoreCase(name);
+        }
+
+        default Boolean supports(Filter.Type type) {
+            return supportedTypes().contains(type);
         }
 
     }

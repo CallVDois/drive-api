@@ -47,14 +47,16 @@ public class InvalidFilterException extends SilentDomainException {
 
     public static InvalidFilterException type(
             final String typePassed,
-            final List<Filter.Type> possibleTypes) {
+            final Filter.Field field) {
         return new InvalidFilterException(
                 "The filter type is invalid.",
                 List.of(Error.with(
                         "Invalid filter type: "
                                 + typePassed
+                                + " for field "
+                                + field.value()
                                 + ". Possible types are: "
-                                + Arrays.toString(possibleTypes.toArray()))));
+                                + Arrays.toString(field.supportedTypes().toArray()))));
     }
 
 }

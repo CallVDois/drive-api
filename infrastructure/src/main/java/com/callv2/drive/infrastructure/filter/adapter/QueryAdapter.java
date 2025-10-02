@@ -70,7 +70,8 @@ public interface QueryAdapter {
 
             final var type = Filter.Type
                     .of(map.get("type"))
-                    .orElseThrow(() -> InvalidFilterException.type(map.get("type"), List.of(Filter.Type.values())));
+                    .filter(field::supports)
+                    .orElseThrow(() -> InvalidFilterException.type(map.get("type"), field));
 
             final Filter filter = new Filter(
                     field,
