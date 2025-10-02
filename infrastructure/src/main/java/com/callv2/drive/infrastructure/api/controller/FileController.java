@@ -109,7 +109,7 @@ public class FileController implements FileAPI {
     public ResponseEntity<Page<FileListResponse>> list(
             final int page,
             final int perPage,
-            final String orderField,
+            final FileField orderField,
             final Pagination.Order.Direction orderDirection,
             final Filter.Operator filterOperator,
             final List<String> filterGroups) {

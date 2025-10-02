@@ -65,7 +65,7 @@ public class MemberAdminController implements MemberAdminAPI {
     public ResponseEntity<Page<QuotaRequestListResponse>> listQuotaRequests(
             final int page,
             final int perPage,
-            final String orderField,
+            final MemberField orderField,
             final Pagination.Order.Direction orderDirection) {
 
         final SearchQuery query = SearchQuery.of(
@@ -81,7 +81,7 @@ public class MemberAdminController implements MemberAdminAPI {
     public ResponseEntity<Page<MemberQuotaListResponse>> listQuotas(
             int page,
             int perPage,
-            String orderField,
+            MemberField orderField,
             Direction orderDirection,
             Operator filterOperator,
             List<String> filterGroups) {

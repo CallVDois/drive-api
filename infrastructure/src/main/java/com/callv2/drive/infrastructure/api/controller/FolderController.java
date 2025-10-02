@@ -101,7 +101,7 @@ public class FolderController implements FolderAPI {
     public ResponseEntity<Page<FolderListResponse>> list(
             final int page,
             final int perPage,
-            final String orderField,
+            final FolderField orderField,
             final Pagination.Order.Direction orderDirection,
             final Filter.Operator filterOperator,
             final List<String> filterGroups) {

@@ -31,7 +31,7 @@ public interface QueryAdapter {
         if (order == null)
             return Sort.unsorted();
 
-        return Sort.by(of(order.direction()), order.field());
+        return Sort.by(of(order.direction()), order.field().value());
     }
 
     static Direction of(final Pagination.Order.Direction direction) {
