@@ -7,12 +7,18 @@ import com.callv2.drive.domain.pagination.Filter;
 
 public class InvalidFilterException extends SilentDomainException {
 
+    private static final String FILTER_EXAMPLE = "(field=name;value=banana;type=EQUALS)OR(field=name;value=pijamas;type=LIKE)AND(field=age;value=18;valueToCompare=21;type=BETWEEN)";
+
     private InvalidFilterException(final String message, final List<Error> errors) {
         super(message, errors);
     }
 
     public static InvalidFilterException filter(final String filter) {
-        return new InvalidFilterException("The filter is invalid.", List.of(Error.with("Invalid filter: " + filter)));
+        return new InvalidFilterException(
+                "The filter is invalid.",
+                List.of(
+                        Error.with("Invalid filter: " + filter),
+                        Error.with("Example of a valid filter: " + FILTER_EXAMPLE)));
     }
 
     public static InvalidFilterException field(

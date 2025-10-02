@@ -1,5 +1,7 @@
 package com.callv2.drive.infrastructure.filter.adapter;
 
+import static java.util.Objects.isNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,14 +40,14 @@ public interface QueryAdapter {
 
     static Filter.Group of(final String source, final List<Filter.Field> acceptableFields) {
 
+        if (isNull(source) || source.isBlank())
+            return new Filter.Group(new ArrayList<>());
+
         final Matcher matcher = FILTER_REGEX.matcher(source);
 
         final List<Filter.Group.Element> filterGroupElements = new ArrayList<Filter.Group.Element>();
 
         while (matcher.find()) {
-
-            if (matcher.groupCount() != 2)
-                throw InvalidFilterException.filter(matcher.group());
 
             final String operatorGroup = matcher.group(1);
             final String filterGroup = matcher.group(2);
