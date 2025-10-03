@@ -1,0 +1,29 @@
+package com.callv2.drive.application.file.permissions.grant;
+
+import java.util.UUID;
+
+import com.callv2.drive.domain.access.AccessPermission;
+import com.callv2.drive.domain.access.SharePermission;
+
+public record GrantPermissionInput(
+        UUID fileId,
+        UUID granter,
+        UUID grantee,
+        AccessPermission accessPermission,
+        SharePermission sharePermission) {
+
+    public static GrantPermissionInput with(
+            final UUID fileId,
+            final UUID granter,
+            final UUID grantee,
+            final AccessPermission accessPermission,
+            final SharePermission sharePermission) {
+        return new GrantPermissionInput(
+                fileId,
+                granter,
+                grantee,
+                accessPermission,
+                sharePermission);
+    }
+
+}
