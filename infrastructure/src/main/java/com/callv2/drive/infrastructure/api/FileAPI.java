@@ -18,6 +18,7 @@ import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
+import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
@@ -72,9 +73,9 @@ public interface FileAPI {
     ResponseEntity<Page<FileListResponse>> list(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
-            @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
+            @RequestParam(name = "orderField", required = false, defaultValue = "CREATED_AT") FileField orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
-            @RequestParam(name = "filters", required = false) List<String> filters);
+            @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
 }

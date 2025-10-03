@@ -29,6 +29,7 @@ import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.FileAPI;
 import com.callv2.drive.infrastructure.file.adapter.FileAdapter;
+import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
@@ -108,26 +109,29 @@ public class FileController implements FileAPI {
     public ResponseEntity<Page<FileListResponse>> list(
             final int page,
             final int perPage,
-            final String orderField,
+            final FileField orderField,
             final Pagination.Order.Direction orderDirection,
             final Filter.Operator filterOperator,
-            final List<String> filters) {
+            final List<String> filterGroups) {
 
-        final List<Filter> searchFilters = filters == null ? List.of()
-                : filters
+        final List<Filter.Group> searchFilterGroups = filterGroups == null ? List.of()
+                : filterGroups
                         .stream()
-                        .map(QueryAdapter::of)
+                        .map(source -> QueryAdapter.of(
+                                source,
+                                List.of(FileField.values())))
                         .toList();
 
         final SearchQuery query = SearchQuery.of(
                 Pagination.of(page, perPage, Pagination.Order.of(orderField, orderDirection)),
                 filterOperator,
-                searchFilters);
+                searchFilterGroups);
 
         final var actorId = SecurityContext.getAuthenticatedUserId();
 
         return ResponseEntity
                 .ok(listFilesUseCase.execute(new FileListInput(actorId, query)).map(FilePresenter::present));
+
     }
 
 }

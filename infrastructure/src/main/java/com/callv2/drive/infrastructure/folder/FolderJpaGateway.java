@@ -90,7 +90,7 @@ public class FolderJpaGateway implements FolderGateway {
         final var page = QueryAdapter.of(searchQuery.pagination());
 
         final Specification<FolderJpaEntity> specification = folderAclSpecification(actorId.getValue())
-                .and(filterService.buildSpecification(
+                .and(filterService.build(
                         FolderJpaEntity.class,
                         searchQuery.filterMethod(),
                         searchQuery.filters()));
