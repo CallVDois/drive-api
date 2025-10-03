@@ -24,17 +24,17 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
     private Queue<Event<?>> events;
 
     private final Resource<?> resource;
-    private Set<Entry> directEntries;
-    private Set<Entry> inheritedEntries;
+    private Set<Entry<?>> directEntries;
+    private Set<Entry<?>> inheritedEntries;
 
     private final Instant createdAt;
     private Instant updatedAt;
 
-    public Acl(
+    private Acl(
             final AclID id,
             final Resource<?> resource,
-            final Set<Entry> directEntries,
-            final Set<Entry> inheritedEntries,
+            final Set<Entry<?>> directEntries,
+            final Set<Entry<?>> inheritedEntries,
             final Instant createdAt,
             final Instant updatedAt) {
         super(id);
@@ -66,14 +66,14 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
     public static Acl with(
             final AclID id,
             final Resource<?> resource,
-            final Set<Entry> directEntries,
-            final Set<Entry> inheritedEntries,
+            final Set<Entry<?>> directEntries,
+            final Set<Entry<?>> inheritedEntries,
             final Instant createdAt,
             final Instant updatedAt) {
         return new Acl(id, resource, directEntries, inheritedEntries, createdAt, updatedAt);
     }
 
-    public static Acl create(final Resource<?> resource) {
+    public static Acl create(final Resource<?> resource, final MemberID owner) {
         Instant now = Instant.now();
         return new Acl(
                 AclID.unique(),
@@ -81,13 +81,14 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
                 null,
                 null,
                 now,
-                now);
+                now)
+                .grantTotal(owner);
     }
 
     public Acl createInherited(final Resource<?> resource) {
         final Instant now = Instant.now();
 
-        final Set<Entry> inheritedEntries = Stream
+        final Set<Entry<?>> inheritedEntries = Stream
                 .concat(this.directEntries.stream(), this.inheritedEntries.stream())
                 .collect(Collectors.toSet());
 
@@ -107,7 +108,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         final Instant now = Instant.now();
 
-        final Set<Entry> inheritedEntries = Stream
+        final Set<Entry<?>> inheritedEntries = Stream
                 .concat(parentAcl.directEntries.stream(), parentAcl.inheritedEntries.stream())
                 .collect(Collectors.toSet());
 
@@ -119,30 +120,22 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
         return this;
     }
 
-    public Acl grantTotal(final MemberID member) {
-        return this.grantEntry(member, AccessPermission.mostPrivileged(), SharePermission.mostPrivileged());
-    }
+    public Acl grantAccess(
+            final MemberID granter,
+            final MemberID grantee,
+            final AccessPermission accessPermission) {
 
-    public Acl grantEntry(
-            MemberID member,
-            AccessPermission accessPermission,
-            SharePermission sharePermission) {
+        if (isNull(granter))
+            throw new IllegalArgumentException("'granter' should not be null");
 
-        if (isNull(member))
-            throw new IllegalArgumentException("'member' should not be null");
-        if (isNull(accessPermission))
-            throw new IllegalArgumentException("'accessPermission' should not be null");
-        if (isNull(sharePermission))
-            throw new IllegalArgumentException("'sharePermission' should not be null");
+        effectiveSharePermission(grantee)
+                .filter(sp -> sp.canShare(accessPermission))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "'granter' does not have share permission to grant the specified 'accessPermission'"));
 
-        final Entry entry = Entry.create(member, accessPermission, sharePermission);
+        applyEntry(grantee, accessPermission);
 
-        if (this.directEntries.stream().anyMatch(e -> e.isEquivalentTo(entry)))
-            return this;
-
-        this.directEntries.add(entry);
         this.updatedAt = Instant.now();
-
         this.events.add(AclUpdatedEvent.create(this));
 
         return this;
@@ -152,7 +145,9 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         return Stream.concat(directEntries.stream(), inheritedEntries.stream())
                 .filter(entry -> entry.member().equals(member))
-                .map(Entry::accessPermission)
+                .map(Entry::permission)
+                .filter(AccessPermission.class::isInstance)
+                .map(AccessPermission.class::cast)
                 .min((e1, e2) -> e1.getLevel().compareTo(e2.getLevel()));
 
     }
@@ -161,8 +156,36 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         return Stream.concat(directEntries.stream(), inheritedEntries.stream())
                 .filter(entry -> entry.member().equals(member))
-                .map(Entry::sharePermission)
+                .map(Entry::permission)
+                .filter(SharePermission.class::isInstance)
+                .map(SharePermission.class::cast)
                 .min((e1, e2) -> e1.getLevel().compareTo(e2.getLevel()));
+
+    }
+
+    private Acl grantTotal(final MemberID grantee) {
+        return this
+                .applyEntry(grantee, AccessPermission.mostPrivileged())
+                .applyEntry(grantee, SharePermission.mostPrivileged());
+    }
+
+    private <P extends Permission<?>> Acl applyEntry(
+            final MemberID grantee,
+            final P permission) {
+
+        if (isNull(grantee))
+            throw new IllegalArgumentException("'grantee' should not be null");
+        if (isNull(permission))
+            throw new IllegalArgumentException("'permission' should not be null");
+
+        final Entry<P> entry = Entry.create(grantee, permission);
+
+        if (this.directEntries.stream().anyMatch(e -> e.isEquivalentTo(entry)))
+            return this;
+
+        this.directEntries.add(entry);
+
+        return this;
 
     }
 
@@ -170,11 +193,11 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
         return resource;
     }
 
-    public Set<Entry> getDirectEntries() {
+    public Set<Entry<?>> getDirectEntries() {
         return Set.copyOf(directEntries);
     }
 
-    public Set<Entry> getInheritedEntries() {
+    public Set<Entry<?>> getInheritedEntries() {
         return Set.copyOf(inheritedEntries);
     }
 

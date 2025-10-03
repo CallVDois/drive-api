@@ -1,6 +1,8 @@
 package com.callv2.drive.infrastructure.access;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,10 +73,21 @@ public class AclJpaGateway implements AclGateway {
         final Resource<FolderID> resource = Resource
                 .folder(FolderID.fromStringValue(acl.getResource().id().getStringValue()));
 
-        this.folderAclRepository.saveAll(Stream
+        Stream
                 .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
-                .map(entry -> FolderAclJpaEntity.from(resource, entry))
-                .collect(Collectors.toSet()));
+                .distinct()
+                // .collect(Collectors.groupingBy(
+                //         entry -> entry.member(),
+                //         Collector.of(
+                //                 () -> new AccessSharePermissionAccumulator(),
+                //                 (acc, entry) -> acc.accumulate(entry),
+                //                 (acc1, acc2) -> acc1.combine(acc2),
+                //                 acc -> acc)))
+                // .map(entry -> FolderAclJpaEntity.from(resource, entry))
+                .collect(Collectors.toSet())
+                ;
+
+        this.folderAclRepository.saveAll(List.of());
 
     }
 
@@ -83,10 +96,10 @@ public class AclJpaGateway implements AclGateway {
         final Resource<FileID> resource = Resource
                 .file(FileID.fromStringValue(acl.getResource().id().getStringValue()));
 
-        this.fileAclRepository.saveAll(Stream
-                .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
-                .map(entry -> FileAclJpaEntity.from(resource, entry))
-                .collect(Collectors.toSet()));
+        // this.fileAclRepository.saveAll(Stream
+        //         .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
+        //         .map(entry -> FileAclJpaEntity.from(resource, entry))
+        //         .collect(Collectors.toSet()));
 
     }
 

@@ -88,11 +88,11 @@ public class AclJpaEntity {
 
     public Acl toDomain() {
 
-        final Set<Entry> directEntries = this.directEntries.stream()
+        final Set<Entry<?>> directEntries = this.directEntries.stream()
                 .map(EntryJpa::toDomain)
                 .collect(java.util.stream.Collectors.toSet());
 
-        final Set<Entry> inheritedEntries = this.inheritedEntries.stream()
+        final Set<Entry<?>> inheritedEntries = this.inheritedEntries.stream()
                 .map(EntryJpa::toDomain)
                 .collect(java.util.stream.Collectors.toSet());
 

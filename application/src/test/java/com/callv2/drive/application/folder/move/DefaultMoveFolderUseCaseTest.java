@@ -53,11 +53,8 @@ public class DefaultMoveFolderUseCaseTest {
         final var expectedFolderToMoveResource = Resource.folder(expectedFolderToMove.getId());
         final var expectedFolderTargetResource = Resource.folder(expectedFolderTarget.getId());
 
-        final var expectedFolderToMoveAcl = Acl.create(expectedFolderToMoveResource);
-        final var expectedFolderTargetAcl = Acl.create(expectedFolderTargetResource);
-
-        expectedFolderToMoveAcl.grantTotal(actorId);
-        expectedFolderTargetAcl.grantTotal(actorId);
+        final var expectedFolderToMoveAcl = Acl.create(expectedFolderToMoveResource, actorId);
+        final var expectedFolderTargetAcl = Acl.create(expectedFolderTargetResource, actorId);
 
         when(aclGateway.findByResource(expectedFolderToMoveResource))
                 .thenReturn(Optional.of(expectedFolderToMoveAcl));

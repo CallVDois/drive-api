@@ -1,29 +1,28 @@
 package com.callv2.drive.domain.access;
 
-import java.time.Instant;
 import static java.util.Objects.isNull;
+
+import java.time.Instant;
+
 import com.callv2.drive.domain.ValueObject;
 import com.callv2.drive.domain.member.MemberID;
 
-public record Entry(
+public record Entry<P extends Permission<?>>(
         MemberID member,
-        AccessPermission accessPermission,
-        SharePermission sharePermission,
+        P permission,
         Instant grantedAt) implements ValueObject {
 
-    public static Entry create(
+    public static <P extends Permission<?>> Entry<P> create(
             final MemberID member,
-            final AccessPermission accessPermission,
-            final SharePermission sharePermission) {
-        return new Entry(member, accessPermission, sharePermission, Instant.now());
+            final P permission) {
+        return new Entry<>(member, permission, Instant.now());
     }
 
-    public boolean isEquivalentTo(final Entry other) {
+    public Boolean isEquivalentTo(final Entry<? extends Permission<?>> other) {
 
         return isNull(other) ? false
-                : member.equals(other.member)
-                        && accessPermission.equals(other.accessPermission)
-                        && sharePermission.equals(other.sharePermission);
+                : member.equals(other.member())
+                        && permission().equals(other.permission());
 
     }
 

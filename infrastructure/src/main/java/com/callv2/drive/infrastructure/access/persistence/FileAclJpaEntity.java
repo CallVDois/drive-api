@@ -1,10 +1,10 @@
 package com.callv2.drive.infrastructure.access.persistence;
 
 import com.callv2.drive.domain.access.AccessPermission;
-import com.callv2.drive.domain.access.Entry;
 import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.access.SharePermission;
 import com.callv2.drive.domain.file.FileID;
+import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -37,11 +37,15 @@ public class FileAclJpaEntity {
         this.effectiveSharePermission = effectiveSharePermission;
     }
 
-    public static FileAclJpaEntity from(Resource<FileID> resource, Entry entry) {
+    public static FileAclJpaEntity from(
+            final Resource<FileID> resource,
+            final MemberID grantee,
+            final AccessPermission effectiveAccessPermission,
+            final SharePermission effectiveSharePermission) {
         return new FileAclJpaEntity(
-                FileAclID.from(resource.id().getValue(), entry.member().getValue()),
-                entry.accessPermission(),
-                entry.sharePermission());
+                FileAclID.from(resource.id().getValue(), grantee.getValue()),
+                effectiveAccessPermission,
+                effectiveSharePermission);
     }
 
     public FileAclID getId() {

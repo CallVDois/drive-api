@@ -58,7 +58,7 @@ public class DefaultGetRootFolderUseCase extends GetRootFolderUseCase {
     private Folder createRoot(final MemberID owner) {
 
         final Folder root = Folder.createRoot(owner);
-        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(root.getId())).grantTotal(owner)));
+        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(root.getId()), owner)));
         return folderGateway.create(root);
 
     }

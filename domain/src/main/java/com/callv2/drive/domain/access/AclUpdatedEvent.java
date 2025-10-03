@@ -46,19 +46,18 @@ public class AclUpdatedEvent extends Event<AclUpdatedEvent.Data> {
                     acl.getUpdatedAt());
         }
 
-        public record Entry(
+        public static record Entry(
                 UUID memberId,
-                AccessPermission accessPermission,
-                SharePermission sharePermission,
+                Permission<?> permission,
                 Instant grantedAt) implements Serializable {
 
-            public static Set<Data.Entry> of(final Set<com.callv2.drive.domain.access.Entry> entries) {
-                return entries.stream()
-                        .map(entry -> new Data.Entry(
-                                entry.member().getValue(),
-                                entry.accessPermission(),
-                                entry.sharePermission(),
-                                entry.grantedAt()))
+            public static Set<Data.Entry> of(final Set<com.callv2.drive.domain.access.Entry<?>> entries) {
+                return entries
+                        .stream().map(
+                                entry -> new Data.Entry(
+                                        entry.member().getValue(),
+                                        entry.permission(),
+                                        entry.grantedAt()))
                         .collect(Collectors.toSet());
             }
 

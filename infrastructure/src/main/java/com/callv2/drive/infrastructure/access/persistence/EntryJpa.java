@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.callv2.drive.domain.access.AccessPermission;
 import com.callv2.drive.domain.access.Entry;
+import com.callv2.drive.domain.access.Permission;
 import com.callv2.drive.domain.access.SharePermission;
 import com.callv2.drive.domain.member.MemberID;
 
@@ -17,8 +18,12 @@ import jakarta.persistence.Enumerated;
 @Embeddable
 public class EntryJpa implements Serializable {
 
-    @Column(name = "member_id")
+    @Column(name = "member_id", nullable = false)
     private UUID memberId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "entry_type", nullable = false)
+    private EntryJpaType entryType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "access_permission")
@@ -28,7 +33,7 @@ public class EntryJpa implements Serializable {
     @Column(name = "share_permission")
     private SharePermission sharePermission;
 
-    @Column(name = "granted_at")
+    @Column(name = "granted_at", nullable = false)
     private Instant grantedAt;
 
     public EntryJpa() {
@@ -36,29 +41,51 @@ public class EntryJpa implements Serializable {
 
     private EntryJpa(
             final UUID memberId,
+            final EntryJpaType entryType,
             final AccessPermission accessPermission,
             final SharePermission sharePermission,
             final Instant grantedAt) {
         this.memberId = memberId;
+        this.entryType = entryType;
         this.accessPermission = accessPermission;
         this.sharePermission = sharePermission;
         this.grantedAt = grantedAt;
     }
 
-    public static EntryJpa fromDomain(final Entry entry) {
-        return new EntryJpa(
-                entry.member().getValue(),
-                entry.accessPermission(),
-                entry.sharePermission(),
-                entry.grantedAt());
+    public static <P extends Permission<?>> EntryJpa fromDomain(final Entry<P> entry) {
+
+        return switch (entry.permission()) {
+            case AccessPermission accessPermission -> new EntryJpa(
+                    entry.member().getValue(),
+                    EntryJpaType.ACCESS,
+                    accessPermission,
+                    null,
+                    entry.grantedAt());
+            case SharePermission sharePermission -> new EntryJpa(
+                    entry.member().getValue(),
+                    EntryJpaType.SHARE,
+                    null,
+                    sharePermission,
+                    entry.grantedAt());
+            default ->
+                throw new IllegalArgumentException("Unsupported permission type: " + entry.permission().getClass());
+        };
+
     }
 
-    public Entry toDomain() {
-        return new Entry(
-                MemberID.of(memberId),
-                accessPermission,
-                sharePermission,
-                grantedAt);
+    public Entry<?> toDomain() {
+
+        return switch (entryType) {
+            case ACCESS -> new Entry<>(
+                    MemberID.of(memberId),
+                    accessPermission,
+                    grantedAt);
+            case SHARE -> new Entry<>(
+                    MemberID.of(memberId),
+                    sharePermission,
+                    grantedAt);
+        };
+
     }
 
 }

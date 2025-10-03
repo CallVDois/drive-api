@@ -1,14 +1,13 @@
 package com.callv2.drive.application.file.permissions.grant;
 
-import java.lang.reflect.Member;
 import java.util.Objects;
 
-import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.access.Acl;
 import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.access.SharePermission;
 import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.member.MemberID;

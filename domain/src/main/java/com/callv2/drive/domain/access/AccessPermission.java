@@ -1,6 +1,6 @@
 package com.callv2.drive.domain.access;
 
-public enum AccessPermission {
+public enum AccessPermission implements Permission<AccessPermission> {
     WRITE(0),
     READ(1);
 
@@ -22,8 +22,16 @@ public enum AccessPermission {
         return this.level <= READ.level;
     }
 
+    public Boolean fitsWithin(final AccessPermission maximum) {
+        return this.level >= maximum.level;
+    }
+
     public static AccessPermission mostPrivileged() {
         return WRITE;
+    }
+
+    public Boolean allows(final AccessPermission permission) {
+        return this.level <= permission.level;
     }
 
 }
