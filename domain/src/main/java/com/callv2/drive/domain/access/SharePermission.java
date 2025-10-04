@@ -5,6 +5,8 @@ public enum SharePermission implements Permission<SharePermission> {
     SHARE_WRITE(1, AccessPermission.WRITE),
     SHARE_READ(2, AccessPermission.READ);
 
+    private static final Permission.Type TYPE = Permission.Type.SHARE;
+
     private final Integer level;
     private final AccessPermission shareAccessPermissionsAllowed;
 
@@ -15,6 +17,12 @@ public enum SharePermission implements Permission<SharePermission> {
         this.shareAccessPermissionsAllowed = shareAccessPermissionsAllowed;
     }
 
+    @Override
+    public Permission.Type type() {
+        return TYPE;
+    }
+
+    @Override
     public Integer getLevel() {
         return level;
     }

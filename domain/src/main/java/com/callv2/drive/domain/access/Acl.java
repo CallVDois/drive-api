@@ -21,7 +21,7 @@ import com.callv2.drive.domain.validation.ValidationHandler;
 
 public class Acl extends AggregateRoot<AclID> implements EventSource {
 
-    private Queue<Event<?>> events;
+    private final Queue<Event<?>> events;
 
     private final Resource<?> resource;
     private Set<Entry<?>> directEntries;
@@ -36,7 +36,8 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
             final Set<Entry<?>> directEntries,
             final Set<Entry<?>> inheritedEntries,
             final Instant createdAt,
-            final Instant updatedAt) {
+            final Instant updatedAt,
+            final Queue<Event<?>> events) {
         super(id);
         this.resource = resource;
         this.directEntries = nonNull(directEntries) ? new HashSet<>(directEntries) : new HashSet<>();
@@ -44,7 +45,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
 
-        this.events = new LinkedList<>();
+        this.events = nonNull(events) ? new LinkedList<>(events) : new LinkedList<>();
     }
 
     @Override
@@ -69,20 +70,26 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
             final Set<Entry<?>> directEntries,
             final Set<Entry<?>> inheritedEntries,
             final Instant createdAt,
-            final Instant updatedAt) {
-        return new Acl(id, resource, directEntries, inheritedEntries, createdAt, updatedAt);
+            final Instant updatedAt,
+            final Queue<Event<?>> events) {
+        return new Acl(id, resource, directEntries, inheritedEntries, createdAt, updatedAt, events);
     }
 
     public static Acl create(final Resource<?> resource, final MemberID owner) {
+
         Instant now = Instant.now();
-        return new Acl(
+
+        final Acl newAcl = new Acl(
                 AclID.unique(),
                 resource,
                 null,
                 null,
                 now,
-                now)
+                now,
+                null)
                 .grantTotal(owner);
+
+        return newAcl;
     }
 
     public Acl createInherited(final Resource<?> resource) {
@@ -92,13 +99,16 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
                 .concat(this.directEntries.stream(), this.inheritedEntries.stream())
                 .collect(Collectors.toSet());
 
-        return new Acl(
+        final Acl newAcl = new Acl(
                 AclID.unique(),
                 resource,
                 null,
                 inheritedEntries,
                 now,
-                now);
+                now,
+                null);
+
+        return newAcl;
 
     }
 
@@ -115,27 +125,6 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
         this.inheritedEntries = inheritedEntries;
         this.updatedAt = now;
 
-        this.events.add(AclUpdatedEvent.create(this));
-
-        return this;
-    }
-
-    public Acl grantAccess(
-            final MemberID granter,
-            final MemberID grantee,
-            final AccessPermission accessPermission) {
-
-        if (isNull(granter))
-            throw new IllegalArgumentException("'granter' should not be null");
-
-        effectiveSharePermission(grantee)
-                .filter(sp -> sp.canShare(accessPermission))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "'granter' does not have share permission to grant the specified 'accessPermission'"));
-
-        applyEntry(grantee, accessPermission);
-
-        this.updatedAt = Instant.now();
         this.events.add(AclUpdatedEvent.create(this));
 
         return this;
@@ -169,6 +158,48 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
                 .applyEntry(grantee, SharePermission.mostPrivileged());
     }
 
+    public Acl grantAccess(
+            final MemberID granter,
+            final MemberID grantee,
+            final AccessPermission accessPermission) {
+
+        if (isNull(granter))
+            throw new IllegalArgumentException("'granter' should not be null");
+
+        effectiveSharePermission(granter)
+                .filter(sp -> sp.canShare(accessPermission))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "'granter' does not have share permission to grant the specified 'accessPermission'"));
+
+        applyEntry(grantee, accessPermission);
+
+        this.updatedAt = Instant.now();
+        this.events.add(AclUpdatedEvent.create(this));
+
+        return this;
+    }
+
+    public Acl grantShare(
+            final MemberID granter,
+            final MemberID grantee,
+            final SharePermission sharePermission) {
+
+        if (isNull(granter))
+            throw new IllegalArgumentException("'granter' should not be null");
+
+        effectiveSharePermission(granter)
+                .filter(sp -> sp.canShare(sharePermission))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "'granter' does not have share permission to grant the specified 'sharePermission'"));
+
+        applyEntry(grantee, sharePermission);
+
+        this.updatedAt = Instant.now();
+        this.events.add(AclUpdatedEvent.create(this));
+
+        return this;
+    }
+
     private <P extends Permission<?>> Acl applyEntry(
             final MemberID grantee,
             final P permission) {
@@ -187,6 +218,10 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         return this;
 
+    }
+
+    public Queue<Event<?>> getEvents() {
+        return new LinkedList<>(events);
     }
 
     public Resource<?> getResource() {

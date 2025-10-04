@@ -77,15 +77,14 @@ public class AclJpaGateway implements AclGateway {
                 .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
                 .distinct()
                 // .collect(Collectors.groupingBy(
-                //         entry -> entry.member(),
-                //         Collector.of(
-                //                 () -> new AccessSharePermissionAccumulator(),
-                //                 (acc, entry) -> acc.accumulate(entry),
-                //                 (acc1, acc2) -> acc1.combine(acc2),
-                //                 acc -> acc)))
+                // entry -> entry.member(),
+                // Collector.of(
+                // () -> new AccessSharePermissionAccumulator(),
+                // (acc, entry) -> acc.accumulate(entry),
+                // (acc1, acc2) -> acc1.combine(acc2),
+                // acc -> acc)))
                 // .map(entry -> FolderAclJpaEntity.from(resource, entry))
-                .collect(Collectors.toSet())
-                ;
+                .collect(Collectors.toSet());
 
         this.folderAclRepository.saveAll(List.of());
 
@@ -97,9 +96,9 @@ public class AclJpaGateway implements AclGateway {
                 .file(FileID.fromStringValue(acl.getResource().id().getStringValue()));
 
         // this.fileAclRepository.saveAll(Stream
-        //         .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
-        //         .map(entry -> FileAclJpaEntity.from(resource, entry))
-        //         .collect(Collectors.toSet()));
+        // .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
+        // .map(entry -> FileAclJpaEntity.from(resource, entry))
+        // .collect(Collectors.toSet()));
 
     }
 

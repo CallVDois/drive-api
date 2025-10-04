@@ -1,5 +1,6 @@
 package com.callv2.drive.application.file.permissions.grant;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import com.callv2.drive.domain.access.AccessPermission;
@@ -9,8 +10,8 @@ public record GrantPermissionInput(
         UUID fileId,
         UUID granter,
         UUID grantee,
-        AccessPermission accessPermission,
-        SharePermission sharePermission) {
+        Optional<AccessPermission> accessPermission,
+        Optional<SharePermission> sharePermission) {
 
     public static GrantPermissionInput with(
             final UUID fileId,
@@ -22,8 +23,8 @@ public record GrantPermissionInput(
                 fileId,
                 granter,
                 grantee,
-                accessPermission,
-                sharePermission);
+                Optional.ofNullable(accessPermission),
+                Optional.ofNullable(sharePermission));
     }
 
 }

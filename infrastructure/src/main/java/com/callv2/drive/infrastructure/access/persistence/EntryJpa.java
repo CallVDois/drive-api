@@ -22,8 +22,8 @@ public class EntryJpa implements Serializable {
     private UUID memberId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "entry_type", nullable = false)
-    private EntryJpaType entryType;
+    @Column(name = "permission_type", nullable = false)
+    private Permission.Type permissionType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "access_permission")
@@ -41,12 +41,12 @@ public class EntryJpa implements Serializable {
 
     private EntryJpa(
             final UUID memberId,
-            final EntryJpaType entryType,
+            final Permission.Type permissionType,
             final AccessPermission accessPermission,
             final SharePermission sharePermission,
             final Instant grantedAt) {
         this.memberId = memberId;
-        this.entryType = entryType;
+        this.permissionType = permissionType;
         this.accessPermission = accessPermission;
         this.sharePermission = sharePermission;
         this.grantedAt = grantedAt;
@@ -57,13 +57,13 @@ public class EntryJpa implements Serializable {
         return switch (entry.permission()) {
             case AccessPermission accessPermission -> new EntryJpa(
                     entry.member().getValue(),
-                    EntryJpaType.ACCESS,
+                    Permission.Type.ACCESS,
                     accessPermission,
                     null,
                     entry.grantedAt());
             case SharePermission sharePermission -> new EntryJpa(
                     entry.member().getValue(),
-                    EntryJpaType.SHARE,
+                    Permission.Type.SHARE,
                     null,
                     sharePermission,
                     entry.grantedAt());
@@ -75,7 +75,7 @@ public class EntryJpa implements Serializable {
 
     public Entry<?> toDomain() {
 
-        return switch (entryType) {
+        return switch (permissionType) {
             case ACCESS -> new Entry<>(
                     MemberID.of(memberId),
                     accessPermission,

@@ -4,12 +4,20 @@ public enum AccessPermission implements Permission<AccessPermission> {
     WRITE(0),
     READ(1);
 
+    private static final Permission.Type TYPE = Permission.Type.ACCESS;
+
     private final Integer level;
 
     AccessPermission(int level) {
         this.level = level;
     }
 
+    @Override
+    public Permission.Type type() {
+        return TYPE;
+    }
+
+    @Override
     public Integer getLevel() {
         return level;
     }

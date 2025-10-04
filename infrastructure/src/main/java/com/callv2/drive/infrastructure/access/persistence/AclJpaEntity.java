@@ -2,6 +2,7 @@ package com.callv2.drive.infrastructure.access.persistence;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ import com.callv2.drive.domain.access.AclID;
 import com.callv2.drive.domain.access.Entry;
 import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.access.ResourceType;
+import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.folder.FolderID;
 
@@ -21,6 +23,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity(name = "Acl")
 @Table(name = "acls")
@@ -46,6 +49,9 @@ public class AclJpaEntity {
 
     private Instant updatedAt;
 
+    @Transient
+    private Queue<Event<?>> events;
+
     public AclJpaEntity() {
     }
 
@@ -56,7 +62,8 @@ public class AclJpaEntity {
             final Set<EntryJpa> directEntries,
             final Set<EntryJpa> inheritedEntries,
             final Instant createdAt,
-            final Instant updatedAt) {
+            final Instant updatedAt,
+            final Queue<Event<?>> events) {
         this.id = id;
         this.resourceId = resourceId;
         this.resourceType = resourceType;
@@ -64,6 +71,7 @@ public class AclJpaEntity {
         this.inheritedEntries = inheritedEntries;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.events = events;
     }
 
     public static AclJpaEntity fromDomain(final Acl acl) {
@@ -83,7 +91,8 @@ public class AclJpaEntity {
                 directEntries,
                 inheritedEntries,
                 acl.getCreatedAt(),
-                acl.getUpdatedAt());
+                acl.getUpdatedAt(),
+                acl.getEvents());
     }
 
     public Acl toDomain() {
@@ -108,7 +117,8 @@ public class AclJpaEntity {
                 directEntries,
                 inheritedEntries,
                 this.createdAt,
-                this.updatedAt);
+                this.updatedAt,
+                this.events);
     }
 
     public UUID getId() {
@@ -165,6 +175,14 @@ public class AclJpaEntity {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Queue<Event<?>> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Queue<Event<?>> events) {
+        this.events = events;
     }
 
 }
