@@ -6,20 +6,20 @@ import java.util.UUID;
 import com.callv2.drive.domain.access.AccessPermission;
 import com.callv2.drive.domain.access.SharePermission;
 
-public record GrantPermissionInput(
+public record GrantFilePermissionInput(
         UUID fileId,
         UUID granter,
         UUID grantee,
         Optional<AccessPermission> accessPermission,
         Optional<SharePermission> sharePermission) {
 
-    public static GrantPermissionInput with(
+    public static GrantFilePermissionInput with(
             final UUID fileId,
             final UUID granter,
             final UUID grantee,
             final AccessPermission accessPermission,
             final SharePermission sharePermission) {
-        return new GrantPermissionInput(
+        return new GrantFilePermissionInput(
                 fileId,
                 granter,
                 grantee,

@@ -6,8 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.callv2.drive.application.file.content.delete.DeleteFileContentInput;
 import com.callv2.drive.application.file.create.CreateFileInput;
+import com.callv2.drive.application.file.permissions.grant.GrantFilePermissionInput;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.infrastructure.file.model.DeleteFileContentMessage;
+import com.callv2.drive.infrastructure.file.model.GrantFilePermissionRequest;
 
 public interface FileAdapter {
 
@@ -27,6 +29,18 @@ public interface FileAdapter {
 
     static DeleteFileContentInput adapt(DeleteFileContentMessage message) {
         return DeleteFileContentInput.of(message.data().fileId(), message.data().deleterId());
+    }
+
+    static GrantFilePermissionInput adapt(
+            UUID fileId,
+            UUID granterId,
+            GrantFilePermissionRequest request) {
+        return GrantFilePermissionInput.with(
+                fileId,
+                granterId,
+                request.grantee(),
+                request.accessPermission(),
+                request.sharePermission());
     }
 
 }

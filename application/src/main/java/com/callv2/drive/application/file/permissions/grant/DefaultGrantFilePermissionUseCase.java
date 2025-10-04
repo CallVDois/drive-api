@@ -14,14 +14,14 @@ import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.handler.Notification;
 
-public class DefaultGrantPermissionUseCase extends GrantPermissionUseCase {
+public class DefaultGrantFilePermissionUseCase extends GrantFilePermissionUseCase {
 
     private final EventDispatcher eventDispatcher;
 
     private final AclGateway aclGateway;
     private final FileGateway fileGateway;
 
-    public DefaultGrantPermissionUseCase(
+    public DefaultGrantFilePermissionUseCase(
             final EventDispatcher eventDispatcher,
             final AclGateway aclGateway,
             final FileGateway fileGateway) {
@@ -31,7 +31,7 @@ public class DefaultGrantPermissionUseCase extends GrantPermissionUseCase {
     }
 
     @Override
-    public void execute(final GrantPermissionInput input) {
+    public void execute(final GrantFilePermissionInput input) {
 
         final MemberID granterId = MemberID.of(input.granter());
         final MemberID granteeId = MemberID.of(input.grantee());

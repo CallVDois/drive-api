@@ -11,6 +11,8 @@ import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.create.DefaultCreateFileUseCase;
 import com.callv2.drive.application.file.delete.DefaultDeleteFileUseCase;
 import com.callv2.drive.application.file.delete.DeleteFileUseCase;
+import com.callv2.drive.application.file.permissions.grant.DefaultGrantFilePermissionUseCase;
+import com.callv2.drive.application.file.permissions.grant.GrantFilePermissionUseCase;
 import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.DefaultListFilesUseCase;
@@ -87,4 +89,10 @@ public class FileUseCaseConfig {
     DeleteFileContentUseCase deleteFileContentUseCase() {
         return new DefaultlDeleteFileContentUseCase(fileGateway, storageGateway);
     }
+
+    @Bean
+    GrantFilePermissionUseCase grantFilePermissionUseCase() {
+        return new DefaultGrantFilePermissionUseCase(eventDispatcher, aclGateway, fileGateway);
+    }
+
 }

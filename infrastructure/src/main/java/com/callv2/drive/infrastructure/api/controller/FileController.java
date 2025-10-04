@@ -19,6 +19,7 @@ import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.delete.DeleteFileInput;
 import com.callv2.drive.application.file.delete.DeleteFileUseCase;
+import com.callv2.drive.application.file.permissions.grant.GrantFilePermissionUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.FileListInput;
@@ -33,6 +34,7 @@ import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
+import com.callv2.drive.infrastructure.file.model.GrantFilePermissionRequest;
 import com.callv2.drive.infrastructure.file.presenter.FilePresenter;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.security.SecurityContext;
@@ -45,18 +47,21 @@ public class FileController implements FileAPI {
     private final GetFileUseCase getFileUseCase;
     private final GetFileContentUseCase getFileContentUseCase;
     private final ListFilesUseCase listFilesUseCase;
+    private final GrantFilePermissionUseCase grantFilePermissionUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
             final DeleteFileUseCase deleteFileUseCase,
             final GetFileUseCase getFileUseCase,
             final GetFileContentUseCase getFileContentUseCase,
-            final ListFilesUseCase listFilesUseCase) {
+            final ListFilesUseCase listFilesUseCase,
+            final GrantFilePermissionUseCase grantFilePermissionUseCase) {
         this.createFileUseCase = createFileUseCase;
         this.deleteFileUseCase = deleteFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.getFileContentUseCase = getFileContentUseCase;
         this.listFilesUseCase = listFilesUseCase;
+        this.grantFilePermissionUseCase = grantFilePermissionUseCase;
     }
 
     @Override
@@ -131,6 +136,19 @@ public class FileController implements FileAPI {
 
         return ResponseEntity
                 .ok(listFilesUseCase.execute(new FileListInput(actorId, query)).map(FilePresenter::present));
+
+    }
+
+    @Override
+    public ResponseEntity<Void> grantPermission(
+            final UUID id,
+            final GrantFilePermissionRequest request) {
+
+        final var granterId = SecurityContext.getAuthenticatedUserId();
+
+        grantFilePermissionUseCase.execute(FileAdapter.adapt(id, granterId, request));
+
+        return ResponseEntity.noContent().build();
 
     }
 
