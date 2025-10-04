@@ -2,7 +2,6 @@ package com.callv2.drive.infrastructure.access.persistence;
 
 import com.callv2.drive.domain.access.AccessPermission;
 import com.callv2.drive.domain.access.Resource;
-import com.callv2.drive.domain.access.SharePermission;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
@@ -12,9 +11,9 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
-@Entity(name = "FolderAcl")
-@Table(name = "folder_acls")
-public class FolderAclJpaEntity {
+@Entity(name = "FolderAccessAcl")
+@Table(name = "folder_access_acls")
+public class FolderAccessAclJpaEntity {
 
     @EmbeddedId
     private FolderAclID id;
@@ -22,30 +21,23 @@ public class FolderAclJpaEntity {
     @Enumerated(EnumType.STRING)
     private AccessPermission effectiveAccessPermission;
 
-    @Enumerated(EnumType.STRING)
-    private SharePermission effectiveSharePermission;
-
-    public FolderAclJpaEntity() {
+    public FolderAccessAclJpaEntity() {
     }
 
-    private FolderAclJpaEntity(
+    private FolderAccessAclJpaEntity(
             final FolderAclID id,
-            final AccessPermission effectiveAccessPermission,
-            final SharePermission effectiveSharePermission) {
+            final AccessPermission effectiveAccessPermission) {
         this.id = id;
         this.effectiveAccessPermission = effectiveAccessPermission;
-        this.effectiveSharePermission = effectiveSharePermission;
     }
 
-    public static FolderAclJpaEntity from(
+    public static FolderAccessAclJpaEntity from(
             final Resource<FolderID> resource,
             final MemberID grantee,
-            final AccessPermission effectiveAccessPermission,
-            final SharePermission effectiveSharePermission) {
-        return new FolderAclJpaEntity(
+            final AccessPermission effectiveAccessPermission) {
+        return new FolderAccessAclJpaEntity(
                 FolderAclID.from(resource.id().getValue(), grantee.getValue()),
-                effectiveAccessPermission,
-                effectiveSharePermission);
+                effectiveAccessPermission);
     }
 
     public FolderAclID getId() {
@@ -62,14 +54,6 @@ public class FolderAclJpaEntity {
 
     public void setEffectiveAccessPermission(AccessPermission effectiveAccessPermission) {
         this.effectiveAccessPermission = effectiveAccessPermission;
-    }
-
-    public SharePermission getEffectiveSharePermission() {
-        return effectiveSharePermission;
-    }
-
-    public void setEffectiveSharePermission(SharePermission effectiveSharePermission) {
-        this.effectiveSharePermission = effectiveSharePermission;
     }
 
 }

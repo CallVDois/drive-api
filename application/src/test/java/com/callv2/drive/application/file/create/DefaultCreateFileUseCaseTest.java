@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -137,7 +138,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         when(storageKeyGenerator.generate())
                 .thenReturn(expectedStorageKey);
@@ -365,7 +367,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -457,7 +460,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         when(storageKeyGenerator.generate())
                 .thenReturn(expectedStorageKey);
@@ -565,7 +569,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         when(storageKeyGenerator.generate())
                 .thenReturn(expectedStorageKey);
@@ -664,7 +669,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         when(storageKeyGenerator.generate())
                 .thenReturn(expectedStorageKey);
@@ -747,7 +753,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -826,7 +833,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         final var input = CreateFileInput.of(
                 ownerId.getValue(),
@@ -915,7 +923,8 @@ class DefaultCreateFileUseCaseTest {
                         expectedAclDirectEntries,
                         expectedAclInheritedEntries,
                         expectedAclCreatedAt,
-                        expectedAclUpdatedAt)));
+                        expectedAclUpdatedAt,
+                        new LinkedList<>())));
 
         when(storageKeyGenerator.generate())
                 .thenReturn(expectedStorageKey);

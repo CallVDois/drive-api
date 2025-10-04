@@ -16,7 +16,7 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
-import com.callv2.drive.infrastructure.access.persistence.FolderAclJpaEntity;
+import com.callv2.drive.infrastructure.access.persistence.FolderAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.filter.FilterService;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.folder.persistence.FolderJpaEntity;
@@ -118,7 +118,7 @@ public class FolderJpaGateway implements FolderGateway {
             if (query == null)
                 return criteriaBuilder.conjunction();
 
-            final Root<FolderAclJpaEntity> aclRoot = query.from(FolderAclJpaEntity.class);
+            final Root<FolderAccessAclJpaEntity> aclRoot = query.from(FolderAccessAclJpaEntity.class);
 
             return criteriaBuilder.and(
                     criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("folderId")),

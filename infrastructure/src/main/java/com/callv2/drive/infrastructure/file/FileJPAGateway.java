@@ -14,7 +14,7 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
-import com.callv2.drive.infrastructure.access.persistence.FileAclJpaEntity;
+import com.callv2.drive.infrastructure.access.persistence.FileAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.file.persistence.FileJpaEntity;
 import com.callv2.drive.infrastructure.file.persistence.FileJpaRepository;
 import com.callv2.drive.infrastructure.filter.FilterService;
@@ -123,7 +123,7 @@ public class FileJPAGateway implements FileGateway {
             if (query == null)
                 return criteriaBuilder.conjunction();
 
-            final Root<FileAclJpaEntity> aclRoot = query.from(FileAclJpaEntity.class);
+            final Root<FileAccessAclJpaEntity> aclRoot = query.from(FileAccessAclJpaEntity.class);
 
             return criteriaBuilder.and(
                     criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("fileId")),
