@@ -16,6 +16,7 @@ import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.folder.FolderID;
 
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,9 +33,11 @@ public class AclJpaEntity {
     @Id
     private UUID id;
 
+    @Column(name = "resource_id", nullable = false)
     private String resourceId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "resource_type", nullable = false)
     private ResourceType resourceType;
 
     @ElementCollection
