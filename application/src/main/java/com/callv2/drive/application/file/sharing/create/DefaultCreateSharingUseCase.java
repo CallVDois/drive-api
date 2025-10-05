@@ -64,7 +64,7 @@ public class DefaultCreateSharingUseCase extends CreateSharingUseCase {
                 .accessPermission()
                 .ifPresent(ap -> {
                     acl.grantAccess(granterId, granteeId, ap);
-                    file.share(granterId, granteeId, retrieveOrCreateSharedInbox(granteeId));
+                    file.share(granterId, granteeId, retrieveSharedInbox(granteeId));
                 }));
 
         notification.validate(() -> input
@@ -79,11 +79,16 @@ public class DefaultCreateSharingUseCase extends CreateSharingUseCase {
 
     }
 
-    private FolderID retrieveOrCreateSharedInbox(final MemberID memberId) {
+    private FolderID retrieveSharedInbox(final MemberID memberId) {
         return folderGateway.findDefaultMemberSharedInbox(memberId)
-                .orElseGet(() -> folderGateway
-                        .create(Folder.createInbox(memberId, retrieveMemberRootFolder(memberId))))
+                .orElseGet(() -> folderGateway.create(createSharedInbox(memberId)))
                 .getId();
+    }
+
+    private Folder createSharedInbox(final MemberID memberId) {
+        final Folder inboxFolder = Folder.createInbox(memberId, retrieveMemberRootFolder(memberId));
+        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder.getId()), memberId)));
+        return folderGateway.create(inboxFolder);
     }
 
     private FolderID retrieveMemberRootFolder(final MemberID memberId) {
