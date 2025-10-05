@@ -33,6 +33,7 @@ public class DefaultGetFolderUseCase extends GetFolderUseCase {
 
         return GetFolderOutput
                 .from(
+                        actorId,
                         folder,
                         folderGateway.findByParentFolderIdWithMemberAccess(folder.getId(), actorId),
                         fileGateway.findAllActiveByFolder(folder.getId()));

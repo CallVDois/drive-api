@@ -201,10 +201,10 @@ public class Folder extends AggregateRoot<FolderID> {
         return this;
     }
 
-    public FolderID getVirtualFolder(final MemberID member) {
+    public FolderID getVirtualParentFolder(final MemberID member) {
 
         if (this.owner.equals(member))
-            return this.id;
+            return this.parentFolder;
 
         return this.sharings.stream()
                 .filter(sharing -> sharing.getSharedTo().equals(member))

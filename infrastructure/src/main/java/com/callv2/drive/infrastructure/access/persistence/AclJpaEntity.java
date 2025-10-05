@@ -48,8 +48,10 @@ public class AclJpaEntity {
     @CollectionTable(name = "acl_inherited_entries", joinColumns = @JoinColumn(name = "acl_id"))
     private Set<EntryJpa> inheritedEntries = new HashSet<>();
 
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
     @Transient

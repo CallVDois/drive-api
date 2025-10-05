@@ -84,6 +84,7 @@ public class FolderJpaGateway implements FolderGateway {
     public Optional<Folder> findByIdWithMemberAccess(final FolderID id, final MemberID actorId) {
 
         final var specification = folderByIdSpecification(id.getValue())
+                .and(folderByIdSpecification(id.getValue()))
                 .and(folderAclSpecification(actorId.getValue()));
 
         return this.folderRepository

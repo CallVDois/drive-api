@@ -16,9 +16,12 @@ public class DefaultListFoldersUseCase extends ListFoldersUseCase {
 
     @Override
     public Page<FolderListOutput> execute(final FolderListInput input) {
+
+        final MemberID actorId = MemberID.of(input.actorId());
+
         return folderGateway
-                .findAllWithMemberAccess(input.searchQuery(), MemberID.of(input.actorId()))
-                .map(FolderListOutput::from);
+                .findAllWithMemberAccess(input.searchQuery(), actorId)
+                .map(folder -> FolderListOutput.from(actorId, folder));
     }
 
 }

@@ -3,17 +3,18 @@ package com.callv2.drive.application.folder.retrieve.list;
 import java.util.UUID;
 
 import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.member.MemberID;
 
 public record FolderListOutput(
         UUID id,
         String name,
         UUID parentFolder) {
 
-    public static FolderListOutput from(final Folder folder) {
+    public static FolderListOutput from(final MemberID actorId, final Folder folder) {
         return new FolderListOutput(
                 folder.getId().getValue(),
                 folder.getName().value(),
-                folder.getParentFolder().getValue());
+                folder.getVirtualParentFolder(actorId).getValue());
     }
 
     public static record SubFolder(UUID id, String name) {

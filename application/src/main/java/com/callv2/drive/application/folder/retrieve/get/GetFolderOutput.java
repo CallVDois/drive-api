@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.member.MemberID;
 
 public record GetFolderOutput(
         UUID id,
@@ -21,6 +22,7 @@ public record GetFolderOutput(
         Instant deletedAt) {
 
     public static GetFolderOutput from(
+            final MemberID actor,
             final Folder folder,
             final Set<Folder> subFolders,
             final List<com.callv2.drive.domain.file.File> files) {
@@ -29,7 +31,7 @@ public record GetFolderOutput(
                 folder.getId().getValue(),
                 folder.getName().value(),
                 folder.isRootFolder(),
-                folder.getParentFolder().getValue(),
+                folder.getVirtualParentFolder(actor).getValue(),
                 subFolders
                         .stream()
                         .map(GetFolderOutput.SubFolder::from)
