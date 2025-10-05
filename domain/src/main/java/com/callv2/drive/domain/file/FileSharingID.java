@@ -29,7 +29,7 @@ public class FileSharingID extends Identifier<UUID> {
 
     @Override
     public String toString() {
-        return "SharingID [value=" + getValue() + "]";
+        return "FileSharingID [value=" + getValue() + "]";
     }
 
 }
