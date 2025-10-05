@@ -97,7 +97,7 @@ public class Folder extends AggregateRoot<FolderID> {
                 FolderID.unique(),
                 owner,
                 owner,
-                FolderName.of("Shared Folder"),
+                FolderName.of("Shared"),
                 parentFolder,
                 now,
                 now,
