@@ -3,8 +3,8 @@ package com.callv2.drive.infrastructure.file.persistence;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.callv2.drive.domain.file.Sharing;
-import com.callv2.drive.domain.file.SharingID;
+import com.callv2.drive.domain.file.FileSharing;
+import com.callv2.drive.domain.file.FileSharingID;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
@@ -43,7 +43,7 @@ public class FileSharingJpaEntity {
         this.createdAt = createdAt;
     }
 
-    public static FileSharingJpaEntity from(final Sharing sharing) {
+    public static FileSharingJpaEntity from(final FileSharing sharing) {
         return new FileSharingJpaEntity(
                 sharing.getId().getValue(),
                 sharing.getSharedTo().getValue(),
@@ -52,9 +52,9 @@ public class FileSharingJpaEntity {
                 sharing.getCreatedAt());
     }
 
-    public Sharing toDomain() {
-        return Sharing.with(
-                SharingID.of(this.id),
+    public FileSharing toDomain() {
+        return FileSharing.with(
+                FileSharingID.of(this.id),
                 MemberID.of(this.sharedTo),
                 MemberID.of(this.sharedBy),
                 FolderID.of(this.virtualFolder),

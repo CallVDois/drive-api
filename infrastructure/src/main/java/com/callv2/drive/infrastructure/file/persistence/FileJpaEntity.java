@@ -10,7 +10,7 @@ import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
-import com.callv2.drive.domain.file.Sharing;
+import com.callv2.drive.domain.file.FileSharing;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
@@ -137,7 +137,7 @@ public class FileJpaEntity {
 
     public File toDomain() {
 
-        final Set<Sharing> domainSharings = sharings
+        final Set<FileSharing> domainSharings = sharings
                 .stream()
                 .map(FileSharingJpaEntity::toDomain)
                 .collect(Collectors.toSet());

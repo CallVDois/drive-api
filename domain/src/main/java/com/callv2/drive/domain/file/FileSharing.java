@@ -7,15 +7,15 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationHandler;
 
-public class Sharing extends Entity<SharingID> {
+public class FileSharing extends Entity<FileSharingID> {
 
     private MemberID sharedTo;
     private MemberID sharedBy;
     private FolderID virtualFolder;
     private Instant createdAt;
 
-    private Sharing(
-            final SharingID id,
+    private FileSharing(
+            final FileSharingID id,
             final MemberID sharedTo,
             final MemberID sharedBy,
             final FolderID virtualFolder,
@@ -27,13 +27,13 @@ public class Sharing extends Entity<SharingID> {
         this.createdAt = createdAt;
     }
 
-    public static Sharing with(
-            final SharingID id,
+    public static FileSharing with(
+            final FileSharingID id,
             final MemberID sharedTo,
             final MemberID sharedBy,
             final FolderID virtualFolder,
             final Instant createdAt) {
-        return new Sharing(
+        return new FileSharing(
                 id,
                 sharedTo,
                 sharedBy,
@@ -41,13 +41,13 @@ public class Sharing extends Entity<SharingID> {
                 createdAt);
     }
 
-    public static Sharing create(
+    public static FileSharing create(
             final MemberID sharedTo,
             final MemberID sharedBy,
             final FolderID virtualFolder) {
         final Instant now = Instant.now();
-        return new Sharing(
-                SharingID.unique(),
+        return new FileSharing(
+                FileSharingID.unique(),
                 sharedTo,
                 sharedBy,
                 virtualFolder,

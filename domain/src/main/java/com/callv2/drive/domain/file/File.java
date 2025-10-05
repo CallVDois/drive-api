@@ -41,7 +41,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     private Boolean isDeleted;
 
-    private final Set<Sharing> sharings;
+    private final Set<FileSharing> sharings;
 
     private File(
             final FileID anId,
@@ -56,7 +56,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
             final Instant updatedAt,
             final Instant deletedAt,
             final Boolean isDeleted,
-            final Set<Sharing> sharings) {
+            final Set<FileSharing> sharings) {
         super(anId);
 
         this.folder = folder;
@@ -95,7 +95,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
             final Instant updatedAt,
             final Instant deletedAt,
             final Boolean isDeleted,
-            final Set<Sharing> sharings) {
+            final Set<FileSharing> sharings) {
         return new File(
                 id,
                 creator,
@@ -214,7 +214,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
         this.updatedAt = Instant.now();
 
-        final Sharing sharing = Sharing.create(sharedTo, sharedBy, virtualFolder);
+        final FileSharing sharing = FileSharing.create(sharedTo, sharedBy, virtualFolder);
 
         // this.events.add(FileSharedEvent.create(this, sharing));
 
@@ -231,7 +231,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         return this.sharings.stream()
                 .filter(sharing -> sharing.getSharedTo().equals(member))
                 .findFirst()
-                .map(Sharing::getVirtualFolder)
+                .map(FileSharing::getVirtualFolder)
                 .orElse(null);
     }
 
@@ -291,7 +291,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         return isDeleted;
     }
 
-    public Set<Sharing> getSharings() {
+    public Set<FileSharing> getSharings() {
         return Set.copyOf(sharings);
     }
 
