@@ -9,7 +9,7 @@ import com.callv2.drive.application.file.create.CreateFileInput;
 import com.callv2.drive.application.file.sharing.create.CreateFileSharingInput;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.infrastructure.file.model.DeleteFileContentMessage;
-import com.callv2.drive.infrastructure.file.model.GrantFilePermissionRequest;
+import com.callv2.drive.infrastructure.file.model.ShareFileRequest;
 
 public interface FileAdapter {
 
@@ -34,13 +34,12 @@ public interface FileAdapter {
     static CreateFileSharingInput adapt(
             UUID fileId,
             UUID granterId,
-            GrantFilePermissionRequest request) {
+            ShareFileRequest request) {
         return CreateFileSharingInput.with(
                 fileId,
                 granterId,
                 request.grantee(),
-                request.accessPermission(),
-                request.sharePermission());
+                request.accessPermission());
     }
 
 }

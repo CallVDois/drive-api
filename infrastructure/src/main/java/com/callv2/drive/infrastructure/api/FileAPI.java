@@ -23,7 +23,7 @@ import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
-import com.callv2.drive.infrastructure.file.model.GrantFilePermissionRequest;
+import com.callv2.drive.infrastructure.file.model.ShareFileRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -82,6 +82,6 @@ public interface FileAPI {
 
     @Operation(summary = "Share File", description = "This method shares a file", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("{id}/share")
-    ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody GrantFilePermissionRequest request);
+    ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody ShareFileRequest request);
 
 }

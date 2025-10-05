@@ -34,7 +34,7 @@ import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
-import com.callv2.drive.infrastructure.file.model.GrantFilePermissionRequest;
+import com.callv2.drive.infrastructure.file.model.ShareFileRequest;
 import com.callv2.drive.infrastructure.file.presenter.FilePresenter;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.security.SecurityContext;
@@ -145,7 +145,7 @@ public class FileController implements FileAPI {
     @Override
     public ResponseEntity<Void> shareFile(
             final UUID id,
-            final GrantFilePermissionRequest request) {
+            final ShareFileRequest request) {
 
         final var granterId = SecurityContext.getAuthenticatedUserId();
 

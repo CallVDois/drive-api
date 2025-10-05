@@ -81,8 +81,14 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
 
     private FolderID retrieveMemberRootFolder(final MemberID memberId) {
         return folderGateway.findMemberRootFolder(memberId)
-                .orElseGet(() -> folderGateway.create(Folder.createRoot(memberId)))
+                .orElseGet(() -> createRootFolder(memberId))
                 .getId();
+    }
+
+    private Folder createRootFolder(final MemberID memberId) {
+        final Folder rootFolder = Folder.createRoot(memberId);
+        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(rootFolder.getId()), memberId)));
+        return folderGateway.create(rootFolder);
     }
 
 }

@@ -60,9 +60,7 @@ public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
 
         final Notification notification = Notification.create();
 
-        notification.validate(() -> input
-                .accessPermission()
-                .ifPresent(ap -> acl.grantAccess(granterId, granteeId, ap)));
+        acl.grantAccess(granterId, granteeId, input.accessPermission());
 
         file.share(granterId, granteeId, retrieveSharedInbox(granteeId));
 
