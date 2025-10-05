@@ -23,6 +23,9 @@ public class FolderJpaEntity {
     @Column(name = "is_root_folder", nullable = false)
     private Boolean rootFolder;
 
+    @Column(name = "is_default_shared_inbox", nullable = false)
+    private Boolean defaultSharedInbox;
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -47,6 +50,7 @@ public class FolderJpaEntity {
     private FolderJpaEntity(
             final UUID id,
             final Boolean rootFolder,
+            final Boolean defaultSharedInbox,
             final String name,
             final UUID creatorId,
             final UUID ownerId,
@@ -56,6 +60,7 @@ public class FolderJpaEntity {
             final Instant deletedAt) {
         this.id = id;
         this.rootFolder = rootFolder;
+        this.defaultSharedInbox = defaultSharedInbox;
         this.name = name;
         this.creatorId = creatorId;
         this.ownerId = ownerId;
@@ -75,6 +80,7 @@ public class FolderJpaEntity {
         final var entity = new FolderJpaEntity(
                 folder.getId().getValue(),
                 folder.isRootFolder(),
+                folder.getDefaultSharedInbox(),
                 folder.getName().value(),
                 folder.getCreator().getValue(),
                 folder.getOwner().getValue(),
@@ -96,7 +102,8 @@ public class FolderJpaEntity {
                 createdAt,
                 updatedAt,
                 deletedAt,
-                rootFolder);
+                rootFolder,
+                defaultSharedInbox);
     }
 
     public UUID getId() {
@@ -115,6 +122,14 @@ public class FolderJpaEntity {
         this.rootFolder = rootFolder;
     }
 
+    public Boolean getDefaultSharedInbox() {
+        return defaultSharedInbox;
+    }
+
+    public void setDefaultSharedInbox(Boolean defaultSharedInbox) {
+        this.defaultSharedInbox = defaultSharedInbox;
+    }
+
     public String getName() {
         return name;
     }
@@ -123,20 +138,20 @@ public class FolderJpaEntity {
         this.name = name;
     }
 
-    public UUID getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(UUID ownerId) {
-        this.ownerId = ownerId;
-    }
-
     public UUID getCreatorId() {
         return creatorId;
     }
 
     public void setCreatorId(UUID creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public UUID getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(UUID ownerId) {
+        this.ownerId = ownerId;
     }
 
     public UUID getParentFolderId() {

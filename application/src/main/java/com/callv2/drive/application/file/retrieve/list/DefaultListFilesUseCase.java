@@ -16,9 +16,12 @@ public class DefaultListFilesUseCase extends ListFilesUseCase {
 
     @Override
     public Page<FileListOutput> execute(final FileListInput input) {
+
+        final MemberID actorId = MemberID.of(input.actorId());
+
         return this.fileGateway
-                .findAllWithMemberAccess(input.query(), MemberID.of(input.actorId()))
-                .map(FileListOutput::from);
+                .findAllWithMemberAccess(input.query(), actorId)
+                .map(file -> FileListOutput.from(file, actorId));
     }
 
 }

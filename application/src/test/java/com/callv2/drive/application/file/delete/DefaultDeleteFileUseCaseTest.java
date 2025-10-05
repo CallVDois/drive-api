@@ -93,7 +93,8 @@ public class DefaultDeleteFileUseCaseTest {
                 expectedCreatedAt,
                 expectedUpdatedAt,
                 null,
-                false);
+                false,
+                null);
 
         when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.of(deleter));

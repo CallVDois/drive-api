@@ -1,0 +1,104 @@
+package com.callv2.drive.infrastructure.file.persistence;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import com.callv2.drive.domain.file.Sharing;
+import com.callv2.drive.domain.file.SharingID;
+import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity(name = "FileSharing")
+@Table(name = "file_sharings")
+public class FileSharingJpaEntity {
+
+    @Id
+    private UUID id;
+
+    private UUID sharedTo;
+
+    private UUID sharedBy;
+
+    private UUID virtualFolder;
+
+    private Instant createdAt;
+
+    public FileSharingJpaEntity() {
+    }
+
+    private FileSharingJpaEntity(
+            UUID id,
+            UUID sharedTo,
+            UUID sharedBy,
+            UUID virtualFolder,
+            Instant createdAt) {
+        this.id = id;
+        this.sharedTo = sharedTo;
+        this.sharedBy = sharedBy;
+        this.virtualFolder = virtualFolder;
+        this.createdAt = createdAt;
+    }
+
+    public static FileSharingJpaEntity from(final Sharing sharing) {
+        return new FileSharingJpaEntity(
+                sharing.getId().getValue(),
+                sharing.getSharedTo().getValue(),
+                sharing.getSharedBy().getValue(),
+                sharing.getVirtualFolder().getValue(),
+                sharing.getCreatedAt());
+    }
+
+    public Sharing toDomain() {
+        return Sharing.with(
+                SharingID.of(this.id),
+                MemberID.of(this.sharedTo),
+                MemberID.of(this.sharedBy),
+                FolderID.of(this.virtualFolder),
+                this.createdAt);
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getSharedTo() {
+        return sharedTo;
+    }
+
+    public void setSharedTo(UUID sharedTo) {
+        this.sharedTo = sharedTo;
+    }
+
+    public UUID getSharedBy() {
+        return sharedBy;
+    }
+
+    public void setSharedBy(UUID sharedBy) {
+        this.sharedBy = sharedBy;
+    }
+
+    public UUID getVirtualFolder() {
+        return virtualFolder;
+    }
+
+    public void setVirtualFolder(UUID virtualFolder) {
+        this.virtualFolder = virtualFolder;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+}

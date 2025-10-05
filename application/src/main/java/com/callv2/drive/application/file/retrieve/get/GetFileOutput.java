@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.callv2.drive.domain.file.File;
+import com.callv2.drive.domain.member.MemberID;
 
 public record GetFileOutput(
         UUID id,
@@ -19,11 +20,11 @@ public record GetFileOutput(
         UUID deleterId,
         Instant deletedAt) {
 
-    public static GetFileOutput from(final File file) {
+    public static GetFileOutput from(final File file, final MemberID actor) {
         return new GetFileOutput(
                 file.getId().getValue(),
                 file.getOwner().getValue(),
-                file.getFolder().getValue(),
+                file.getVirtualFolder(actor).getValue(),
                 file.getName().value(),
                 file.getContent().type(),
                 file.getContent().size(),

@@ -11,7 +11,8 @@ import com.callv2.drive.domain.validation.handler.Notification;
 
 public class Folder extends AggregateRoot<FolderID> {
 
-    private boolean rootFolder;
+    private Boolean rootFolder;
+    private Boolean defaultSharedInbox;
 
     private MemberID creator;
     private MemberID owner;
@@ -32,7 +33,8 @@ public class Folder extends AggregateRoot<FolderID> {
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
-            final boolean rootFolder) {
+            final Boolean rootFolder,
+            final Boolean defaultSharedInbox) {
         super(id);
 
         this.owner = owner;
@@ -43,6 +45,7 @@ public class Folder extends AggregateRoot<FolderID> {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
         this.rootFolder = rootFolder;
+        this.defaultSharedInbox = defaultSharedInbox;
 
         selfValidate();
     }
@@ -56,8 +59,19 @@ public class Folder extends AggregateRoot<FolderID> {
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
-            final boolean rootFolder) {
-        return new Folder(id, creator, owner, name, parentFolder, createdAt, updatedAt, deletedAt, rootFolder);
+            final Boolean rootFolder,
+            final Boolean defaultSharedInbox) {
+        return new Folder(
+                id,
+                creator,
+                owner,
+                name,
+                parentFolder,
+                createdAt,
+                updatedAt,
+                deletedAt,
+                rootFolder,
+                defaultSharedInbox);
     }
 
     public static Folder createRoot(final MemberID creator) {
@@ -72,7 +86,24 @@ public class Folder extends AggregateRoot<FolderID> {
                 now,
                 now,
                 null,
-                true);
+                Boolean.TRUE,
+                Boolean.FALSE);
+    }
+
+    public static Folder createInbox(final MemberID owner, final FolderID parentFolder) {
+        Instant now = Instant.now();
+
+        return Folder.with(
+                FolderID.unique(),
+                owner,
+                owner,
+                FolderName.of("Shared Folder"),
+                parentFolder,
+                now,
+                now,
+                null,
+                Boolean.FALSE,
+                Boolean.TRUE);
     }
 
     public static Folder create(
@@ -92,7 +123,8 @@ public class Folder extends AggregateRoot<FolderID> {
                 now,
                 now,
                 null,
-                false);
+                Boolean.FALSE,
+                Boolean.FALSE);
 
         return folder;
     }
@@ -140,6 +172,10 @@ public class Folder extends AggregateRoot<FolderID> {
 
     public boolean isRootFolder() {
         return rootFolder;
+    }
+
+    public Boolean getDefaultSharedInbox() {
+        return defaultSharedInbox;
     }
 
     public MemberID getCreator() {

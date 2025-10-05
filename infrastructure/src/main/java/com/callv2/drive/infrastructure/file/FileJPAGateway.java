@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
@@ -45,6 +46,7 @@ public class FileJPAGateway implements FileGateway {
         return save(file);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<File> findByIdWithMemberAccess(final FileID id, final MemberID memberId) {
 
@@ -55,6 +57,7 @@ public class FileJPAGateway implements FileGateway {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<File> findAllActiveByFolder(FolderID folderId) {
         return this.fileRepository
@@ -64,6 +67,7 @@ public class FileJPAGateway implements FileGateway {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<File> findAllWithMemberAccess(final SearchQuery searchQuery, final MemberID memberId) {
 
@@ -87,6 +91,7 @@ public class FileJPAGateway implements FileGateway {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<File> findByOwner(MemberID ownerId) {
         return this.fileRepository

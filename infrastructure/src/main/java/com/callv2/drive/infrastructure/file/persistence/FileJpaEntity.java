@@ -1,18 +1,26 @@
 package com.callv2.drive.infrastructure.file.persistence;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
+import com.callv2.drive.domain.file.Sharing;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity(name = "File")
@@ -61,6 +69,10 @@ public class FileJpaEntity {
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "file_id", nullable = false)
+    private Set<FileSharingJpaEntity> sharings = new HashSet<>();
+
     private FileJpaEntity(
             final UUID id,
             final UUID creatorId,
@@ -75,7 +87,8 @@ public class FileJpaEntity {
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
-            final Boolean isDeleted) {
+            final Boolean isDeleted,
+            final Set<FileSharingJpaEntity> sharings) {
         this.id = id;
         this.creatorId = creatorId;
         this.ownerId = ownerId;
@@ -90,12 +103,20 @@ public class FileJpaEntity {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
         this.isDeleted = isDeleted;
+        this.sharings = sharings;
     }
 
     public FileJpaEntity() {
     }
 
     public static FileJpaEntity from(final File file) {
+
+        final Set<FileSharingJpaEntity> sharings = file
+                .getSharings()
+                .stream()
+                .map(FileSharingJpaEntity::from)
+                .collect(Collectors.toSet());
+
         return new FileJpaEntity(
                 file.getId().getValue(),
                 file.getCreator().getValue(),
@@ -110,10 +131,17 @@ public class FileJpaEntity {
                 file.getCreatedAt(),
                 file.getUpdatedAt(),
                 file.getDeletedAt(),
-                file.getIsDeleted());
+                file.getIsDeleted(),
+                sharings);
     }
 
     public File toDomain() {
+
+        final Set<Sharing> domainSharings = sharings
+                .stream()
+                .map(FileSharingJpaEntity::toDomain)
+                .collect(Collectors.toSet());
+
         return File.with(
                 FileID.of(getId()),
                 MemberID.of(getCreatorId()),
@@ -126,7 +154,8 @@ public class FileJpaEntity {
                 getCreatedAt(),
                 getUpdatedAt(),
                 getDeletedAt(),
-                getIsDeleted());
+                getIsDeleted(),
+                domainSharings);
     }
 
     public UUID getId() {

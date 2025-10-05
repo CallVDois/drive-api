@@ -43,6 +43,13 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     @Override
+    public Optional<Folder> findDefaultMemberSharedInbox(final MemberID owner) {
+        return this.folderRepository
+                .findByDefaultSharedInboxTrueAndOwnerId(owner.getValue())
+                .map(FolderJpaEntity::toDomain);
+    }
+
+    @Override
     public Set<Folder> findByParentFolderIdWithMemberAccess(FolderID parentFolderId, final MemberID actorId) {
         return this.folderRepository
                 .findAll(

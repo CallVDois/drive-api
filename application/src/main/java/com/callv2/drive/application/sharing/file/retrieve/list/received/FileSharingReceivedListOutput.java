@@ -1,12 +1,13 @@
-package com.callv2.drive.application.file.retrieve.list;
+package com.callv2.drive.application.sharing.file.retrieve.list.received;
 
 import java.time.Instant;
 import java.util.UUID;
 
+import com.callv2.drive.application.file.retrieve.list.FileListOutput;
 import com.callv2.drive.domain.file.File;
-import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.folder.FolderID;
 
-public record FileListOutput(
+public record FileSharingReceivedListOutput(
         UUID id,
         UUID ownerId,
         UUID folderId,
@@ -16,11 +17,11 @@ public record FileListOutput(
         Instant createdAt,
         Instant updatedAt) {
 
-    public static FileListOutput from(final File file, final MemberID actor) {
+    public static FileListOutput from(final File file, final FolderID virtualFolder) {
         return new FileListOutput(
                 file.getId().getValue(),
                 file.getOwner().getValue(),
-                file.getVirtualFolder(actor).getValue(),
+                virtualFolder.getValue(),
                 file.getName().value(),
                 file.getContent().type(),
                 file.getContent().size(),

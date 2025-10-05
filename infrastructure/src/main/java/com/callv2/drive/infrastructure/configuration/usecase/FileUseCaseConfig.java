@@ -11,12 +11,12 @@ import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.create.DefaultCreateFileUseCase;
 import com.callv2.drive.application.file.delete.DefaultDeleteFileUseCase;
 import com.callv2.drive.application.file.delete.DeleteFileUseCase;
-import com.callv2.drive.application.file.permissions.grant.DefaultGrantFilePermissionUseCase;
-import com.callv2.drive.application.file.permissions.grant.GrantFilePermissionUseCase;
 import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.DefaultListFilesUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
+import com.callv2.drive.application.file.sharing.create.CreateSharingUseCase;
+import com.callv2.drive.application.file.sharing.create.DefaultCreateSharingUseCase;
 import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
@@ -91,8 +91,13 @@ public class FileUseCaseConfig {
     }
 
     @Bean
-    GrantFilePermissionUseCase grantFilePermissionUseCase() {
-        return new DefaultGrantFilePermissionUseCase(eventDispatcher, aclGateway, fileGateway);
+    CreateSharingUseCase grantFilePermissionUseCase() {
+        return new DefaultCreateSharingUseCase(
+                eventDispatcher,
+                memberGateway,
+                aclGateway,
+                fileGateway,
+                folderGateway);
     }
 
 }

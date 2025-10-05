@@ -19,11 +19,11 @@ import com.callv2.drive.application.file.content.get.GetFileContentUseCase;
 import com.callv2.drive.application.file.create.CreateFileUseCase;
 import com.callv2.drive.application.file.delete.DeleteFileInput;
 import com.callv2.drive.application.file.delete.DeleteFileUseCase;
-import com.callv2.drive.application.file.permissions.grant.GrantFilePermissionUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.FileListInput;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
+import com.callv2.drive.application.file.sharing.create.CreateSharingUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
@@ -47,7 +47,7 @@ public class FileController implements FileAPI {
     private final GetFileUseCase getFileUseCase;
     private final GetFileContentUseCase getFileContentUseCase;
     private final ListFilesUseCase listFilesUseCase;
-    private final GrantFilePermissionUseCase grantFilePermissionUseCase;
+    private final CreateSharingUseCase createSharingUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
@@ -55,13 +55,13 @@ public class FileController implements FileAPI {
             final GetFileUseCase getFileUseCase,
             final GetFileContentUseCase getFileContentUseCase,
             final ListFilesUseCase listFilesUseCase,
-            final GrantFilePermissionUseCase grantFilePermissionUseCase) {
+            final CreateSharingUseCase createSharingUseCase) {
         this.createFileUseCase = createFileUseCase;
         this.deleteFileUseCase = deleteFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.getFileContentUseCase = getFileContentUseCase;
         this.listFilesUseCase = listFilesUseCase;
-        this.grantFilePermissionUseCase = grantFilePermissionUseCase;
+        this.createSharingUseCase = createSharingUseCase;
     }
 
     @Override
@@ -101,10 +101,12 @@ public class FileController implements FileAPI {
 
         final var actorId = SecurityContext.getAuthenticatedUserId();
 
-        final GetFileContentOutput output = getFileContentUseCase.execute(GetFileContentInput.with(id, actorId));
+        final GetFileContentOutput output = getFileContentUseCase
+                .execute(GetFileContentInput.with(id, actorId));
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.name() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + output.name() + "\"")
                 .contentLength(output.size())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(new InputStreamResource(output.inputStream()));
@@ -135,18 +137,19 @@ public class FileController implements FileAPI {
         final var actorId = SecurityContext.getAuthenticatedUserId();
 
         return ResponseEntity
-                .ok(listFilesUseCase.execute(new FileListInput(actorId, query)).map(FilePresenter::present));
+                .ok(listFilesUseCase.execute(new FileListInput(actorId, query))
+                        .map(FilePresenter::present));
 
     }
 
     @Override
-    public ResponseEntity<Void> grantPermission(
+    public ResponseEntity<Void> shareFile(
             final UUID id,
             final GrantFilePermissionRequest request) {
 
         final var granterId = SecurityContext.getAuthenticatedUserId();
 
-        grantFilePermissionUseCase.execute(FileAdapter.adapt(id, granterId, request));
+        createSharingUseCase.execute(FileAdapter.adapt(id, granterId, request));
 
         return ResponseEntity.noContent().build();
 

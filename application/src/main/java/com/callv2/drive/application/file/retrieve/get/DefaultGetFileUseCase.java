@@ -18,9 +18,12 @@ public class DefaultGetFileUseCase extends GetFileUseCase {
 
     @Override
     public GetFileOutput execute(GetFileInput input) {
+
+        final MemberID actorId = MemberID.of(input.actorId());
+
         return fileGateway
-                .findByIdWithMemberAccess(FileID.of(input.fileId()), MemberID.of(input.actorId()))
-                .map(GetFileOutput::from)
+                .findByIdWithMemberAccess(FileID.of(input.fileId()), actorId)
+                .map(file -> GetFileOutput.from(file, actorId))
                 .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
     }
 

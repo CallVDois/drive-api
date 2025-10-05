@@ -80,8 +80,8 @@ public interface FileAPI {
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
             @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
-    @Operation(summary = "Grant file permission", description = "This method grants permission to a file", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping("{id}/permissions")
-    ResponseEntity<Void> grantPermission(@PathVariable("id") UUID id, @RequestBody GrantFilePermissionRequest request);
+    @Operation(summary = "Share File", description = "This method shares a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping("{id}/share")
+    ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody GrantFilePermissionRequest request);
 
 }

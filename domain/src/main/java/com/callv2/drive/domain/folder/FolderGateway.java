@@ -12,6 +12,8 @@ public interface FolderGateway {
 
     Optional<Folder> findMemberRootFolder(MemberID owner);
 
+    Optional<Folder> findDefaultMemberSharedInbox(MemberID owner);
+
     Set<Folder> findByParentFolderIdWithMemberAccess(FolderID parentFolderId, final MemberID actorId);
 
     Folder create(Folder folder);
