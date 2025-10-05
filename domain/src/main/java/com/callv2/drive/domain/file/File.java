@@ -212,13 +212,13 @@ public class File extends AggregateRoot<FileID> implements EventSource {
             throw ValidationException.with("Could not share the file", notification);
         }
 
-        this.updatedAt = Instant.now();
+        if (this.sharings.stream().anyMatch(s -> s.getSharedTo().equals(sharedTo)))
+            return this;
 
         final FileSharing sharing = FileSharing.create(sharedTo, sharedBy, virtualFolder);
-
-        // this.events.add(FileSharedEvent.create(this, sharing));
-
         this.sharings.add(sharing);
+
+        this.events.add(FileSharedEvent.create(this, sharing));
 
         return this;
     }
