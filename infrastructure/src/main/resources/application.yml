@@ -34,7 +34,7 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
-    show-sql: false
+    show-sql: true
   rabbitmq:
     listener:
       simple:

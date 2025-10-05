@@ -1,6 +1,11 @@
 package com.callv2.drive.domain.folder;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.exception.ValidationException;
@@ -24,6 +29,8 @@ public class Folder extends AggregateRoot<FolderID> {
     private Instant updatedAt;
     private Instant deletedAt;
 
+    private final Set<FolderSharing> sharings;
+
     private Folder(
             final FolderID id,
             final MemberID creator,
@@ -34,7 +41,8 @@ public class Folder extends AggregateRoot<FolderID> {
             final Instant updatedAt,
             final Instant deletedAt,
             final Boolean rootFolder,
-            final Boolean defaultSharedInbox) {
+            final Boolean defaultSharedInbox,
+            final Set<FolderSharing> sharings) {
         super(id);
 
         this.owner = owner;
@@ -46,6 +54,7 @@ public class Folder extends AggregateRoot<FolderID> {
         this.deletedAt = deletedAt;
         this.rootFolder = rootFolder;
         this.defaultSharedInbox = defaultSharedInbox;
+        this.sharings = nonNull(sharings) ? new HashSet<>(sharings) : new HashSet<>();
 
         selfValidate();
     }
@@ -60,7 +69,8 @@ public class Folder extends AggregateRoot<FolderID> {
             final Instant updatedAt,
             final Instant deletedAt,
             final Boolean rootFolder,
-            final Boolean defaultSharedInbox) {
+            final Boolean defaultSharedInbox,
+            final Set<FolderSharing> sharings) {
         return new Folder(
                 id,
                 creator,
@@ -71,7 +81,8 @@ public class Folder extends AggregateRoot<FolderID> {
                 updatedAt,
                 deletedAt,
                 rootFolder,
-                defaultSharedInbox);
+                defaultSharedInbox,
+                sharings);
     }
 
     public static Folder createRoot(final MemberID creator) {
@@ -87,7 +98,8 @@ public class Folder extends AggregateRoot<FolderID> {
                 now,
                 null,
                 Boolean.TRUE,
-                Boolean.FALSE);
+                Boolean.FALSE,
+                new HashSet<>());
     }
 
     public static Folder createInbox(final MemberID owner, final FolderID parentFolder) {
@@ -103,7 +115,8 @@ public class Folder extends AggregateRoot<FolderID> {
                 now,
                 null,
                 Boolean.FALSE,
-                Boolean.TRUE);
+                Boolean.TRUE,
+                new HashSet<>());
     }
 
     public static Folder create(
@@ -124,9 +137,35 @@ public class Folder extends AggregateRoot<FolderID> {
                 now,
                 null,
                 Boolean.FALSE,
-                Boolean.FALSE);
+                Boolean.FALSE,
+                new HashSet<>());
 
         return folder;
+    }
+
+    public Folder share(final MemberID sharedBy, final MemberID sharedTo, final FolderID virtualFolder) {
+
+        final Notification notification = Notification.create();
+
+        if (isNull(sharedBy) || isNull(sharedTo) || isNull(virtualFolder)) {
+            notification.append(ValidationError.with("Member's and virtual folder are required"));
+            throw ValidationException.with("Could not share the folder", notification);
+        }
+
+        if (this.owner.equals(sharedTo) || sharedBy.equals(sharedTo)) {
+            notification.append(ValidationError.with("Cannot share a folder with yourself"));
+            throw ValidationException.with("Could not share the folder", notification);
+        }
+
+        this.updatedAt = Instant.now();
+
+        final FolderSharing sharing = FolderSharing.create(sharedTo, sharedBy, virtualFolder);
+
+        // this.events.add(FolderSharedEvent.create(this, sharing));
+
+        this.sharings.add(sharing);
+
+        return this;
     }
 
     @Override
@@ -162,6 +201,18 @@ public class Folder extends AggregateRoot<FolderID> {
         return this;
     }
 
+    public FolderID getVirtualFolder(final MemberID member) {
+
+        if (this.owner.equals(member))
+            return this.id;
+
+        return this.sharings.stream()
+                .filter(sharing -> sharing.getSharedTo().equals(member))
+                .findFirst()
+                .map(FolderSharing::getVirtualFolder)
+                .orElse(null);
+    }
+
     private void selfValidate() {
         final var notification = Notification.create();
         validate(notification);
@@ -170,7 +221,11 @@ public class Folder extends AggregateRoot<FolderID> {
             throw ValidationException.with("Validation fail has occoured", notification);
     }
 
-    public boolean isRootFolder() {
+    public Boolean isRootFolder() {
+        return getRootFolder();
+    }
+
+    public Boolean getRootFolder() {
         return rootFolder;
     }
 
@@ -204,6 +259,10 @@ public class Folder extends AggregateRoot<FolderID> {
 
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    public Set<FolderSharing> getSharings() {
+        return Set.copyOf(sharings);
     }
 
     @Override

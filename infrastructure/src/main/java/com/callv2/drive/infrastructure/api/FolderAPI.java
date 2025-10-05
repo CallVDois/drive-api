@@ -23,6 +23,7 @@ import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
+import com.callv2.drive.infrastructure.folder.model.ShareFolderRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -87,5 +88,9 @@ public interface FolderAPI {
     @Operation(summary = "Delete folder", description = "This method delete a folder by id", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("{id}")
     ResponseEntity<Void> delete(@PathVariable("id") UUID id);
+
+    @Operation(summary = "Share Folder", description = "This method shares a folder", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping("{id}/share")
+    ResponseEntity<Void> shareFolder(@PathVariable("id") UUID id, @RequestBody ShareFolderRequest request);
 
 }

@@ -1,16 +1,24 @@
 package com.callv2.drive.infrastructure.folder.persistence;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.folder.FolderSharing;
 import com.callv2.drive.domain.member.MemberID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity(name = "Folder")
@@ -47,6 +55,10 @@ public class FolderJpaEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "folder_id", nullable = false)
+    private Set<FolderSharingJpaEntity> sharings = new HashSet<>();
+
     private FolderJpaEntity(
             final UUID id,
             final Boolean rootFolder,
@@ -57,7 +69,8 @@ public class FolderJpaEntity {
             final UUID parentFolderId,
             final Instant createdAt,
             final Instant updatedAt,
-            final Instant deletedAt) {
+            final Instant deletedAt,
+            final Set<FolderSharingJpaEntity> sharings) {
         this.id = id;
         this.rootFolder = rootFolder;
         this.defaultSharedInbox = defaultSharedInbox;
@@ -68,7 +81,7 @@ public class FolderJpaEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
-
+        this.sharings = sharings;
     }
 
     public FolderJpaEntity() {
@@ -76,6 +89,12 @@ public class FolderJpaEntity {
 
     public static FolderJpaEntity fromDomain(final Folder folder) {
         final UUID parentFolderId = folder.getParentFolder() == null ? null : folder.getParentFolder().getValue();
+
+        final Set<FolderSharingJpaEntity> sharings = folder
+                .getSharings()
+                .stream()
+                .map(FolderSharingJpaEntity::from)
+                .collect(Collectors.toSet());
 
         final var entity = new FolderJpaEntity(
                 folder.getId().getValue(),
@@ -87,12 +106,19 @@ public class FolderJpaEntity {
                 parentFolderId,
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
-                folder.getDeletedAt());
+                folder.getDeletedAt(),
+                sharings);
 
         return entity;
     }
 
     public Folder toDomain() {
+
+        final Set<FolderSharing> domainSharings = sharings
+                .stream()
+                .map(FolderSharingJpaEntity::toDomain)
+                .collect(Collectors.toSet());
+
         return Folder.with(
                 FolderID.of(id),
                 MemberID.of(creatorId),
@@ -103,7 +129,8 @@ public class FolderJpaEntity {
                 updatedAt,
                 deletedAt,
                 rootFolder,
-                defaultSharedInbox);
+                defaultSharedInbox,
+                domainSharings);
     }
 
     public UUID getId() {

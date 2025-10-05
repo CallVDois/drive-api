@@ -37,11 +37,13 @@ public class FolderJpaGateway implements FolderGateway {
         this.folderRepository = folderRepository;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Folder> findMemberRootFolder(final MemberID owner) {
         return this.folderRepository.findByRootFolderTrueAndOwnerId(owner.getValue()).map(FolderJpaEntity::toDomain);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Folder> findDefaultMemberSharedInbox(final MemberID owner) {
         return this.folderRepository
@@ -49,6 +51,7 @@ public class FolderJpaGateway implements FolderGateway {
                 .map(FolderJpaEntity::toDomain);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Set<Folder> findByParentFolderIdWithMemberAccess(FolderID parentFolderId, final MemberID actorId) {
         return this.folderRepository
@@ -70,12 +73,13 @@ public class FolderJpaGateway implements FolderGateway {
         return save(folder);
     }
 
-    @Override
     @Transactional
+    @Override
     public void updateAll(List<Folder> folders) {
         this.folderRepository.saveAll(folders.stream().map(FolderJpaEntity::fromDomain).toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Folder> findByIdWithMemberAccess(final FolderID id, final MemberID actorId) {
 
@@ -92,6 +96,7 @@ public class FolderJpaGateway implements FolderGateway {
         return this.folderRepository.save(FolderJpaEntity.fromDomain(folder)).toDomain();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Folder> findAllWithMemberAccess(final SearchQuery searchQuery, final MemberID actorId) {
         final var page = QueryAdapter.of(searchQuery.pagination());
@@ -142,7 +147,8 @@ public class FolderJpaGateway implements FolderGateway {
 
     private static Specification<FolderJpaEntity> findByParentFolderIdSpecification(final UUID parentFolderId) {
         return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.and(criteriaBuilder.equal(root.get("parentFolderId"), parentFolderId));
+            criteriaBuilder.and(criteriaBuilder.equal(root.get("parentFolderId"), parentFolderId));
+            return criteriaBuilder.or(criteriaBuilder.equal(root.get("sharings").get("virtualFolder"), parentFolderId));
         };
     }
 
