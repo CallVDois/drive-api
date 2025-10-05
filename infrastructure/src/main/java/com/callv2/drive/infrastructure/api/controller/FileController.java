@@ -23,7 +23,7 @@ import com.callv2.drive.application.file.retrieve.get.GetFileInput;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.FileListInput;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
-import com.callv2.drive.application.file.sharing.create.CreateSharingUseCase;
+import com.callv2.drive.application.file.sharing.create.CreateFileSharingUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
@@ -47,7 +47,7 @@ public class FileController implements FileAPI {
     private final GetFileUseCase getFileUseCase;
     private final GetFileContentUseCase getFileContentUseCase;
     private final ListFilesUseCase listFilesUseCase;
-    private final CreateSharingUseCase createSharingUseCase;
+    private final CreateFileSharingUseCase createFileSharingUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
@@ -55,13 +55,13 @@ public class FileController implements FileAPI {
             final GetFileUseCase getFileUseCase,
             final GetFileContentUseCase getFileContentUseCase,
             final ListFilesUseCase listFilesUseCase,
-            final CreateSharingUseCase createSharingUseCase) {
+            final CreateFileSharingUseCase createFileSharingUseCase) {
         this.createFileUseCase = createFileUseCase;
         this.deleteFileUseCase = deleteFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.getFileContentUseCase = getFileContentUseCase;
         this.listFilesUseCase = listFilesUseCase;
-        this.createSharingUseCase = createSharingUseCase;
+        this.createFileSharingUseCase = createFileSharingUseCase;
     }
 
     @Override
@@ -149,7 +149,7 @@ public class FileController implements FileAPI {
 
         final var granterId = SecurityContext.getAuthenticatedUserId();
 
-        createSharingUseCase.execute(FileAdapter.adapt(id, granterId, request));
+        createFileSharingUseCase.execute(FileAdapter.adapt(id, granterId, request));
 
         return ResponseEntity.noContent().build();
 

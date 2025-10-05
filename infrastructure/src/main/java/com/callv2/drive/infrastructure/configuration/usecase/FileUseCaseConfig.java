@@ -15,8 +15,8 @@ import com.callv2.drive.application.file.retrieve.get.DefaultGetFileUseCase;
 import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.DefaultListFilesUseCase;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
-import com.callv2.drive.application.file.sharing.create.CreateSharingUseCase;
-import com.callv2.drive.application.file.sharing.create.DefaultCreateSharingUseCase;
+import com.callv2.drive.application.file.sharing.create.CreateFileSharingUseCase;
+import com.callv2.drive.application.file.sharing.create.DefaultCreateFileSharingUseCase;
 import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
@@ -91,8 +91,8 @@ public class FileUseCaseConfig {
     }
 
     @Bean
-    CreateSharingUseCase grantFilePermissionUseCase() {
-        return new DefaultCreateSharingUseCase(
+    CreateFileSharingUseCase createFileSharingUseCase() {
+        return new DefaultCreateFileSharingUseCase(
                 eventDispatcher,
                 memberGateway,
                 aclGateway,

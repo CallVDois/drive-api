@@ -17,7 +17,7 @@ import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.handler.Notification;
 
-public class DefaultCreateSharingUseCase extends CreateSharingUseCase {
+public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
 
     private final EventDispatcher eventDispatcher;
 
@@ -26,7 +26,7 @@ public class DefaultCreateSharingUseCase extends CreateSharingUseCase {
     private final FileGateway fileGateway;
     private final FolderGateway folderGateway;
 
-    public DefaultCreateSharingUseCase(
+    public DefaultCreateFileSharingUseCase(
             final EventDispatcher eventDispatcher,
             final MemberGateway memberGateway,
             final AclGateway aclGateway,
@@ -40,7 +40,7 @@ public class DefaultCreateSharingUseCase extends CreateSharingUseCase {
     }
 
     @Override
-    public void execute(final CreateSharingInput input) {
+    public void execute(final CreateFileSharingInput input) {
 
         final MemberID granterId = memberGateway.findById(MemberID.of(input.granter()))
                 .map(Member::getId)
