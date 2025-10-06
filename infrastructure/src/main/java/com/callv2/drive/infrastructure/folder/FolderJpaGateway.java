@@ -1,6 +1,8 @@
 package com.callv2.drive.infrastructure.folder;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.FolderSharing;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
@@ -21,6 +24,8 @@ import com.callv2.drive.infrastructure.filter.FilterService;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.folder.persistence.FolderJpaEntity;
 import com.callv2.drive.infrastructure.folder.persistence.FolderJpaRepository;
+import com.callv2.drive.infrastructure.folder.persistence.FolderSharingJpaEntity;
+import com.callv2.drive.infrastructure.folder.persistence.FolderSharingJpaRepository;
 
 import jakarta.persistence.criteria.Root;
 
@@ -29,18 +34,21 @@ public class FolderJpaGateway implements FolderGateway {
 
     private final FilterService filterService;
     private final FolderJpaRepository folderRepository;
+    private final FolderSharingJpaRepository folderSharingRepository;
 
     public FolderJpaGateway(
             final FilterService filterService,
-            final FolderJpaRepository folderRepository) {
+            final FolderJpaRepository folderRepository,
+            final FolderSharingJpaRepository folderSharingRepository) {
         this.filterService = filterService;
         this.folderRepository = folderRepository;
+        this.folderSharingRepository = folderSharingRepository;
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<Folder> findMemberRootFolder(final MemberID owner) {
-        return this.folderRepository.findByRootFolderTrueAndOwnerId(owner.getValue()).map(FolderJpaEntity::toDomain);
+        return this.folderRepository.findByRootFolderTrueAndOwnerId(owner.getValue()).map(this::mapToDomain);
     }
 
     @Transactional(readOnly = true)
@@ -48,18 +56,16 @@ public class FolderJpaGateway implements FolderGateway {
     public Optional<Folder> findDefaultMemberSharedInbox(final MemberID owner) {
         return this.folderRepository
                 .findByDefaultSharedInboxTrueAndOwnerId(owner.getValue())
-                .map(FolderJpaEntity::toDomain);
+                .map(this::mapToDomain);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Set<Folder> findByParentFolderIdWithMemberAccess(FolderID parentFolderId, final MemberID actorId) {
-        return this.folderRepository
-                .findAll(
-                        findByParentFolderIdSpecification(parentFolderId.getValue())
-                                .and(folderAclSpecification(actorId.getValue())))
+        return mapToDomain(this.folderRepository.findAll(
+                findByParentFolderIdSpecification(parentFolderId.getValue())
+                        .and(folderAclSpecification(actorId.getValue()))))
                 .stream()
-                .map(FolderJpaEntity::toDomain)
                 .collect(Collectors.toSet());
     }
 
@@ -89,12 +95,12 @@ public class FolderJpaGateway implements FolderGateway {
 
         return this.folderRepository
                 .findOne(specification)
-                .map(FolderJpaEntity::toDomain);
+                .map(this::mapToDomain);
 
     }
 
     private Folder save(Folder folder) {
-        return this.folderRepository.save(FolderJpaEntity.fromDomain(folder)).toDomain();
+        return this.folderRepository.save(FolderJpaEntity.fromDomain(folder)).toDomain(folder.getSharings());
     }
 
     @Transactional(readOnly = true)
@@ -117,12 +123,35 @@ public class FolderJpaGateway implements FolderGateway {
                 pageResult.getSize(),
                 pageResult.getTotalPages(),
                 pageResult.getTotalElements(),
-                pageResult.map(FolderJpaEntity::toDomain).toList());
+                mapToDomain(pageResult.toList()));
     }
 
     @Override
     public void deleteById(FolderID id) {
         this.folderRepository.deleteById(id.getValue());
+    }
+
+    private Folder mapToDomain(final FolderJpaEntity entity) {
+        final List<FolderSharingJpaEntity> sharings = this.folderSharingRepository.findAllByFolderId(entity.getId());
+        return entity.toDomain(
+                sharings
+                        .stream()
+                        .map(FolderSharingJpaEntity::toDomain)
+                        .collect(Collectors.toSet()));
+    }
+
+    private List<Folder> mapToDomain(final Collection<FolderJpaEntity> folderJpaEntities) {
+
+        final Map<UUID, Set<FolderSharing>> sharingsByFolderId = this.folderSharingRepository
+                .findAllByFolderIdIn(folderJpaEntities.stream().map(FolderJpaEntity::getId).toList())
+                .stream()
+                .collect(
+                        Collectors.groupingBy(fs -> fs.getFolder().getId(),
+                                Collectors.mapping(folderShareJpa -> folderShareJpa.toDomain(), Collectors.toSet())));
+
+        return folderJpaEntities
+                .stream()
+                .map(folder -> folder.toDomain(sharingsByFolderId.get(folder.getId()))).toList();
     }
 
     private static Specification<FolderJpaEntity> folderAclSpecification(final UUID actorId) {
