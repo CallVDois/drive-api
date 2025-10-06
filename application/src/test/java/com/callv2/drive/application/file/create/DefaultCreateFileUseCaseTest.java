@@ -112,7 +112,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedContentSize = (long) contentBytes.length;
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));
@@ -343,7 +343,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedErrorMessage = "File with same name already exists on this folder";
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));
@@ -424,7 +424,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedExceptionMessage = "Could not store File";
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));
@@ -533,7 +533,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedExceptionMessage = "Could not delete BinaryContent";
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));
@@ -642,7 +642,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedExceptionMessage = "Could not store BinaryContent";
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));
@@ -732,7 +732,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedErrorMessage = "'name' cannot be a reserved name: NUL";
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));
@@ -812,7 +812,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedErrorMessage = "You have exceeded your current quota of 1 BYTE";
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));
@@ -891,7 +891,7 @@ class DefaultCreateFileUseCaseTest {
         final var expectedErrorMessage = "'type' cannot be null.";
 
         final var expectedAclId = AclID.unique();
-        final var expectedAclResource = Resource.folder(expectedFolderId);
+        final var expectedAclResource = Resource.folder(folder);
         final var expectedAclDirectEntries = Set.<Entry<?>>of(
                 Entry.create(ownerId, AccessPermission.mostPrivileged()),
                 Entry.create(ownerId, SharePermission.mostPrivileged()));

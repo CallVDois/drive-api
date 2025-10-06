@@ -50,8 +50,8 @@ public class DefaultMoveFolderUseCaseTest {
         final var expectedFolderToMove = Folder.create(ownerId, ownerId, FolderName.of("folder1"), expectedRootFolder);
         final var expectedFolderTarget = Folder.create(ownerId, ownerId, FolderName.of("folder2"), expectedRootFolder);
 
-        final var expectedFolderToMoveResource = Resource.folder(expectedFolderToMove.getId());
-        final var expectedFolderTargetResource = Resource.folder(expectedFolderTarget.getId());
+        final var expectedFolderToMoveResource = Resource.folder(expectedFolderToMove);
+        final var expectedFolderTargetResource = Resource.folder(expectedFolderTarget);
 
         final var expectedFolderToMoveAcl = Acl.create(expectedFolderToMoveResource, actorId);
         final var expectedFolderTargetAcl = Acl.create(expectedFolderTargetResource, actorId);

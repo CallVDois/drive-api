@@ -97,7 +97,7 @@ public class FileJpaEntity {
     public FileJpaEntity() {
     }
 
-    public static FileJpaEntity from(final File file) {
+    public static FileJpaEntity fromDomain(final File file) {
 
         return new FileJpaEntity(
                 file.getId().getValue(),

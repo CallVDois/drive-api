@@ -99,10 +99,6 @@ public class FolderJpaGateway implements FolderGateway {
 
     }
 
-    private Folder save(Folder folder) {
-        return this.folderRepository.save(FolderJpaEntity.fromDomain(folder)).toDomain(folder.getSharings());
-    }
-
     @Transactional(readOnly = true)
     @Override
     public Page<Folder> findAllWithMemberAccess(final SearchQuery searchQuery, final MemberID actorId) {
@@ -154,6 +150,21 @@ public class FolderJpaGateway implements FolderGateway {
                 .map(folder -> folder.toDomain(sharingsByFolderId.get(folder.getId()))).toList();
     }
 
+    private Folder save(final Folder folder) {
+
+        final FolderJpaEntity folderJpa = this.folderRepository.save(FolderJpaEntity.fromDomain(folder));
+
+        this.folderSharingRepository
+                .saveAll(
+                        folder
+                                .getSharings()
+                                .stream()
+                                .map(folderSharing -> FolderSharingJpaEntity.from(folderJpa, folderSharing))
+                                .toList());
+
+        return folder;
+    }
+
     private static Specification<FolderJpaEntity> folderAclSpecification(final UUID actorId) {
         return (root, query, criteriaBuilder) -> {
 
@@ -170,16 +181,12 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     private static Specification<FolderJpaEntity> folderByIdSpecification(final UUID folderId) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), folderId));
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), folderId));
     }
 
     private static Specification<FolderJpaEntity> findByParentFolderIdSpecification(final UUID parentFolderId) {
-        return (root, query, criteriaBuilder) -> {
-            criteriaBuilder.and(criteriaBuilder.equal(root.get("parentFolderId"), parentFolderId));
-            return criteriaBuilder.or(criteriaBuilder.equal(root.get("sharings").get("virtualFolder"), parentFolderId));
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.and(
+                criteriaBuilder.equal(root.get("parentFolderId"), parentFolderId));
     }
 
 }

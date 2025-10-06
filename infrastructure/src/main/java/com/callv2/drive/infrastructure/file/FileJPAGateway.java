@@ -46,7 +46,7 @@ public class FileJPAGateway implements FileGateway {
     }
 
     @Override
-    public File create(File file) {
+    public File create(final File file) {
         return save(file);
     }
 
@@ -67,7 +67,7 @@ public class FileJPAGateway implements FileGateway {
 
     @Transactional(readOnly = true)
     @Override
-    public List<File> findAllActiveByFolder(FolderID folderId) {
+    public List<File> findAllActiveByFolder(final FolderID folderId) {
         return mapToDomain(this.fileRepository.findByFolderIdAndIsDeletedFalse(folderId.getValue()));
     }
 
@@ -97,7 +97,7 @@ public class FileJPAGateway implements FileGateway {
 
     @Transactional(readOnly = true)
     @Override
-    public List<File> findByOwner(MemberID ownerId) {
+    public List<File> findByOwner(final MemberID ownerId) {
         return mapToDomain(this.fileRepository.findByOwnerId(ownerId.getValue()));
     }
 
@@ -111,8 +111,18 @@ public class FileJPAGateway implements FileGateway {
         return this.fileRepository.sumAllContentSize();
     }
 
-    private File save(File file) {
-        this.fileRepository.save(FileJpaEntity.from(file));
+    private File save(final File file) {
+
+        final FileJpaEntity fileJpa = this.fileRepository.save(FileJpaEntity.fromDomain(file));
+
+        this.fileSharingRepository
+                .saveAll(
+                        file
+                                .getSharings()
+                                .stream()
+                                .map(fileSharing -> FileSharingJpaEntity.from(fileJpa, fileSharing))
+                                .toList());
+
         return file;
     }
 

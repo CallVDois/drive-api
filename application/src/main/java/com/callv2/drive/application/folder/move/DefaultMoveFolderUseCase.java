@@ -38,12 +38,12 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
         final Folder newParentFolder = findFolder(newParentFolderId, actorId);
 
         final Acl folderAcl = aclGateway
-                .findByResource(Resource.folder(folderId))
+                .findByResource(Resource.folder(folder))
                 .orElseThrow(() -> NotFoundException.with(Folder.class, folderId.getValue().toString()));
         checkFolderAccessPermission(folderAcl, folderId, actorId);
 
         final Acl parentFolderAcl = aclGateway
-                .findByResource(Resource.folder(newParentFolderId))
+                .findByResource(Resource.folder(newParentFolder))
                 .orElseThrow(() -> NotFoundException.with(Folder.class, newParentFolderId.getValue().toString()));
         checkParentFolderAccessPermission(parentFolderAcl, newParentFolderId, actorId);
 

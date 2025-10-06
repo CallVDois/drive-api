@@ -157,6 +157,39 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     }
 
+    public Acl revokeAccess(
+            final MemberID revoker,
+            final MemberID revokedMember) {
+
+        final Notification notification = Notification.create();
+
+        if (this.resource.owner().equals(revokedMember))
+            notification.append(ValidationError.with("The owner of the resource cannot have its access revoked"));
+
+        if (isNull(revoker))
+            notification.append(ValidationError.with("'revoker' should not be null"));
+
+        if (isNull(revokedMember))
+            notification.append(ValidationError.with("'revokedMember' should not be null"));
+
+        if (notification.hasError())
+            throw ValidationException.with("Could not revoke access", notification);
+
+        if (revoker.equals(revokedMember))
+            revokeTotal(revokedMember);
+
+        // // TODO
+        // effectiveSharePermission(revoker)
+        // .filter(sp -> sp.allows(SharePermission.SHARE_TO_SHARE))
+        // .orElseThrow(() -> NotAllowedException.with(
+        // "'granter' does not have share permission to grant the specified
+        // 'accessPermission'",
+        // "accessPermission level too low"));
+
+        return this;
+
+    }
+
     public Acl grantAccess(
             final MemberID granter,
             final MemberID grantee,
@@ -228,6 +261,11 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         return this;
 
+    }
+
+    private Acl revokeTotal(final MemberID revokedMember) {
+        this.directEntries.removeIf(entry -> entry.member().equals(revokedMember));
+        return this;
     }
 
     private Acl grantTotal(final MemberID grantee) {

@@ -43,25 +43,28 @@ public class FolderSharingJpaEntity {
     }
 
     private FolderSharingJpaEntity(
-            UUID id,
-            UUID sharedTo,
-            UUID sharedBy,
-            UUID virtualFolder,
-            Instant createdAt) {
+            final UUID id,
+            final UUID sharedTo,
+            final UUID sharedBy,
+            final UUID virtualFolder,
+            final Instant createdAt,
+            final FolderJpaEntity folder) {
         this.id = id;
         this.sharedTo = sharedTo;
         this.sharedBy = sharedBy;
         this.virtualFolder = virtualFolder;
         this.createdAt = createdAt;
+        this.folder = folder;
     }
 
-    public static FolderSharingJpaEntity from(final FolderSharing sharing) {
+    public static FolderSharingJpaEntity from(final FolderJpaEntity folderJpa, final FolderSharing sharing) {
         return new FolderSharingJpaEntity(
                 sharing.getId().getValue(),
                 sharing.getSharedTo().getValue(),
                 sharing.getSharedBy().getValue(),
                 sharing.getVirtualFolder().getValue(),
-                sharing.getCreatedAt());
+                sharing.getCreatedAt(),
+                folderJpa);
     }
 
     public FolderSharing toDomain() {

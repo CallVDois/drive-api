@@ -38,25 +38,28 @@ public class FileSharingJpaEntity {
     }
 
     private FileSharingJpaEntity(
-            UUID id,
-            UUID sharedTo,
-            UUID sharedBy,
-            UUID virtualFolder,
-            Instant createdAt) {
+            final UUID id,
+            final UUID sharedTo,
+            final UUID sharedBy,
+            final UUID virtualFolder,
+            final Instant createdAt,
+            final FileJpaEntity file) {
         this.id = id;
         this.sharedTo = sharedTo;
         this.sharedBy = sharedBy;
         this.virtualFolder = virtualFolder;
         this.createdAt = createdAt;
+        this.file = file;
     }
 
-    public static FileSharingJpaEntity from(final FileSharing sharing) {
+    public static FileSharingJpaEntity from(final FileJpaEntity fileJpaEntity, final FileSharing sharing) {
         return new FileSharingJpaEntity(
                 sharing.getId().getValue(),
                 sharing.getSharedTo().getValue(),
                 sharing.getSharedBy().getValue(),
                 sharing.getVirtualFolder().getValue(),
-                sharing.getCreatedAt());
+                sharing.getCreatedAt(),
+                fileJpaEntity);
     }
 
     public FileSharing toDomain() {

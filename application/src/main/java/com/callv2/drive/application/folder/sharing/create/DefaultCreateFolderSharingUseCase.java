@@ -49,7 +49,7 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
         final Acl acl = this.aclGateway
-                .findByResource(Resource.folder(folder.getId()))
+                .findByResource(Resource.folder(folder))
                 .orElseThrow(() -> NotFoundException.with(Folder.class, folder.getId().getStringValue()));
 
         final Notification notification = Notification.create();
@@ -75,7 +75,7 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
 
     private Folder createSharedInbox(final MemberID memberId) {
         final Folder inboxFolder = Folder.createInbox(memberId, retrieveMemberRootFolder(memberId));
-        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder.getId()), memberId)));
+        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder), memberId)));
         return folderGateway.create(inboxFolder);
     }
 
@@ -87,7 +87,7 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
 
     private Folder createRootFolder(final MemberID memberId) {
         final Folder rootFolder = Folder.createRoot(memberId);
-        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(rootFolder.getId()), memberId)));
+        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(rootFolder), memberId)));
         return folderGateway.create(rootFolder);
     }
 

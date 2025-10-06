@@ -73,12 +73,12 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
             throw ValidationException.with("Could not create Aggregate Folder", notification);
 
         final Acl parentFolderAcl = this.aclGateway
-                .findByResource(Resource.folder(parentFolder.getId()))
+                .findByResource(Resource.folder(parentFolder))
                 .orElseThrow(() -> NotAllowedException.with("You don't have any permissions in this folder"));
 
         checkWriteAccessPermission(creatorId, parentFolderAcl);
 
-        final Acl newFolderAcl = parentFolderAcl.createInherited(Resource.folder(folder.getId()));
+        final Acl newFolderAcl = parentFolderAcl.createInherited(Resource.folder(folder));
         eventDispatcher.notify(aclGateway.create(newFolderAcl));
 
         return folderGateway.create(folder);

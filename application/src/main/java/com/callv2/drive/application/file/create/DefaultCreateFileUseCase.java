@@ -70,7 +70,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
         final Acl folderAcl = this.aclGateway
-                .findByResource(Resource.folder(folderId))
+                .findByResource(Resource.folder(folder))
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
         final AccessPermission folderAclPermission = folderAcl
@@ -106,7 +106,7 @@ public class DefaultCreateFileUseCase extends CreateFileUseCase {
         if (notification.hasError())
             throw ValidationException.with("Could not create Aggregate File", notification);
 
-        final Acl fileInheritedAcl = folderAcl.createInherited(Resource.file(file.getId()));
+        final Acl fileInheritedAcl = folderAcl.createInherited(Resource.file(file));
 
         eventDispatcher.notify(aclGateway.create(fileInheritedAcl));
         storeFile(file);

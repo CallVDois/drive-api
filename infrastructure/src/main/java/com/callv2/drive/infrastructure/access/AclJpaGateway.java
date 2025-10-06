@@ -15,8 +15,6 @@ import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.access.Entry;
 import com.callv2.drive.domain.access.Permission;
 import com.callv2.drive.domain.access.Resource;
-import com.callv2.drive.domain.file.FileID;
-import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.infrastructure.access.persistence.AclJpaEntity;
 import com.callv2.drive.infrastructure.access.persistence.AclJpaRepository;
@@ -77,11 +75,11 @@ public class AclJpaGateway implements AclGateway {
 
     private void saveFolderAcl(final Acl acl) {
 
-        final Resource<FolderID> resource = Resource
-                .folder(FolderID.fromStringValue(acl.getResource().id().getStringValue()));
-
         final var folderAccessAcls = filterAccessEntries(acl)
-                .map(entry -> FolderAccessAclJpaEntity.from(resource, entry.getKey(), entry.getValue()))
+                .map(entry -> FolderAccessAclJpaEntity.from(
+                        acl.getResource().folder(),
+                        entry.getKey(),
+                        entry.getValue()))
                 .toList();
 
         this.folderAccessAclJpaRepository.saveAll(folderAccessAcls);
@@ -90,11 +88,11 @@ public class AclJpaGateway implements AclGateway {
 
     private void saveFileAcl(final Acl acl) {
 
-        final Resource<FileID> resource = Resource
-                .file(FileID.fromStringValue(acl.getResource().id().getStringValue()));
-
         final var fileAccessAcls = filterAccessEntries(acl)
-                .map(entry -> FileAccessAclJpaEntity.from(resource, entry.getKey(), entry.getValue()))
+                .map(entry -> FileAccessAclJpaEntity.from(
+                        acl.getResource().file(),
+                        entry.getKey(),
+                        entry.getValue()))
                 .toList();
 
         this.fileAccessAclJpaRepository.saveAll(fileAccessAcls);

@@ -55,7 +55,7 @@ public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
                 .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
 
         final Acl acl = this.aclGateway
-                .findByResource(Resource.file(file.getId()))
+                .findByResource(Resource.file(file))
                 .orElseThrow(() -> NotFoundException.with(File.class, file.getId().getStringValue()));
 
         final Notification notification = Notification.create();
@@ -80,7 +80,7 @@ public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
 
     private Folder createSharedInbox(final MemberID memberId) {
         final Folder inboxFolder = Folder.createInbox(memberId, retrieveMemberRootFolder(memberId));
-        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder.getId()), memberId)));
+        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder), memberId)));
         return folderGateway.create(inboxFolder);
     }
 

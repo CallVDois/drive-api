@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
+import com.callv2.drive.domain.Identifier;
 import com.callv2.drive.domain.access.Acl;
 import com.callv2.drive.domain.access.AclID;
 import com.callv2.drive.domain.access.Entry;
@@ -14,6 +15,7 @@ import com.callv2.drive.domain.access.ResourceType;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -40,6 +42,9 @@ public class AclJpaEntity {
     @Column(name = "resource_type", nullable = false)
     private ResourceType resourceType;
 
+    @Column(name = "resource_owner", nullable = false)
+    private UUID resourceOwner;
+
     @ElementCollection
     @CollectionTable(name = "acl_direct_entries", joinColumns = @JoinColumn(name = "acl_id"))
     private Set<EntryJpa> directEntries = new HashSet<>();
@@ -64,6 +69,7 @@ public class AclJpaEntity {
             final UUID id,
             final String resourceId,
             final ResourceType resourceType,
+            final UUID resourceOwner,
             final Set<EntryJpa> directEntries,
             final Set<EntryJpa> inheritedEntries,
             final Instant createdAt,
@@ -72,6 +78,7 @@ public class AclJpaEntity {
         this.id = id;
         this.resourceId = resourceId;
         this.resourceType = resourceType;
+        this.resourceOwner = resourceOwner;
         this.directEntries = directEntries;
         this.inheritedEntries = inheritedEntries;
         this.createdAt = createdAt;
@@ -93,6 +100,7 @@ public class AclJpaEntity {
                 acl.getId().getValue(),
                 acl.getResource().id().getStringValue(),
                 acl.getResource().type(),
+                acl.getResource().owner().getValue(),
                 directEntries,
                 inheritedEntries,
                 acl.getCreatedAt(),
@@ -111,8 +119,8 @@ public class AclJpaEntity {
                 .collect(java.util.stream.Collectors.toSet());
 
         final Resource<?> resource = switch (this.resourceType) {
-            case FILE -> Resource.file(FileID.of(UUID.fromString(this.resourceId)));
-            case FOLDER -> Resource.folder(FolderID.of(UUID.fromString(this.resourceId)));
+            case FILE -> toResource(FileID.of(UUID.fromString(this.resourceId)));
+            case FOLDER -> toResource(FolderID.of(UUID.fromString(this.resourceId)));
             default -> throw new IllegalStateException("Unexpected value: " + this.resourceId);
         };
 
@@ -124,6 +132,10 @@ public class AclJpaEntity {
                 this.createdAt,
                 this.updatedAt,
                 this.events);
+    }
+
+    private <I extends Identifier<?>> Resource<I> toResource(I identifier) {
+        return new Resource<>(identifier, this.resourceType, MemberID.of(this.resourceOwner));
     }
 
     public UUID getId() {
@@ -148,6 +160,14 @@ public class AclJpaEntity {
 
     public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
+    }
+
+    public UUID getResourceOwner() {
+        return resourceOwner;
+    }
+
+    public void setResourceOwner(UUID resourceOwner) {
+        this.resourceOwner = resourceOwner;
     }
 
     public Set<EntryJpa> getDirectEntries() {
