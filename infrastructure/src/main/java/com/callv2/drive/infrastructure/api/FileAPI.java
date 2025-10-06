@@ -81,7 +81,7 @@ public interface FileAPI {
             @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
     @Operation(summary = "Share File", description = "This method shares a file", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping("{id}/share")
+    @PostMapping("{id}/sharing")
     ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody ShareFileRequest request);
 
 }
