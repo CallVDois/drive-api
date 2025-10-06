@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventEntity;
@@ -51,13 +53,14 @@ public class FileSharedEvent extends Event<FileSharedEvent.Data> {
     public static FileSharedEvent create(final File file, final FileSharing sharing) {
         return new FileSharedEvent(
                 Instant.now(),
-                Set.of(
+                Stream.of(
                         EventEntity.of(file),
                         EventEntity.of(Member.class, file.getOwner()),
                         EventEntity.of(Member.class, sharing.getSharedTo()),
                         EventEntity.of(Member.class, sharing.getSharedBy()),
                         EventEntity.of(Folder.class, file.getFolder()),
-                        EventEntity.of(Folder.class, sharing.getVirtualFolder())),
+                        EventEntity.of(Folder.class, sharing.getVirtualFolder()))
+                        .collect(Collectors.toSet()),
                 Data.of(file, sharing));
     }
 
