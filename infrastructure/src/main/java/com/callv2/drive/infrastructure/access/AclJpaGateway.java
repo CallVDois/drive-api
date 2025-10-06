@@ -3,6 +3,7 @@ package com.callv2.drive.infrastructure.access;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +19,8 @@ import com.callv2.drive.domain.access.Resource;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.infrastructure.access.persistence.AclJpaEntity;
 import com.callv2.drive.infrastructure.access.persistence.AclJpaRepository;
+import com.callv2.drive.infrastructure.access.persistence.EntryJpaEntity;
+import com.callv2.drive.infrastructure.access.persistence.EntryJpaRepository;
 import com.callv2.drive.infrastructure.access.persistence.FileAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.access.persistence.FileAccessAclJpaRepository;
 import com.callv2.drive.infrastructure.access.persistence.FolderAccessAclJpaEntity;
@@ -27,14 +30,17 @@ import com.callv2.drive.infrastructure.access.persistence.FolderAccessAclJpaRepo
 public class AclJpaGateway implements AclGateway {
 
     private final AclJpaRepository aclJpaRepository;
+    private final EntryJpaRepository entryJpaRepository;
     private final FolderAccessAclJpaRepository folderAccessAclJpaRepository;
     private final FileAccessAclJpaRepository fileAccessAclJpaRepository;
 
     public AclJpaGateway(
             final AclJpaRepository aclJpaRepository,
+            final EntryJpaRepository entryJpaRepository,
             final FolderAccessAclJpaRepository folderAccessAclJpaRepository,
             final FileAccessAclJpaRepository fileAccessAclJpaRepository) {
         this.aclJpaRepository = aclJpaRepository;
+        this.entryJpaRepository = entryJpaRepository;
         this.folderAccessAclJpaRepository = folderAccessAclJpaRepository;
         this.fileAccessAclJpaRepository = fileAccessAclJpaRepository;
     }
@@ -55,21 +61,38 @@ public class AclJpaGateway implements AclGateway {
     @Override
     public Optional<Acl> findByResource(Resource<?> resource) {
 
-        return aclJpaRepository.findAll()
-                .stream()
-                .map(AclJpaEntity::toDomain)
-                .filter(acl -> acl.getResource().equals(resource))
-                .findFirst();
+        return aclJpaRepository
+                .findOneResourceIdAndResourceType(resource.id().getStringValue(), resource.type())
+                .map(this::mapToDomain);
 
     }
 
     private Acl save(final Acl acl) {
+
         switch (acl.getResource().type()) {
             case FOLDER -> saveFolderAcl(acl);
             case FILE -> saveFileAcl(acl);
         }
 
-        return aclJpaRepository.save(AclJpaEntity.fromDomain(acl)).toDomain();
+        return acl;
+
+    }
+
+    private Acl mapToDomain(final AclJpaEntity aclJpa) {
+
+        final Set<Entry<?>> directEntries = entryJpaRepository
+                .findAllByAclIdAndType(aclJpa.getId(), EntryJpaEntity.Type.DIRECT)
+                .stream()
+                .map(entryJpa -> entryJpa.toDomain())
+                .collect(Collectors.toSet());
+
+        final Set<Entry<?>> inheritedEntries = entryJpaRepository
+                .findAllByAclIdAndType(aclJpa.getId(), EntryJpaEntity.Type.INHERITED)
+                .stream()
+                .map(entryJpa -> entryJpa.toDomain())
+                .collect(Collectors.toSet());
+
+        return aclJpa.toDomain(directEntries, inheritedEntries);
 
     }
 
@@ -103,10 +126,10 @@ public class AclJpaGateway implements AclGateway {
 
         return Stream
                 .concat(acl.getDirectEntries().stream(), acl.getInheritedEntries().stream())
-                .filter(entry -> Permission.Type.ACCESS.equals(entry.permission().type()))
-                .collect(Collectors.groupingBy(Entry::member,
+                .filter(entry -> Permission.Type.ACCESS.equals(entry.getPermission().type()))
+                .collect(Collectors.groupingBy(Entry::getMember,
                         Collectors.mapping(
-                                entry -> (AccessPermission) entry.permission(),
+                                entry -> (AccessPermission) entry.getPermission(),
                                 Collectors.minBy(Comparator.comparing(AccessPermission::getLevel)))))
                 .entrySet()
                 .stream()

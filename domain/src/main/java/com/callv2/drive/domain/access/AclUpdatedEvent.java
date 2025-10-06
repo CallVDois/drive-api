@@ -55,9 +55,9 @@ public class AclUpdatedEvent extends Event<AclUpdatedEvent.Data> {
                 return entries
                         .stream().map(
                                 entry -> new Data.Entry(
-                                        entry.member().getValue(),
-                                        entry.permission(),
-                                        entry.grantedAt()))
+                                        entry.getMember().getValue(),
+                                        entry.getPermission(),
+                                        entry.getGrantedAt()))
                         .collect(Collectors.toSet());
             }
 

@@ -1,7 +1,6 @@
 package com.callv2.drive.infrastructure.access.persistence;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
@@ -17,14 +16,11 @@ import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -45,14 +41,6 @@ public class AclJpaEntity {
     @Column(name = "resource_owner", nullable = false)
     private UUID resourceOwner;
 
-    @ElementCollection
-    @CollectionTable(name = "acl_direct_entries", joinColumns = @JoinColumn(name = "acl_id"))
-    private Set<EntryJpa> directEntries = new HashSet<>();
-
-    @ElementCollection
-    @CollectionTable(name = "acl_inherited_entries", joinColumns = @JoinColumn(name = "acl_id"))
-    private Set<EntryJpa> inheritedEntries = new HashSet<>();
-
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -70,8 +58,6 @@ public class AclJpaEntity {
             final String resourceId,
             final ResourceType resourceType,
             final UUID resourceOwner,
-            final Set<EntryJpa> directEntries,
-            final Set<EntryJpa> inheritedEntries,
             final Instant createdAt,
             final Instant updatedAt,
             final Queue<Event<?>> events) {
@@ -79,8 +65,6 @@ public class AclJpaEntity {
         this.resourceId = resourceId;
         this.resourceType = resourceType;
         this.resourceOwner = resourceOwner;
-        this.directEntries = directEntries;
-        this.inheritedEntries = inheritedEntries;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.events = events;
@@ -88,35 +72,18 @@ public class AclJpaEntity {
 
     public static AclJpaEntity fromDomain(final Acl acl) {
 
-        final Set<EntryJpa> directEntries = acl.getDirectEntries().stream()
-                .map(EntryJpa::fromDomain)
-                .collect(java.util.stream.Collectors.toSet());
-
-        final Set<EntryJpa> inheritedEntries = acl.getInheritedEntries().stream()
-                .map(EntryJpa::fromDomain)
-                .collect(java.util.stream.Collectors.toSet());
-
         return new AclJpaEntity(
                 acl.getId().getValue(),
                 acl.getResource().id().getStringValue(),
                 acl.getResource().type(),
                 acl.getResource().owner().getValue(),
-                directEntries,
-                inheritedEntries,
                 acl.getCreatedAt(),
                 acl.getUpdatedAt(),
                 acl.getEvents());
+
     }
 
-    public Acl toDomain() {
-
-        final Set<Entry<?>> directEntries = this.directEntries.stream()
-                .map(EntryJpa::toDomain)
-                .collect(java.util.stream.Collectors.toSet());
-
-        final Set<Entry<?>> inheritedEntries = this.inheritedEntries.stream()
-                .map(EntryJpa::toDomain)
-                .collect(java.util.stream.Collectors.toSet());
+    public Acl toDomain(final Set<Entry<?>> directEntries, final Set<Entry<?>> inheritedEntries) {
 
         final Resource<?> resource = switch (this.resourceType) {
             case FILE -> toResource(FileID.of(UUID.fromString(this.resourceId)));
@@ -168,22 +135,6 @@ public class AclJpaEntity {
 
     public void setResourceOwner(UUID resourceOwner) {
         this.resourceOwner = resourceOwner;
-    }
-
-    public Set<EntryJpa> getDirectEntries() {
-        return directEntries;
-    }
-
-    public void setDirectEntries(Set<EntryJpa> directEntries) {
-        this.directEntries = directEntries;
-    }
-
-    public Set<EntryJpa> getInheritedEntries() {
-        return inheritedEntries;
-    }
-
-    public void setInheritedEntries(Set<EntryJpa> inheritedEntries) {
-        this.inheritedEntries = inheritedEntries;
     }
 
     public Instant getCreatedAt() {

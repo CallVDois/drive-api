@@ -138,8 +138,8 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
     public Optional<AccessPermission> effectiveAccessPermission(final MemberID member) {
 
         return Stream.concat(directEntries.stream(), inheritedEntries.stream())
-                .filter(entry -> entry.member().equals(member))
-                .map(Entry::permission)
+                .filter(entry -> entry.getMember().equals(member))
+                .map(Entry::getPermission)
                 .filter(AccessPermission.class::isInstance)
                 .map(AccessPermission.class::cast)
                 .min((e1, e2) -> e1.getLevel().compareTo(e2.getLevel()));
@@ -149,8 +149,8 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
     public Optional<SharePermission> effectiveSharePermission(final MemberID member) {
 
         return Stream.concat(directEntries.stream(), inheritedEntries.stream())
-                .filter(entry -> entry.member().equals(member))
-                .map(Entry::permission)
+                .filter(entry -> entry.getMember().equals(member))
+                .map(Entry::getPermission)
                 .filter(SharePermission.class::isInstance)
                 .map(SharePermission.class::cast)
                 .min((e1, e2) -> e1.getLevel().compareTo(e2.getLevel()));
@@ -264,7 +264,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
     }
 
     private Acl revokeTotal(final MemberID revokedMember) {
-        this.directEntries.removeIf(entry -> entry.member().equals(revokedMember));
+        this.directEntries.removeIf(entry -> entry.getMember().equals(revokedMember));
         return this;
     }
 
