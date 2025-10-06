@@ -9,7 +9,10 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity(name = "FileSharing")
@@ -26,6 +29,10 @@ public class FileSharingJpaEntity {
     private UUID virtualFolder;
 
     private Instant createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id", nullable = false)
+    private FileJpaEntity file;
 
     public FileSharingJpaEntity() {
     }
@@ -99,6 +106,14 @@ public class FileSharingJpaEntity {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public FileJpaEntity getFile() {
+        return file;
+    }
+
+    public void setFile(FileJpaEntity file) {
+        this.file = file;
     }
 
 }
