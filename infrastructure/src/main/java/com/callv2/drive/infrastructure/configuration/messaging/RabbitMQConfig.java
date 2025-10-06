@@ -32,10 +32,7 @@ public class RabbitMQConfig {
     private static final String FILE_DELETED_DLX_ROUTING_KEY = "drive.file.deleted.event.deadletter";
     private static final String FILE_DELETED_DLQ_QUEUE = "drive.file.deleted.queue.dlq";
 
-    private static final String FILE_SHARED_QUEUE_NAME = "drive.file.shared.queue";
     private static final String FILE_SHARED_ROUTING_KEY = "drive.file.shared.event";
-    private static final String FILE_SHARED_DLX_ROUTING_KEY = "drive.file.shared.event.deadletter";
-    private static final String FILE_SHARED_DLQ_QUEUE = "drive.file.shared.queue.dlq";
 
     private static final String MEMBER_CREATED_QUEUE_NAME = "drive.member.created.queue";
     private static final String MEMBER_CREATED_ROUTING_KEY = EVENT_HUB_MEMBER_CREATED_ROUTING_KEY;
@@ -110,26 +107,6 @@ public class RabbitMQConfig {
                 .bind(fileDeletedDlxQueue)
                 .to(driveDlxExchange)
                 .with(FILE_DELETED_DLX_ROUTING_KEY);
-
-        private final Queue fileSharedQueue = QueueBuilder
-                .durable(FILE_SHARED_QUEUE_NAME)
-                .deadLetterExchange(DRIVE_DLX_EXCHANGE_NAME)
-                .deadLetterRoutingKey(FILE_SHARED_DLX_ROUTING_KEY)
-                .build();
-
-        private final Queue fileSharedDlxQueue = QueueBuilder
-                .durable(FILE_SHARED_DLQ_QUEUE)
-                .build();
-
-        private final Binding fileSharedBinding = BindingBuilder
-                .bind(fileSharedQueue)
-                .to(driveExchange)
-                .with(FILE_SHARED_ROUTING_KEY);
-
-        private final Binding fileSharedDlxBinding = BindingBuilder
-                .bind(fileSharedDlxQueue)
-                .to(driveDlxExchange)
-                .with(FILE_SHARED_DLX_ROUTING_KEY);
 
         private final Queue memberCreatedQueue = QueueBuilder
                 .durable(MEMBER_CREATED_QUEUE_NAME)
@@ -219,26 +196,6 @@ public class RabbitMQConfig {
         @Bean
         Binding fileDeletedDlxBinding() {
             return fileDeletedDlxBinding;
-        }
-
-        @Bean
-        Queue fileSharedQueue() {
-            return fileSharedQueue;
-        }
-
-        @Bean
-        Queue fileSharedDlxQueue() {
-            return fileSharedDlxQueue;
-        }
-
-        @Bean
-        Binding fileSharedBinding() {
-            return fileSharedBinding;
-        }
-
-        @Bean
-        Binding fileSharedDlxBinding() {
-            return fileSharedDlxBinding;
         }
 
         @Bean
