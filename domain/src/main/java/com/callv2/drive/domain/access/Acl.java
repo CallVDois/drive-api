@@ -15,9 +15,12 @@ import java.util.stream.Stream;
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventSource;
+import com.callv2.drive.domain.exception.NotAllowedException;
+import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
+import com.callv2.drive.domain.validation.handler.Notification;
 
 public class Acl extends AggregateRoot<AclID> implements EventSource {
 
@@ -114,7 +117,9 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     public Acl inheritFrom(final Acl parentAcl) {
         if (isNull(parentAcl))
-            throw new IllegalArgumentException("'parentAcl' should not be null");
+            throw ValidationException.with(
+                    "Could not inherit ACL",
+                    ValidationError.with("'parentAcl' should not be null"));
 
         final Instant now = Instant.now();
 
@@ -152,24 +157,21 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     }
 
-    private Acl grantTotal(final MemberID grantee) {
-        return this
-                .applyEntry(grantee, AccessPermission.mostPrivileged())
-                .applyEntry(grantee, SharePermission.mostPrivileged());
-    }
-
     public Acl grantAccess(
             final MemberID granter,
             final MemberID grantee,
             final AccessPermission accessPermission) {
 
         if (isNull(granter))
-            throw new IllegalArgumentException("'granter' should not be null");
+            throw ValidationException.with(
+                    "Could not grant access",
+                    ValidationError.with("'granter' should not be null"));
 
         effectiveSharePermission(granter)
                 .filter(sp -> sp.canShare(accessPermission))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "'granter' does not have share permission to grant the specified 'accessPermission'"));
+                .orElseThrow(() -> NotAllowedException.with(
+                        "'granter' does not have share permission to grant the specified 'accessPermission'",
+                        "accessPermission level too low"));
 
         applyEntry(grantee, accessPermission);
 
@@ -185,12 +187,15 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
             final SharePermission sharePermission) {
 
         if (isNull(granter))
-            throw new IllegalArgumentException("'granter' should not be null");
+            throw ValidationException.with(
+                    "Could not grant share",
+                    ValidationError.with("'granter' should not be null"));
 
         effectiveSharePermission(granter)
                 .filter(sp -> sp.canShare(sharePermission))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "'granter' does not have share permission to grant the specified 'sharePermission'"));
+                .orElseThrow(() -> NotAllowedException.with(
+                        "'granter' does not have share permission to grant the specified 'sharePermission'",
+                        "sharePermission level too low"));
 
         applyEntry(grantee, sharePermission);
 
@@ -204,10 +209,15 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
             final MemberID grantee,
             final P permission) {
 
+        final Notification notification = Notification.create();
+
         if (isNull(grantee))
-            throw new IllegalArgumentException("'grantee' should not be null");
+            notification.append(ValidationError.with("'grantee' should not be null"));
         if (isNull(permission))
-            throw new IllegalArgumentException("'permission' should not be null");
+            notification.append(ValidationError.with("'permission' should not be null"));
+
+        if (notification.hasError())
+            throw ValidationException.with("Could not apply entry", notification);
 
         final Entry<P> entry = Entry.create(grantee, permission);
 
@@ -218,6 +228,12 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         return this;
 
+    }
+
+    private Acl grantTotal(final MemberID grantee) {
+        return this
+                .applyEntry(grantee, AccessPermission.mostPrivileged())
+                .applyEntry(grantee, SharePermission.mostPrivileged());
     }
 
     public Queue<Event<?>> getEvents() {
