@@ -62,7 +62,7 @@ public class AclJpaGateway implements AclGateway {
     public Optional<Acl> findByResource(Resource<?> resource) {
 
         return aclJpaRepository
-                .findOneResourceIdAndResourceType(resource.id().getStringValue(), resource.type())
+                .findOneByResourceIdAndResourceType(resource.id().getStringValue(), resource.type())
                 .map(this::mapToDomain);
 
     }

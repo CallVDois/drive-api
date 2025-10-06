@@ -9,6 +9,6 @@ import com.callv2.drive.domain.access.ResourceType;
 
 public interface AclJpaRepository extends JpaRepository<AclJpaEntity, UUID> {
 
-    Optional<AclJpaEntity> findOneResourceIdAndResourceType(String resourceId, ResourceType resourceType);
+    Optional<AclJpaEntity> findOneByResourceIdAndResourceType(String resourceId, ResourceType resourceType);
 
 }
