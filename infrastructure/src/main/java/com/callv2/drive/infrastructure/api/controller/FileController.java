@@ -24,6 +24,8 @@ import com.callv2.drive.application.file.retrieve.get.GetFileUseCase;
 import com.callv2.drive.application.file.retrieve.list.FileListInput;
 import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
 import com.callv2.drive.application.file.sharing.create.CreateFileSharingUseCase;
+import com.callv2.drive.application.file.sharing.remove.RemoveFileSharingInput;
+import com.callv2.drive.application.file.sharing.remove.RemoveFileSharingUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
@@ -48,6 +50,7 @@ public class FileController implements FileAPI {
     private final GetFileContentUseCase getFileContentUseCase;
     private final ListFilesUseCase listFilesUseCase;
     private final CreateFileSharingUseCase createFileSharingUseCase;
+    private final RemoveFileSharingUseCase removeFileSharingUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
@@ -55,13 +58,15 @@ public class FileController implements FileAPI {
             final GetFileUseCase getFileUseCase,
             final GetFileContentUseCase getFileContentUseCase,
             final ListFilesUseCase listFilesUseCase,
-            final CreateFileSharingUseCase createFileSharingUseCase) {
+            final CreateFileSharingUseCase createFileSharingUseCase,
+            final RemoveFileSharingUseCase removeFileSharingUseCase) {
         this.createFileUseCase = createFileUseCase;
         this.deleteFileUseCase = deleteFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.getFileContentUseCase = getFileContentUseCase;
         this.listFilesUseCase = listFilesUseCase;
         this.createFileSharingUseCase = createFileSharingUseCase;
+        this.removeFileSharingUseCase = removeFileSharingUseCase;
     }
 
     @Override
@@ -150,6 +155,17 @@ public class FileController implements FileAPI {
         final var granterId = SecurityContext.getAuthenticatedUserId();
 
         createFileSharingUseCase.execute(FileAdapter.adapt(id, granterId, request));
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @Override
+    public ResponseEntity<Void> unshareFile(UUID id, UUID memberToUnshareId) {
+
+        final var revokerId = SecurityContext.getAuthenticatedUserId();
+
+        this.removeFileSharingUseCase.execute(new RemoveFileSharingInput(id, revokerId, memberToUnshareId));
 
         return ResponseEntity.noContent().build();
 

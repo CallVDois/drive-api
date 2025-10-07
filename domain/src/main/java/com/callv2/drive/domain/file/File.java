@@ -223,6 +223,22 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         return this;
     }
 
+    public File unshare(final MemberID revokedBy, final MemberID revokedFrom) {
+
+        final Notification notification = Notification.create();
+
+        if (isNull(revokedBy))
+            notification.append(ValidationError.with("revokedBy' are required"));
+
+        if (isNull(revokedFrom))
+            notification.append(ValidationError.with("revokedFrom' are required"));
+
+        if (sharings.removeIf(sharing -> sharing.getSharedTo().equals(revokedFrom)))
+            this.events.add(FileUnsharedEvent.create(this, revokedFrom, revokedBy));
+
+        return this;
+    }
+
     public FolderID getVirtualFolder(final MemberID member) {
 
         if (this.owner.equals(member))

@@ -84,4 +84,10 @@ public interface FileAPI {
     @PostMapping("{id}/sharing")
     ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody ShareFileRequest request);
 
+    @Operation(summary = "Unshare File", description = "This method unshares a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping("{id}/sharing/{memberToUnshareId}")
+    ResponseEntity<Void> unshareFile(
+            @PathVariable("id") UUID id,
+            @PathVariable("memberToUnshareId") UUID memberToUnshareId);
+
 }
