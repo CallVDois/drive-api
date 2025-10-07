@@ -2,7 +2,7 @@ package com.callv2.drive.application.file.sharing.create;
 
 import java.util.UUID;
 
-import com.callv2.drive.domain.access.AccessPermission;
+import com.callv2.drive.domain.acl.AccessPermission;
 
 public record CreateFileSharingInput(
         UUID fileId,

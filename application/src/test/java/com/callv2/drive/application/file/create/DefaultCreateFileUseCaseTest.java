@@ -27,12 +27,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.callv2.drive.domain.access.AccessPermission;
-import com.callv2.drive.domain.access.Acl;
-import com.callv2.drive.domain.access.AclGateway;
-import com.callv2.drive.domain.access.AclID;
-import com.callv2.drive.domain.access.Entry;
-import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.acl.AccessPermission;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.AclID;
+import com.callv2.drive.domain.acl.Entry;
+import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.NotFoundException;

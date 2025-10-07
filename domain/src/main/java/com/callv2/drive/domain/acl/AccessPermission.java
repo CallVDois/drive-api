@@ -1,4 +1,4 @@
-package com.callv2.drive.domain.access;
+package com.callv2.drive.domain.acl;
 
 public enum AccessPermission implements Permission<AccessPermission> {
     SHARE(0),

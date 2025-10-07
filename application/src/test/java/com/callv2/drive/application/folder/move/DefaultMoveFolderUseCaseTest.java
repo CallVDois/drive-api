@@ -19,9 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.callv2.drive.domain.access.Acl;
-import com.callv2.drive.domain.access.AclGateway;
-import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.FolderName;

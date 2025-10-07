@@ -3,9 +3,9 @@ package com.callv2.drive.application.folder.retrieve.get.root;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.callv2.drive.domain.access.Acl;
-import com.callv2.drive.domain.access.AclGateway;
-import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.FileGateway;

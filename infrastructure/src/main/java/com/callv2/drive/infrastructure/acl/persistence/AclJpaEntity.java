@@ -1,4 +1,4 @@
-package com.callv2.drive.infrastructure.access.persistence;
+package com.callv2.drive.infrastructure.acl.persistence;
 
 import java.time.Instant;
 import java.util.Queue;
@@ -6,11 +6,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.callv2.drive.domain.Identifier;
-import com.callv2.drive.domain.access.Acl;
-import com.callv2.drive.domain.access.AclID;
-import com.callv2.drive.domain.access.Entry;
-import com.callv2.drive.domain.access.Resource;
-import com.callv2.drive.domain.access.ResourceType;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclID;
+import com.callv2.drive.domain.acl.Entry;
+import com.callv2.drive.domain.acl.Resource;
+import com.callv2.drive.domain.acl.ResourceType;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.folder.FolderID;

@@ -1,4 +1,4 @@
-package com.callv2.drive.infrastructure.access;
+package com.callv2.drive.infrastructure.acl;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -10,22 +10,22 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.callv2.drive.domain.access.AccessPermission;
-import com.callv2.drive.domain.access.Acl;
-import com.callv2.drive.domain.access.AclGateway;
-import com.callv2.drive.domain.access.AclID;
-import com.callv2.drive.domain.access.Entry;
-import com.callv2.drive.domain.access.Permission;
-import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.acl.AccessPermission;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.AclID;
+import com.callv2.drive.domain.acl.Entry;
+import com.callv2.drive.domain.acl.Permission;
+import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.member.MemberID;
-import com.callv2.drive.infrastructure.access.persistence.AclJpaEntity;
-import com.callv2.drive.infrastructure.access.persistence.AclJpaRepository;
-import com.callv2.drive.infrastructure.access.persistence.EntryJpaEntity;
-import com.callv2.drive.infrastructure.access.persistence.EntryJpaRepository;
-import com.callv2.drive.infrastructure.access.persistence.FileAccessAclJpaEntity;
-import com.callv2.drive.infrastructure.access.persistence.FileAccessAclJpaRepository;
-import com.callv2.drive.infrastructure.access.persistence.FolderAccessAclJpaEntity;
-import com.callv2.drive.infrastructure.access.persistence.FolderAccessAclJpaRepository;
+import com.callv2.drive.infrastructure.acl.persistence.AclJpaEntity;
+import com.callv2.drive.infrastructure.acl.persistence.AclJpaRepository;
+import com.callv2.drive.infrastructure.acl.persistence.EntryJpaEntity;
+import com.callv2.drive.infrastructure.acl.persistence.EntryJpaRepository;
+import com.callv2.drive.infrastructure.acl.persistence.FileAccessAclJpaEntity;
+import com.callv2.drive.infrastructure.acl.persistence.FileAccessAclJpaRepository;
+import com.callv2.drive.infrastructure.acl.persistence.FolderAccessAclJpaEntity;
+import com.callv2.drive.infrastructure.acl.persistence.FolderAccessAclJpaRepository;
 
 @Component
 public class AclJpaGateway implements AclGateway {

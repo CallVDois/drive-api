@@ -19,7 +19,7 @@ import com.callv2.drive.application.folder.sharing.create.CreateFolderSharingUse
 import com.callv2.drive.application.folder.sharing.create.DefaultCreateFolderSharingUseCase;
 import com.callv2.drive.application.folder.update.name.DefaultUpdateFolderNameUseCase;
 import com.callv2.drive.application.folder.update.name.UpdateFolderNameUseCase;
-import com.callv2.drive.domain.access.AclGateway;
+import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;

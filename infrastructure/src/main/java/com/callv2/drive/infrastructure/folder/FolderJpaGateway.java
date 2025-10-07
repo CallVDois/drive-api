@@ -19,7 +19,7 @@ import com.callv2.drive.domain.folder.FolderSharing;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
-import com.callv2.drive.infrastructure.access.persistence.FolderAccessAclJpaEntity;
+import com.callv2.drive.infrastructure.acl.persistence.FolderAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.filter.FilterService;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.folder.persistence.FolderJpaEntity;

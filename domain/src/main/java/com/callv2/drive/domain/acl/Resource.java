@@ -1,4 +1,4 @@
-package com.callv2.drive.domain.access;
+package com.callv2.drive.domain.acl;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;

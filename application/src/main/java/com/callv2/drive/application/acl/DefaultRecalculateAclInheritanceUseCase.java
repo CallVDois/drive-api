@@ -1,10 +1,10 @@
 package com.callv2.drive.application.acl;
 
-import com.callv2.drive.domain.access.Acl;
-import com.callv2.drive.domain.access.AclGateway;
-import com.callv2.drive.domain.access.AclID;
-import com.callv2.drive.domain.access.Resource;
-import com.callv2.drive.domain.access.ResourceType;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.AclID;
+import com.callv2.drive.domain.acl.Resource;
+import com.callv2.drive.domain.acl.ResourceType;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;

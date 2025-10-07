@@ -1,8 +1,8 @@
-package com.callv2.drive.infrastructure.access.persistence;
+package com.callv2.drive.infrastructure.acl.persistence;
 
-import com.callv2.drive.domain.access.AccessPermission;
-import com.callv2.drive.domain.access.Resource;
-import com.callv2.drive.domain.file.FileID;
+import com.callv2.drive.domain.acl.AccessPermission;
+import com.callv2.drive.domain.acl.Resource;
+import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.EmbeddedId;
@@ -11,40 +11,40 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
-@Entity(name = "FileAcl")
-@Table(name = "file_access_acls")
-public class FileAccessAclJpaEntity {
+@Entity(name = "FolderAccessAcl")
+@Table(name = "folder_access_acls")
+public class FolderAccessAclJpaEntity {
 
     @EmbeddedId
-    private FileAclID id;
+    private FolderAclID id;
 
     @Enumerated(EnumType.STRING)
     private AccessPermission effectiveAccessPermission;
 
-    public FileAccessAclJpaEntity() {
+    public FolderAccessAclJpaEntity() {
     }
 
-    private FileAccessAclJpaEntity(
-            final FileAclID id,
+    private FolderAccessAclJpaEntity(
+            final FolderAclID id,
             final AccessPermission effectiveAccessPermission) {
         this.id = id;
         this.effectiveAccessPermission = effectiveAccessPermission;
     }
 
-    public static FileAccessAclJpaEntity from(
-            final Resource<FileID> resource,
+    public static FolderAccessAclJpaEntity from(
+            final Resource<FolderID> resource,
             final MemberID grantee,
             final AccessPermission effectiveAccessPermission) {
-        return new FileAccessAclJpaEntity(
-                FileAclID.from(resource.id().getValue(), grantee.getValue()),
+        return new FolderAccessAclJpaEntity(
+                FolderAclID.from(resource.id().getValue(), grantee.getValue()),
                 effectiveAccessPermission);
     }
 
-    public FileAclID getId() {
+    public FolderAclID getId() {
         return id;
     }
 
-    public void setId(FileAclID id) {
+    public void setId(FolderAclID id) {
         this.id = id;
     }
 

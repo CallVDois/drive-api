@@ -1,13 +1,13 @@
-package com.callv2.drive.infrastructure.access.persistence;
+package com.callv2.drive.infrastructure.acl.persistence;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.callv2.drive.domain.access.AccessPermission;
-import com.callv2.drive.domain.access.Entry;
-import com.callv2.drive.domain.access.EntryID;
-import com.callv2.drive.domain.access.Permission;
+import com.callv2.drive.domain.acl.AccessPermission;
+import com.callv2.drive.domain.acl.Entry;
+import com.callv2.drive.domain.acl.EntryID;
+import com.callv2.drive.domain.acl.Permission;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package com.callv2.drive.domain.access;
+package com.callv2.drive.domain.acl;
 
 public interface Permission<T extends Enum<T> & Permission<T>> {
 

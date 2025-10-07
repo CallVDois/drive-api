@@ -1,4 +1,4 @@
-package com.callv2.drive.domain.access;
+package com.callv2.drive.domain.acl;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -51,7 +51,7 @@ public class AclUpdatedEvent extends Event<AclUpdatedEvent.Data> {
                 Permission<?> permission,
                 Instant grantedAt) implements Serializable {
 
-            public static Set<Data.Entry> of(final Set<com.callv2.drive.domain.access.Entry<?>> entries) {
+            public static Set<Data.Entry> of(final Set<com.callv2.drive.domain.acl.Entry<?>> entries) {
                 return entries
                         .stream().map(
                                 entry -> new Data.Entry(

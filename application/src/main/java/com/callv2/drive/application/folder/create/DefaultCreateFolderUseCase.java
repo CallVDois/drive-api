@@ -2,10 +2,10 @@ package com.callv2.drive.application.folder.create;
 
 import java.util.Set;
 
-import com.callv2.drive.domain.access.AccessPermission;
-import com.callv2.drive.domain.access.Acl;
-import com.callv2.drive.domain.access.AclGateway;
-import com.callv2.drive.domain.access.Resource;
+import com.callv2.drive.domain.acl.AccessPermission;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.NotAllowedException;
 import com.callv2.drive.domain.exception.NotFoundException;

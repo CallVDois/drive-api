@@ -1,4 +1,4 @@
-package com.callv2.drive.infrastructure.access.persistence;
+package com.callv2.drive.infrastructure.acl.persistence;
 
 import java.io.Serializable;
 import java.util.Objects;
