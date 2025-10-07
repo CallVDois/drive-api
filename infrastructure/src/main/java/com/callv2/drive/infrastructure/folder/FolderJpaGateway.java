@@ -59,6 +59,13 @@ public class FolderJpaGateway implements FolderGateway {
                 .map(this::mapToDomain);
     }
 
+    @Override
+    public Set<Folder> findByParentFolderId(final FolderID parentFolderId) {
+        return mapToDomain(this.folderRepository.findAll(findByParentFolderIdSpecification(parentFolderId.getValue())))
+                .stream()
+                .collect(Collectors.toSet());
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Set<Folder> findByParentFolderIdWithMemberAccess(FolderID parentFolderId, final MemberID actorId) {

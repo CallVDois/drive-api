@@ -16,7 +16,7 @@ public interface FileGateway {
 
     Optional<File> findByIdWithMemberAccess(final FileID id, final MemberID memberId);
 
-    List<File> findAllActiveByFolder(FolderID folderId);
+    List<File> findAllByFolder(FolderID folderId);
 
     List<File> findByOwner(MemberID ownerId);
 

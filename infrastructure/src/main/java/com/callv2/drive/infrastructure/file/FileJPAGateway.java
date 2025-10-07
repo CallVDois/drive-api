@@ -69,8 +69,8 @@ public class FileJPAGateway implements FileGateway {
 
     @Transactional(readOnly = true)
     @Override
-    public List<File> findAllActiveByFolder(final FolderID folderId) {
-        return mapToDomain(this.fileRepository.findByFolderIdAndIsDeletedFalse(folderId.getValue()));
+    public List<File> findAllByFolder(final FolderID folderId) {
+        return mapToDomain(this.fileRepository.findByFolderId(folderId.getValue()));
     }
 
     @Transactional(readOnly = true)

@@ -122,7 +122,7 @@ class DefaultCreateFileUseCaseTest {
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findAllActiveByFolder(any()))
+        when(fileGateway.findAllByFolder(any()))
                 .thenReturn(List.of());
 
         when(folderGateway.findByIdWithMemberAccess(any(), any()))
@@ -164,8 +164,8 @@ class DefaultCreateFileUseCaseTest {
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllByFolder(any());
+        verify(fileGateway, times(1)).findAllByFolder(eq(folder.getId()));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
@@ -241,7 +241,7 @@ class DefaultCreateFileUseCaseTest {
         verify(storageService, times(0)).store(any(), any());
         verify(storageService, times(0)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(0)).findAllActiveByFolder(any());
+        verify(fileGateway, times(0)).findAllByFolder(any());
         verify(fileGateway, times(0)).create(any());
 
     }
@@ -287,7 +287,7 @@ class DefaultCreateFileUseCaseTest {
         verify(storageService, times(0)).store(any(), any());
         verify(storageService, times(0)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(0)).findAllActiveByFolder(any());
+        verify(fileGateway, times(0)).findAllByFolder(any());
         verify(fileGateway, times(0)).create(any());
 
     }
@@ -349,7 +349,7 @@ class DefaultCreateFileUseCaseTest {
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findAllActiveByFolder(any()))
+        when(fileGateway.findAllByFolder(any()))
                 .thenReturn(List.of(fileWithSameName));
 
         when(folderGateway.findByIdWithMemberAccess(any(), any()))
@@ -382,8 +382,8 @@ class DefaultCreateFileUseCaseTest {
         verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(0)).store(any(), any());
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllByFolder(any());
+        verify(fileGateway, times(1)).findAllByFolder(eq(folder.getId()));
         verify(fileGateway, times(0)).create(any());
 
     }
@@ -430,7 +430,7 @@ class DefaultCreateFileUseCaseTest {
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findAllActiveByFolder(any()))
+        when(fileGateway.findAllByFolder(any()))
                 .thenReturn(List.of());
 
         when(folderGateway.findByIdWithMemberAccess(any(), any()))
@@ -477,8 +477,8 @@ class DefaultCreateFileUseCaseTest {
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(1)).delete(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllByFolder(any());
+        verify(fileGateway, times(1)).findAllByFolder(eq(folder.getId()));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
@@ -537,7 +537,7 @@ class DefaultCreateFileUseCaseTest {
         when(memberGateway.findById(ownerId))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findAllActiveByFolder(any()))
+        when(fileGateway.findAllByFolder(any()))
                 .thenReturn(List.of());
 
         when(folderGateway.findByIdWithMemberAccess(any(), any()))
@@ -584,8 +584,8 @@ class DefaultCreateFileUseCaseTest {
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(1)).delete(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllByFolder(any());
+        verify(fileGateway, times(1)).findAllByFolder(eq(folder.getId()));
         verify(fileGateway, times(1)).create(any());
         verify(fileGateway, times(1)).create(argThat(file -> {
 
@@ -681,8 +681,8 @@ class DefaultCreateFileUseCaseTest {
         verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
-        verify(fileGateway, times(1)).findAllActiveByFolder(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(eq(expectedFolderId));
+        verify(fileGateway, times(1)).findAllByFolder(any());
+        verify(fileGateway, times(1)).findAllByFolder(eq(expectedFolderId));
         verify(storageService, times(0)).delete(any());
         verify(fileGateway, times(0)).create(any());
 
@@ -760,7 +760,7 @@ class DefaultCreateFileUseCaseTest {
         verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
         verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(ownerId));
         verify(storageService, times(0)).store(any(), any());
-        verify(fileGateway, times(0)).findAllActiveByFolder(any());
+        verify(fileGateway, times(0)).findAllByFolder(any());
         verify(storageService, times(0)).delete(any());
         verify(fileGateway, times(0)).create(any());
 
@@ -837,7 +837,7 @@ class DefaultCreateFileUseCaseTest {
 
         verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
         verify(storageService, times(0)).store(any(), any());
-        verify(fileGateway, times(0)).findAllActiveByFolder(any());
+        verify(fileGateway, times(0)).findAllByFolder(any());
         verify(storageService, times(0)).delete(any());
         verify(fileGateway, times(0)).create(any());
 
@@ -887,7 +887,7 @@ class DefaultCreateFileUseCaseTest {
         when(memberGateway.findById(any()))
                 .thenReturn(Optional.of(owner));
 
-        when(fileGateway.findAllActiveByFolder(any()))
+        when(fileGateway.findAllByFolder(any()))
                 .thenReturn(List.of());
 
         when(folderGateway.findByIdWithMemberAccess(any(), any()))
@@ -931,8 +931,8 @@ class DefaultCreateFileUseCaseTest {
         verify(storageService, times(1)).store(any(), any());
         verify(storageService, times(1)).store(any(), eq(expectedContent));
         verify(storageService, times(0)).delete(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(any());
-        verify(fileGateway, times(1)).findAllActiveByFolder(eq(folder.getId()));
+        verify(fileGateway, times(1)).findAllByFolder(any());
+        verify(fileGateway, times(1)).findAllByFolder(eq(folder.getId()));
         verify(fileGateway, times(0)).create(any());
 
     }

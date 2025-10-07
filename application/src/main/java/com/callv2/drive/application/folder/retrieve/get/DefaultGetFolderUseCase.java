@@ -36,7 +36,7 @@ public class DefaultGetFolderUseCase extends GetFolderUseCase {
                         actorId,
                         folder,
                         folderGateway.findByParentFolderIdWithMemberAccess(folder.getId(), actorId),
-                        fileGateway.findAllActiveByFolder(folder.getId()));
+                        fileGateway.findAllByFolder(folder.getId()));
     }
 
 }

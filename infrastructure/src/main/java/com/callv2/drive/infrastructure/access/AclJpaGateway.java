@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.callv2.drive.domain.access.AccessPermission;
 import com.callv2.drive.domain.access.Acl;
 import com.callv2.drive.domain.access.AclGateway;
+import com.callv2.drive.domain.access.AclID;
 import com.callv2.drive.domain.access.Entry;
 import com.callv2.drive.domain.access.Permission;
 import com.callv2.drive.domain.access.Resource;
@@ -43,6 +44,12 @@ public class AclJpaGateway implements AclGateway {
         this.entryJpaRepository = entryJpaRepository;
         this.folderAccessAclJpaRepository = folderAccessAclJpaRepository;
         this.fileAccessAclJpaRepository = fileAccessAclJpaRepository;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Acl> findById(AclID id) {
+        return aclJpaRepository.findById(id.getValue()).map(this::mapToDomain);
     }
 
     @Transactional
