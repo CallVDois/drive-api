@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FolderSharingJpaRepository extends JpaRepository<FolderSharingJpaEntity, UUID> {
 
+    Integer deleteAllByFolderIdAndIdNotIn(UUID folderId, Collection<UUID> ids);
+
     List<FolderSharingJpaEntity> findAllByFolderId(UUID folderId);
 
     List<FolderSharingJpaEntity> findAllByFolderIdIn(Collection<UUID> folderIds);

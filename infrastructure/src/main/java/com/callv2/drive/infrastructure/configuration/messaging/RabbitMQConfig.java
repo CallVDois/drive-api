@@ -11,6 +11,7 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.callv2.drive.domain.acl.AclUpdatedEvent;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.file.FileDeletedEvent;
 import com.callv2.drive.domain.file.FileSharedEvent;
@@ -26,6 +27,11 @@ public class RabbitMQConfig {
 
     private static final String DRIVE_EXCHANGE_NAME = "drive.exchange";
     private static final String DRIVE_DLX_EXCHANGE_NAME = "drive.dlx.exchange";
+
+    private static final String ACL_UPDATED_QUEUE_NAME = "drive.acl.updated.queue";
+    private static final String ACL_UPDATED_ROUTING_KEY = "drive.acl.updated.event";
+    private static final String ACL_UPDATED_DLX_ROUTING_KEY = "drive.acl.updated.event.deadletter";
+    private static final String ACL_UPDATED_DLQ_QUEUE = "drive.acl.updated.queue.dlq";
 
     private static final String FILE_DELETED_QUEUE_NAME = "drive.file.deleted.queue";
     private static final String FILE_DELETED_ROUTING_KEY = "drive.file.deleted.event";
@@ -62,6 +68,14 @@ public class RabbitMQConfig {
         return new RabbitMQProducer<>(
                 DRIVE_EXCHANGE_NAME,
                 FILE_SHARED_ROUTING_KEY,
+                rabbitTemplate);
+    }
+
+    @Bean
+    RabbitMQProducer<Event<AclUpdatedEvent.Data>> aclUpdatedProducer(final RabbitTemplate rabbitTemplate) {
+        return new RabbitMQProducer<>(
+                DRIVE_EXCHANGE_NAME,
+                ACL_UPDATED_ROUTING_KEY,
                 rabbitTemplate);
     }
 
@@ -107,6 +121,26 @@ public class RabbitMQConfig {
                 .bind(fileDeletedDlxQueue)
                 .to(driveDlxExchange)
                 .with(FILE_DELETED_DLX_ROUTING_KEY);
+
+        private final Queue aclUpdatedQueue = QueueBuilder
+                .durable(ACL_UPDATED_QUEUE_NAME)
+                .deadLetterExchange(DRIVE_DLX_EXCHANGE_NAME)
+                .deadLetterRoutingKey(ACL_UPDATED_DLX_ROUTING_KEY)
+                .build();
+
+        private final Queue aclUpdatedDlxQueue = QueueBuilder
+                .durable(ACL_UPDATED_DLQ_QUEUE)
+                .build();
+
+        private final Binding aclUpdatedBinding = BindingBuilder
+                .bind(aclUpdatedQueue)
+                .to(driveExchange)
+                .with(ACL_UPDATED_ROUTING_KEY);
+
+        private final Binding aclUpdatedDlxBinding = BindingBuilder
+                .bind(aclUpdatedDlxQueue)
+                .to(driveDlxExchange)
+                .with(ACL_UPDATED_DLX_ROUTING_KEY);
 
         private final Queue memberCreatedQueue = QueueBuilder
                 .durable(MEMBER_CREATED_QUEUE_NAME)
@@ -196,6 +230,26 @@ public class RabbitMQConfig {
         @Bean
         Binding fileDeletedDlxBinding() {
             return fileDeletedDlxBinding;
+        }
+
+        @Bean
+        Queue aclUpdatedQueue() {
+            return aclUpdatedQueue;
+        }
+
+        @Bean
+        Queue aclUpdatedDlxQueue() {
+            return aclUpdatedDlxQueue;
+        }
+
+        @Bean
+        Binding aclUpdatedBinding() {
+            return aclUpdatedBinding;
+        }
+
+        @Bean
+        Binding aclUpdatedDlxBinding() {
+            return aclUpdatedDlxBinding;
         }
 
         @Bean

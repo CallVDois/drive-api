@@ -103,7 +103,7 @@ public class Folder extends AggregateRoot<FolderID> {
     }
 
     public static Folder createInbox(final MemberID owner, final FolderID parentFolder) {
-        Instant now = Instant.now();
+        final Instant now = Instant.now();
 
         return Folder.with(
                 FolderID.unique(),
@@ -125,7 +125,7 @@ public class Folder extends AggregateRoot<FolderID> {
             final FolderName name,
             final Folder parentFolder) {
 
-        Instant now = Instant.now();
+        final Instant now = Instant.now();
 
         final var folder = Folder.with(
                 FolderID.unique(),
@@ -206,11 +206,12 @@ public class Folder extends AggregateRoot<FolderID> {
         if (this.owner.equals(member))
             return this.parentFolder;
 
-        return this.sharings.stream()
+        return this.sharings
+                .stream()
                 .filter(sharing -> sharing.getSharedTo().equals(member))
                 .findFirst()
                 .map(FolderSharing::getVirtualFolder)
-                .orElse(null);
+                .orElse(this.parentFolder);
     }
 
     private void selfValidate() {

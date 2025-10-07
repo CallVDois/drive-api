@@ -27,8 +27,6 @@ import com.callv2.drive.infrastructure.folder.persistence.FolderJpaRepository;
 import com.callv2.drive.infrastructure.folder.persistence.FolderSharingJpaEntity;
 import com.callv2.drive.infrastructure.folder.persistence.FolderSharingJpaRepository;
 
-import jakarta.persistence.criteria.Root;
-
 @Component
 public class FolderJpaGateway implements FolderGateway {
 
@@ -59,6 +57,7 @@ public class FolderJpaGateway implements FolderGateway {
                 .map(this::mapToDomain);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Set<Folder> findByParentFolderId(final FolderID parentFolderId) {
         return mapToDomain(this.folderRepository.findAll(findByParentFolderIdSpecification(parentFolderId.getValue())))
@@ -76,11 +75,13 @@ public class FolderJpaGateway implements FolderGateway {
                 .collect(Collectors.toSet());
     }
 
+    @Transactional
     @Override
     public Folder create(Folder folder) {
         return save(folder);
     }
 
+    @Transactional
     @Override
     public Folder update(Folder folder) {
         return save(folder);
@@ -129,6 +130,7 @@ public class FolderJpaGateway implements FolderGateway {
                 mapToDomain(pageResult.toList()));
     }
 
+    @Transactional
     @Override
     public void deleteById(FolderID id) {
         this.folderRepository.deleteById(id.getValue());
@@ -161,15 +163,20 @@ public class FolderJpaGateway implements FolderGateway {
 
         final FolderJpaEntity folderJpa = this.folderRepository.save(FolderJpaEntity.fromDomain(folder));
 
-        this.folderSharingRepository
-                .saveAll(
-                        folder
-                                .getSharings()
-                                .stream()
-                                .map(folderSharing -> FolderSharingJpaEntity.from(folderJpa, folderSharing))
-                                .toList());
+        final var folderSharings = folder
+                .getSharings()
+                .stream()
+                .map(folderSharing -> FolderSharingJpaEntity.from(folderJpa, folderSharing))
+                .toList();
+
+        final var currentSharingIds = folderSharings.stream().map(FolderSharingJpaEntity::getId).toList();
+
+        this.folderSharingRepository.deleteAllByFolderIdAndIdNotIn(folderJpa.getId(), currentSharingIds);
+
+        this.folderSharingRepository.saveAll(folderSharings);
 
         return folder;
+
     }
 
     private static Specification<FolderJpaEntity> folderAclSpecification(final UUID actorId) {
@@ -178,11 +185,20 @@ public class FolderJpaGateway implements FolderGateway {
             if (query == null)
                 return criteriaBuilder.conjunction();
 
-            final Root<FolderAccessAclJpaEntity> aclRoot = query.from(FolderAccessAclJpaEntity.class);
+            final var subquery = query.subquery(UUID.class);
+            final var aclRoot = subquery.from(FolderAccessAclJpaEntity.class);
 
-            return criteriaBuilder.and(
-                    criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("folderId")),
-                    criteriaBuilder.equal(aclRoot.get("id").get("memberId"), actorId));
+            subquery.select(aclRoot.get("id").get("folderId"))
+                    .where(
+                            criteriaBuilder.and(
+                                    criteriaBuilder.equal(
+                                            aclRoot.get("id").get("folderId"),
+                                            root.get("id")),
+                                    criteriaBuilder.equal(
+                                            aclRoot.get("id").get("memberId"),
+                                            actorId)));
+
+            return criteriaBuilder.exists(subquery);
 
         };
     }
@@ -192,8 +208,20 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     private static Specification<FolderJpaEntity> findByParentFolderIdSpecification(final UUID parentFolderId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.and(
-                criteriaBuilder.equal(root.get("parentFolderId"), parentFolderId));
+        return (root, query, criteriaBuilder) -> {
+
+            if (query == null)
+                return criteriaBuilder.conjunction();
+
+            final var subquery = query.subquery(UUID.class);
+            final var sharingRoot = subquery.from(FolderSharingJpaEntity.class);
+            subquery.select(sharingRoot.get("folder").get("id"))
+                    .where(criteriaBuilder.equal(sharingRoot.get("virtualFolder"), parentFolderId));
+
+            return criteriaBuilder.or(
+                    criteriaBuilder.equal(root.get("parentFolderId"), parentFolderId),
+                    root.get("id").in(subquery));
+        };
     }
 
 }
