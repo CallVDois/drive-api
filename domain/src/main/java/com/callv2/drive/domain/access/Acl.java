@@ -137,6 +137,9 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     public Optional<AccessPermission> effectiveAccessPermission(final MemberID member) {
 
+        if (this.resource.owner().equals(member))
+            return Optional.of(AccessPermission.mostPrivileged());
+
         return Stream.concat(directEntries.stream(), inheritedEntries.stream())
                 .filter(entry -> entry.getMember().equals(member))
                 .map(Entry::getPermission)
