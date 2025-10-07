@@ -64,7 +64,8 @@ public class EntryJpaEntity implements Serializable {
             final Permission.Type permissionType,
             final AccessPermission accessPermission,
             final SharePermission sharePermission,
-            final Instant grantedAt) {
+            final Instant grantedAt,
+            final AclJpaEntity acl) {
         this.id = id;
         this.memberId = memberId;
         this.type = type;
@@ -72,9 +73,11 @@ public class EntryJpaEntity implements Serializable {
         this.accessPermission = accessPermission;
         this.sharePermission = sharePermission;
         this.grantedAt = grantedAt;
+        this.acl = acl;
     }
 
     public static <P extends Permission<?>> EntryJpaEntity fromDomain(
+            final AclJpaEntity aclJpa,
             final Entry<P> entry,
             final EntryJpaEntity.Type type) {
 
@@ -86,7 +89,8 @@ public class EntryJpaEntity implements Serializable {
                     Permission.Type.ACCESS,
                     accessPermission,
                     null,
-                    entry.getGrantedAt());
+                    entry.getGrantedAt(),
+                    aclJpa);
             case SharePermission sharePermission -> new EntryJpaEntity(
                     entry.getId().getValue(),
                     entry.getMember().getValue(),
@@ -94,7 +98,8 @@ public class EntryJpaEntity implements Serializable {
                     Permission.Type.SHARE,
                     null,
                     sharePermission,
-                    entry.getGrantedAt());
+                    entry.getGrantedAt(),
+                    aclJpa);
             default ->
                 throw new IllegalArgumentException("Unsupported permission type: " + entry.getPermission().getClass());
         };
@@ -121,6 +126,70 @@ public class EntryJpaEntity implements Serializable {
     public enum Type {
         DIRECT,
         INHERITED
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public EntryJpaEntity.Type getType() {
+        return type;
+    }
+
+    public void setType(EntryJpaEntity.Type type) {
+        this.type = type;
+    }
+
+    public UUID getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(UUID memberId) {
+        this.memberId = memberId;
+    }
+
+    public Permission.Type getPermissionType() {
+        return permissionType;
+    }
+
+    public void setPermissionType(Permission.Type permissionType) {
+        this.permissionType = permissionType;
+    }
+
+    public AccessPermission getAccessPermission() {
+        return accessPermission;
+    }
+
+    public void setAccessPermission(AccessPermission accessPermission) {
+        this.accessPermission = accessPermission;
+    }
+
+    public SharePermission getSharePermission() {
+        return sharePermission;
+    }
+
+    public void setSharePermission(SharePermission sharePermission) {
+        this.sharePermission = sharePermission;
+    }
+
+    public Instant getGrantedAt() {
+        return grantedAt;
+    }
+
+    public void setGrantedAt(Instant grantedAt) {
+        this.grantedAt = grantedAt;
+    }
+
+    public AclJpaEntity getAcl() {
+        return acl;
+    }
+
+    public void setAcl(AclJpaEntity acl) {
+        this.acl = acl;
     }
 
 }

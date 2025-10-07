@@ -70,9 +70,20 @@ public class AclJpaGateway implements AclGateway {
     private Acl save(final Acl acl) {
 
         switch (acl.getResource().type()) {
-            case FOLDER -> saveFolderAcl(acl);
-            case FILE -> saveFileAcl(acl);
+            case FOLDER -> saveFolderAccessAcl(acl);
+            case FILE -> saveFileAccessAcl(acl);
         }
+
+        final AclJpaEntity aclJpa = aclJpaRepository.save(AclJpaEntity.fromDomain(acl));
+ 
+        this.entryJpaRepository.saveAll(Stream.concat(
+                acl.getDirectEntries()
+                        .stream()
+                        .map(entry -> EntryJpaEntity.fromDomain(aclJpa, entry, EntryJpaEntity.Type.DIRECT)),
+                acl.getInheritedEntries()
+                        .stream()
+                        .map(entry -> EntryJpaEntity.fromDomain(aclJpa, entry, EntryJpaEntity.Type.INHERITED)))
+                .toList());
 
         return acl;
 
@@ -96,7 +107,7 @@ public class AclJpaGateway implements AclGateway {
 
     }
 
-    private void saveFolderAcl(final Acl acl) {
+    private void saveFolderAccessAcl(final Acl acl) {
 
         final var folderAccessAcls = filterAccessEntries(acl)
                 .map(entry -> FolderAccessAclJpaEntity.from(
@@ -109,7 +120,7 @@ public class AclJpaGateway implements AclGateway {
 
     }
 
-    private void saveFileAcl(final Acl acl) {
+    private void saveFileAccessAcl(final Acl acl) {
 
         final var fileAccessAcls = filterAccessEntries(acl)
                 .map(entry -> FileAccessAclJpaEntity.from(
