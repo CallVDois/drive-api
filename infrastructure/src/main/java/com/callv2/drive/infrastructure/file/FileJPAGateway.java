@@ -70,7 +70,7 @@ public class FileJPAGateway implements FileGateway {
     @Transactional(readOnly = true)
     @Override
     public List<File> findAllByFolder(final FolderID folderId) {
-        return mapToDomain(this.fileRepository.findByFolderId(folderId.getValue()));
+        return mapToDomain(this.fileRepository.findAll(findByFolderIdSpecification(folderId.getValue())));
     }
 
     @Transactional(readOnly = true)
@@ -177,6 +177,23 @@ public class FileJPAGateway implements FileGateway {
                     criteriaBuilder.equal(root.get("id"), aclRoot.get("id").get("fileId")),
                     criteriaBuilder.equal(aclRoot.get("id").get("memberId"), actorId));
 
+        };
+    }
+
+    private static Specification<FileJpaEntity> findByFolderIdSpecification(final UUID folderId) {
+        return (root, query, criteriaBuilder) -> {
+
+            if (query == null)
+                return criteriaBuilder.conjunction();
+
+            final var subquery = query.subquery(UUID.class);
+            final var sharingRoot = subquery.from(FileSharingJpaEntity.class);
+            subquery.select(sharingRoot.get("file").get("id"))
+                    .where(criteriaBuilder.equal(sharingRoot.get("virtualFolder"), folderId));
+
+            return criteriaBuilder.or(
+                    criteriaBuilder.equal(root.get("folderId"), folderId),
+                    root.get("id").in(subquery));
         };
     }
 

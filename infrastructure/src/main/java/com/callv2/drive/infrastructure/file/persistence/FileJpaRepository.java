@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 public interface FileJpaRepository extends
-        JpaRepository<FileJpaEntity, UUID>, JpaSpecificationExecutor<FileJpaEntity> {
+        JpaRepository<FileJpaEntity, UUID>,
+        JpaSpecificationExecutor<FileJpaEntity> {
 
     List<FileJpaEntity> findByFolderId(UUID folderId);
 
