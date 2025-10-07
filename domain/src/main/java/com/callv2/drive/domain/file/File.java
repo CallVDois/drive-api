@@ -248,7 +248,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
                 .filter(sharing -> sharing.getSharedTo().equals(member))
                 .findFirst()
                 .map(FileSharing::getVirtualFolder)
-                .orElse(null);
+                .orElse(this.folder);
     }
 
     private void selfValidate() {
