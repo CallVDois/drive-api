@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import com.callv2.drive.domain.access.AccessPermission;
 import com.callv2.drive.domain.access.ResourceType;
-import com.callv2.drive.domain.access.SharePermission;
 
 public record UpdateAclMessage(Data data) implements Serializable {
 
@@ -23,7 +22,6 @@ public record UpdateAclMessage(Data data) implements Serializable {
         public record Entry(
                 UUID memberId,
                 AccessPermission accessPermission,
-                SharePermission sharePermission,
                 Instant grantedAt) implements Serializable {
 
         }

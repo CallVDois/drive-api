@@ -162,8 +162,7 @@ public class FolderController implements FolderAPI {
                         id,
                         actorId,
                         request.grantee(),
-                        request.accessPermission(),
-                        null));
+                        request.accessPermission()));
 
         return ResponseEntity.noContent().build();
 

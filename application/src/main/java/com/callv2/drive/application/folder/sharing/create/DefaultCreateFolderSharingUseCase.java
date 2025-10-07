@@ -54,9 +54,7 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
 
         final Notification notification = Notification.create();
 
-        notification.validate(() -> input
-                .accessPermission()
-                .ifPresent(ap -> acl.grantAccess(granterId, granteeId, ap)));
+        acl.grantAccess(granterId, granteeId, input.accessPermission());
 
         if (notification.hasError())
             throw ValidationException.with("Permission validation failed", notification);

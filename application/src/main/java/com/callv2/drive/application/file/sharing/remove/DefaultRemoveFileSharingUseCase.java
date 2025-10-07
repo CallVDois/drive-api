@@ -19,16 +19,18 @@ public class DefaultRemoveFileSharingUseCase extends RemoveFileSharingUseCase {
     @Override
     public void execute(final RemoveFileSharingInput input) {
 
-        final FileID fileId = FileID.of(input.fileId());
-        final MemberID revoker = MemberID.of(input.revoker());
-        final MemberID revokedMember = MemberID.of(input.revokedMember());
+        // final FileID fileId = FileID.of(input.fileId());
+        // final MemberID revoker = MemberID.of(input.revoker());
+        // final MemberID revokedMember = MemberID.of(input.revokedMember());
 
         // final File file = fileGateway
-        //         .findByIdWithMemberAccess(fileId, revoker)
-        //         .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
+        // .findByIdWithMemberAccess(fileId, revoker)
+        // .orElseThrow(() -> NotFoundException.with(File.class,
+        // input.fileId().toString()));
 
         // final Acl acl = aclGateway.findByResource(Resource.file(file))
-        //         .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
+        // .orElseThrow(() -> NotFoundException.with(File.class,
+        // input.fileId().toString()));
 
         // acl.
 

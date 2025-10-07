@@ -11,7 +11,7 @@ public interface Permission<T extends Enum<T> & Permission<T>> {
     Boolean allows(T permission);
 
     public enum Type {
-        SHARE, ACCESS,
+        ACCESS,
     }
 
 }

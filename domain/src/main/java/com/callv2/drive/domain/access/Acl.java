@@ -146,17 +146,6 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     }
 
-    public Optional<SharePermission> effectiveSharePermission(final MemberID member) {
-
-        return Stream.concat(directEntries.stream(), inheritedEntries.stream())
-                .filter(entry -> entry.getMember().equals(member))
-                .map(Entry::getPermission)
-                .filter(SharePermission.class::isInstance)
-                .map(SharePermission.class::cast)
-                .min((e1, e2) -> e1.getLevel().compareTo(e2.getLevel()));
-
-    }
-
     public Acl revokeAccess(
             final MemberID revoker,
             final MemberID revokedMember) {
@@ -179,12 +168,11 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
             revokeTotal(revokedMember);
 
         // // TODO
-        // effectiveSharePermission(revoker)
-        // .filter(sp -> sp.allows(SharePermission.SHARE_TO_SHARE))
-        // .orElseThrow(() -> NotAllowedException.with(
-        // "'granter' does not have share permission to grant the specified
-        // 'accessPermission'",
-        // "accessPermission level too low"));
+        effectiveAccessPermission(revoker)
+                .filter(sp -> sp.allows(AccessPermission.SHARE))
+                .orElseThrow(() -> NotAllowedException.with(
+                        "'granter' does not have share permission to revoke accessPermission",
+                        "accessPermission level too low"));
 
         return this;
 
@@ -200,37 +188,13 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
                     "Could not grant access",
                     ValidationError.with("'granter' should not be null"));
 
-        effectiveSharePermission(granter)
-                .filter(sp -> sp.canShare(accessPermission))
+        effectiveAccessPermission(granter)
+                .filter(sp -> sp.canShare())
                 .orElseThrow(() -> NotAllowedException.with(
                         "'granter' does not have share permission to grant the specified 'accessPermission'",
                         "accessPermission level too low"));
 
         applyEntry(grantee, accessPermission);
-
-        this.updatedAt = Instant.now();
-        this.events.add(AclUpdatedEvent.create(this));
-
-        return this;
-    }
-
-    public Acl grantShare(
-            final MemberID granter,
-            final MemberID grantee,
-            final SharePermission sharePermission) {
-
-        if (isNull(granter))
-            throw ValidationException.with(
-                    "Could not grant share",
-                    ValidationError.with("'granter' should not be null"));
-
-        effectiveSharePermission(granter)
-                .filter(sp -> sp.canShare(sharePermission))
-                .orElseThrow(() -> NotAllowedException.with(
-                        "'granter' does not have share permission to grant the specified 'sharePermission'",
-                        "sharePermission level too low"));
-
-        applyEntry(grantee, sharePermission);
 
         this.updatedAt = Instant.now();
         this.events.add(AclUpdatedEvent.create(this));
@@ -269,9 +233,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
     }
 
     private Acl grantTotal(final MemberID grantee) {
-        return this
-                .applyEntry(grantee, AccessPermission.mostPrivileged())
-                .applyEntry(grantee, SharePermission.mostPrivileged());
+        return this.applyEntry(grantee, AccessPermission.mostPrivileged());
     }
 
     public Queue<Event<?>> getEvents() {

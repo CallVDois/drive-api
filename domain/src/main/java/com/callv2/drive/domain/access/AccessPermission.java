@@ -1,8 +1,9 @@
 package com.callv2.drive.domain.access;
 
 public enum AccessPermission implements Permission<AccessPermission> {
-    WRITE(0),
-    READ(1);
+    SHARE(0),
+    WRITE(1),
+    READ(2);
 
     private static final Permission.Type TYPE = Permission.Type.ACCESS;
 
@@ -22,6 +23,10 @@ public enum AccessPermission implements Permission<AccessPermission> {
         return level;
     }
 
+    public Boolean canShare() {
+        return this.level <= SHARE.level;
+    }
+
     public Boolean canWrite() {
         return this.level <= WRITE.level;
     }
@@ -35,7 +40,7 @@ public enum AccessPermission implements Permission<AccessPermission> {
     }
 
     public static AccessPermission mostPrivileged() {
-        return WRITE;
+        return SHARE;
     }
 
     public Boolean allows(final AccessPermission permission) {

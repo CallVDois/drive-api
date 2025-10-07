@@ -8,7 +8,6 @@ import com.callv2.drive.domain.access.AccessPermission;
 import com.callv2.drive.domain.access.Entry;
 import com.callv2.drive.domain.access.EntryID;
 import com.callv2.drive.domain.access.Permission;
-import com.callv2.drive.domain.access.SharePermission;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;
@@ -43,10 +42,6 @@ public class EntryJpaEntity implements Serializable {
     @Column(name = "access_permission")
     private AccessPermission accessPermission;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "share_permission")
-    private SharePermission sharePermission;
-
     @Column(name = "granted_at", nullable = false)
     private Instant grantedAt;
 
@@ -63,7 +58,6 @@ public class EntryJpaEntity implements Serializable {
             final EntryJpaEntity.Type type,
             final Permission.Type permissionType,
             final AccessPermission accessPermission,
-            final SharePermission sharePermission,
             final Instant grantedAt,
             final AclJpaEntity acl) {
         this.id = id;
@@ -71,7 +65,6 @@ public class EntryJpaEntity implements Serializable {
         this.type = type;
         this.permissionType = permissionType;
         this.accessPermission = accessPermission;
-        this.sharePermission = sharePermission;
         this.grantedAt = grantedAt;
         this.acl = acl;
     }
@@ -88,16 +81,6 @@ public class EntryJpaEntity implements Serializable {
                     type,
                     Permission.Type.ACCESS,
                     accessPermission,
-                    null,
-                    entry.getGrantedAt(),
-                    aclJpa);
-            case SharePermission sharePermission -> new EntryJpaEntity(
-                    entry.getId().getValue(),
-                    entry.getMember().getValue(),
-                    type,
-                    Permission.Type.SHARE,
-                    null,
-                    sharePermission,
                     entry.getGrantedAt(),
                     aclJpa);
             default ->
@@ -113,11 +96,6 @@ public class EntryJpaEntity implements Serializable {
                     EntryID.of(this.id),
                     MemberID.of(memberId),
                     accessPermission,
-                    grantedAt);
-            case SHARE -> Entry.with(
-                    EntryID.of(this.id),
-                    MemberID.of(memberId),
-                    sharePermission,
                     grantedAt);
         };
 
@@ -166,14 +144,6 @@ public class EntryJpaEntity implements Serializable {
 
     public void setAccessPermission(AccessPermission accessPermission) {
         this.accessPermission = accessPermission;
-    }
-
-    public SharePermission getSharePermission() {
-        return sharePermission;
-    }
-
-    public void setSharePermission(SharePermission sharePermission) {
-        this.sharePermission = sharePermission;
     }
 
     public Instant getGrantedAt() {

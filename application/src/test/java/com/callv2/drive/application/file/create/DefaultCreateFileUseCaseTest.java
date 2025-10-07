@@ -33,7 +33,6 @@ import com.callv2.drive.domain.access.AclGateway;
 import com.callv2.drive.domain.access.AclID;
 import com.callv2.drive.domain.access.Entry;
 import com.callv2.drive.domain.access.Resource;
-import com.callv2.drive.domain.access.SharePermission;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.domain.exception.NotFoundException;
@@ -113,9 +112,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
@@ -344,9 +341,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
@@ -425,9 +420,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
@@ -534,9 +527,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
@@ -643,9 +634,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
@@ -733,9 +722,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
@@ -813,9 +800,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
@@ -892,9 +877,7 @@ class DefaultCreateFileUseCaseTest {
 
         final var expectedAclId = AclID.unique();
         final var expectedAclResource = Resource.folder(folder);
-        final var expectedAclDirectEntries = Set.<Entry<?>>of(
-                Entry.create(ownerId, AccessPermission.mostPrivileged()),
-                Entry.create(ownerId, SharePermission.mostPrivileged()));
+        final var expectedAclDirectEntries = Set.<Entry<?>>of(Entry.create(ownerId, AccessPermission.mostPrivileged()));
         final var expectedAclInheritedEntries = Set.<Entry<?>>of();
         final var expectedAclCreatedAt = Instant.now();
         final var expectedAclUpdatedAt = expectedAclCreatedAt;
