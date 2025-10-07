@@ -98,9 +98,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
     public Acl createInherited(final Resource<?> resource) {
         final Instant now = Instant.now();
 
-        final Set<Entry<?>> inheritedEntries = Stream
-                .concat(this.directEntries.stream(), this.inheritedEntries.stream())
-                .collect(Collectors.toSet());
+        final Set<Entry<?>> inheritedEntries = inheritEntries(this);
 
         final Acl newAcl = new Acl(
                 AclID.unique(),
@@ -123,9 +121,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         final Instant now = Instant.now();
 
-        final Set<Entry<?>> inheritedEntries = Stream
-                .concat(parentAcl.directEntries.stream(), parentAcl.inheritedEntries.stream())
-                .collect(Collectors.toSet());
+        final Set<Entry<?>> inheritedEntries = inheritEntries(parentAcl);
 
         this.inheritedEntries = inheritedEntries;
         this.updatedAt = now;
@@ -237,6 +233,15 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     private Acl grantTotal(final MemberID grantee) {
         return this.applyEntry(grantee, AccessPermission.mostPrivileged());
+    }
+
+    private static Set<Entry<?>> inheritEntries(final Acl acl) {
+        return Stream
+                .concat(acl.directEntries.stream(), acl.inheritedEntries.stream())
+                .collect(Collectors.toSet())
+                .stream()
+                .map(Entry::inherit)
+                .collect(Collectors.toSet());
     }
 
     public Queue<Event<?>> getEvents() {

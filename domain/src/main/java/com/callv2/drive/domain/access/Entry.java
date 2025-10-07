@@ -43,6 +43,10 @@ public class Entry<P extends Permission<?>> extends Entity<EntryID> {
         return new Entry<>(EntryID.unique(), member, permission, Instant.now());
     }
 
+    public static <P extends Permission<?>> Entry<P> inherit(final Entry<P> entry) {
+        return new Entry<>(EntryID.unique(), entry.getMember(), entry.getPermission(), Instant.now());
+    }
+
     public Boolean isEquivalentTo(final Entry<? extends Permission<?>> other) {
 
         return isNull(other) ? false

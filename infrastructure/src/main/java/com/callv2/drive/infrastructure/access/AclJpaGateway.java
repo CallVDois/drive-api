@@ -75,7 +75,7 @@ public class AclJpaGateway implements AclGateway {
         }
 
         final AclJpaEntity aclJpa = aclJpaRepository.save(AclJpaEntity.fromDomain(acl));
- 
+
         this.entryJpaRepository.saveAll(Stream.concat(
                 acl.getDirectEntries()
                         .stream()
@@ -115,6 +115,15 @@ public class AclJpaGateway implements AclGateway {
                         entry.getKey(),
                         entry.getValue()))
                 .toList();
+
+        final var folderAccessAclIds = folderAccessAcls
+                .stream()
+                .map(FolderAccessAclJpaEntity::getId)
+                .collect(Collectors.toSet());
+
+        this.folderAccessAclJpaRepository.deleteAllByIdFolderIdAndIdNotIn(
+                acl.getResource().folder().id().getValue(),
+                folderAccessAclIds);
 
         this.folderAccessAclJpaRepository.saveAll(folderAccessAcls);
 
