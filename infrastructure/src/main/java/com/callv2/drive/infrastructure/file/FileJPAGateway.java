@@ -45,11 +45,13 @@ public class FileJPAGateway implements FileGateway {
         this.filterService = specificationFilterService;
     }
 
+    @Transactional
     @Override
     public File create(final File file) {
         return save(file);
     }
 
+    @Transactional
     @Override
     public File update(final File file) {
         return save(file);
@@ -114,6 +116,16 @@ public class FileJPAGateway implements FileGateway {
     private File save(final File file) {
 
         final FileJpaEntity fileJpa = this.fileRepository.save(FileJpaEntity.fromDomain(file));
+
+        final var fileSharings = file
+                .getSharings()
+                .stream()
+                .map(fileSharing -> FileSharingJpaEntity.from(fileJpa, fileSharing))
+                .toList();
+
+        final var currentSharingIds = fileSharings.stream().map(FileSharingJpaEntity::getId).toList();
+
+        this.fileSharingRepository.deleteAllByFileIdAndIdNotIn(fileJpa.getId(), currentSharingIds);
 
         this.fileSharingRepository
                 .saveAll(
