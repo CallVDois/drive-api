@@ -26,7 +26,6 @@ import com.callv2.drive.infrastructure.acl.persistence.FileAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.acl.persistence.FileAccessAclJpaRepository;
 import com.callv2.drive.infrastructure.acl.persistence.FolderAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.acl.persistence.FolderAccessAclJpaRepository;
-import com.callv2.drive.infrastructure.acl.persistence.FolderAclID;
 
 @Component
 public class AclJpaGateway implements AclGateway {
@@ -133,7 +132,6 @@ public class AclJpaGateway implements AclGateway {
         final var folderAccessAclIds = folderAccessAcls
                 .stream()
                 .map(FolderAccessAclJpaEntity::getId)
-                .map(FolderAclID::getFolderId)
                 .collect(Collectors.toSet());
 
         this.folderAccessAclJpaRepository.deleteAllByIdFolderIdAndIdNotIn(

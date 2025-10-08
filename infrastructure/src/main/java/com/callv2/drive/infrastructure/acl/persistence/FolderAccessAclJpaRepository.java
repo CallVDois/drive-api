@@ -18,6 +18,6 @@ public interface FolderAccessAclJpaRepository extends JpaRepository<FolderAccess
             """)
     void deleteAllByIdFolderIdAndIdNotIn(
             @Param("folderId") UUID folderId,
-            @Param("ids") Collection<UUID> ids);
+            @Param("ids") Collection<FolderAclID> ids);
 
 }
