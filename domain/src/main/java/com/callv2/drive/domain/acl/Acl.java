@@ -163,15 +163,18 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
         if (notification.hasError())
             throw ValidationException.with("Could not revoke access", notification);
 
-        if (revoker.equals(revokedMember))
-            revokeTotal(revokedMember);
+        if (revoker.equals(revokedMember)) {
+            revokeDirectEntries(revokedMember);
+            return this;
+        }
 
-        // // TODO
         effectiveAccessPermission(revoker)
                 .filter(sp -> sp.allows(AccessPermission.SHARE))
                 .orElseThrow(() -> NotAllowedException.with(
                         "'granter' does not have share permission to revoke accessPermission",
                         "accessPermission level too low"));
+
+        this.revokeDirectEntries(revokedMember);
 
         return this;
 
@@ -226,7 +229,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
     }
 
-    private Acl revokeTotal(final MemberID revokedMember) {
+    private Acl revokeDirectEntries(final MemberID revokedMember) {
         this.directEntries.removeIf(entry -> entry.getMember().equals(revokedMember));
         return this;
     }

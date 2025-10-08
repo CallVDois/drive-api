@@ -26,6 +26,7 @@ import com.callv2.drive.infrastructure.acl.persistence.FileAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.acl.persistence.FileAccessAclJpaRepository;
 import com.callv2.drive.infrastructure.acl.persistence.FolderAccessAclJpaEntity;
 import com.callv2.drive.infrastructure.acl.persistence.FolderAccessAclJpaRepository;
+import com.callv2.drive.infrastructure.acl.persistence.FolderAclID;
 
 @Component
 public class AclJpaGateway implements AclGateway {
@@ -83,14 +84,20 @@ public class AclJpaGateway implements AclGateway {
 
         final AclJpaEntity aclJpa = aclJpaRepository.save(AclJpaEntity.fromDomain(acl));
 
-        this.entryJpaRepository.saveAll(Stream.concat(
+        final var entriesJpa = Stream.concat(
                 acl.getDirectEntries()
                         .stream()
                         .map(entry -> EntryJpaEntity.fromDomain(aclJpa, entry, EntryJpaEntity.Type.DIRECT)),
                 acl.getInheritedEntries()
                         .stream()
                         .map(entry -> EntryJpaEntity.fromDomain(aclJpa, entry, EntryJpaEntity.Type.INHERITED)))
-                .toList());
+                .toList();
+
+        this.entryJpaRepository.deleteAllByAclIdAndIdNotIn(
+                aclJpa.getId(),
+                entriesJpa.stream().map(EntryJpaEntity::getId).toList());
+
+        this.entryJpaRepository.saveAll(entriesJpa);
 
         return acl;
 
@@ -126,6 +133,7 @@ public class AclJpaGateway implements AclGateway {
         final var folderAccessAclIds = folderAccessAcls
                 .stream()
                 .map(FolderAccessAclJpaEntity::getId)
+                .map(FolderAclID::getFolderId)
                 .collect(Collectors.toSet());
 
         this.folderAccessAclJpaRepository.deleteAllByIdFolderIdAndIdNotIn(
@@ -144,6 +152,15 @@ public class AclJpaGateway implements AclGateway {
                         entry.getKey(),
                         entry.getValue()))
                 .toList();
+
+        final var fileAccessAclIds = fileAccessAcls
+                .stream()
+                .map(FileAccessAclJpaEntity::getId)
+                .collect(Collectors.toSet());
+
+        this.fileAccessAclJpaRepository.deleteAllByIdFileIdAndIdNotIn(
+                acl.getResource().file().id().getValue(),
+                fileAccessAclIds);
 
         this.fileAccessAclJpaRepository.saveAll(fileAccessAcls);
 

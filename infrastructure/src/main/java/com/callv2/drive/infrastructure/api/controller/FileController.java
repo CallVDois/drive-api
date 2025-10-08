@@ -26,6 +26,8 @@ import com.callv2.drive.application.file.retrieve.list.ListFilesUseCase;
 import com.callv2.drive.application.file.sharing.create.CreateFileSharingUseCase;
 import com.callv2.drive.application.file.sharing.remove.RemoveFileSharingInput;
 import com.callv2.drive.application.file.sharing.remove.RemoveFileSharingUseCase;
+import com.callv2.drive.application.file.sharing.retrieve.list.ListFileSharingInput;
+import com.callv2.drive.application.file.sharing.retrieve.list.ListFileSharingUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
@@ -35,6 +37,7 @@ import com.callv2.drive.infrastructure.file.adapter.FileAdapter;
 import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
+import com.callv2.drive.infrastructure.file.model.FileSharingListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 import com.callv2.drive.infrastructure.file.model.ShareFileRequest;
 import com.callv2.drive.infrastructure.file.presenter.FilePresenter;
@@ -51,6 +54,7 @@ public class FileController implements FileAPI {
     private final ListFilesUseCase listFilesUseCase;
     private final CreateFileSharingUseCase createFileSharingUseCase;
     private final RemoveFileSharingUseCase removeFileSharingUseCase;
+    private final ListFileSharingUseCase listFileSharingUseCase;
 
     public FileController(
             final CreateFileUseCase createFileUseCase,
@@ -59,7 +63,8 @@ public class FileController implements FileAPI {
             final GetFileContentUseCase getFileContentUseCase,
             final ListFilesUseCase listFilesUseCase,
             final CreateFileSharingUseCase createFileSharingUseCase,
-            final RemoveFileSharingUseCase removeFileSharingUseCase) {
+            final RemoveFileSharingUseCase removeFileSharingUseCase,
+            final ListFileSharingUseCase listFileSharingUseCase) {
         this.createFileUseCase = createFileUseCase;
         this.deleteFileUseCase = deleteFileUseCase;
         this.getFileUseCase = getFileUseCase;
@@ -67,6 +72,7 @@ public class FileController implements FileAPI {
         this.listFilesUseCase = listFilesUseCase;
         this.createFileSharingUseCase = createFileSharingUseCase;
         this.removeFileSharingUseCase = removeFileSharingUseCase;
+        this.listFileSharingUseCase = listFileSharingUseCase;
     }
 
     @Override
@@ -161,13 +167,27 @@ public class FileController implements FileAPI {
     }
 
     @Override
-    public ResponseEntity<Void> unshareFile(UUID id, UUID memberToUnshareId) {
+    public ResponseEntity<Void> unshareFile(UUID id, UUID sharingId) {
 
         final var revokerId = SecurityContext.getAuthenticatedUserId();
 
-        this.removeFileSharingUseCase.execute(new RemoveFileSharingInput(id, revokerId, memberToUnshareId));
+        this.removeFileSharingUseCase.execute(new RemoveFileSharingInput(id, sharingId, revokerId));
 
         return ResponseEntity.noContent().build();
+
+    }
+
+    @Override
+    public ResponseEntity<List<FileSharingListResponse>> listSharings(final UUID id) {
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        final var response = listFileSharingUseCase.execute(new ListFileSharingInput(id, actorId))
+                .stream()
+                .map(FilePresenter::present)
+                .toList();
+
+        return ResponseEntity.ok(response);
 
     }
 

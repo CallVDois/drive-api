@@ -3,8 +3,10 @@ package com.callv2.drive.infrastructure.file.presenter;
 import com.callv2.drive.application.file.create.CreateFileOutput;
 import com.callv2.drive.application.file.retrieve.get.GetFileOutput;
 import com.callv2.drive.application.file.retrieve.list.FileListOutput;
+import com.callv2.drive.application.file.sharing.retrieve.list.FileSharingListOutput;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
+import com.callv2.drive.infrastructure.file.model.FileSharingListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 
 public interface FilePresenter {
@@ -39,6 +41,15 @@ public interface FilePresenter {
                 output.contentSize(),
                 output.createdAt(),
                 output.updatedAt());
+    }
+
+    static FileSharingListResponse present(final FileSharingListOutput sharing) {
+        return new FileSharingListResponse(
+                sharing.id(),
+                sharing.sharedTo(),
+                sharing.sharedBy(),
+                sharing.accessPermission(),
+                sharing.createdAt());
     }
 
 }

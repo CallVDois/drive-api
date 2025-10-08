@@ -6,11 +6,18 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface FileSharingJpaRepository extends JpaRepository<FileSharingJpaEntity, UUID> {
 
     @Modifying
-    Integer deleteAllByFileIdAndIdNotIn(UUID fileId, Collection<UUID> ids);
+    @Query("""
+                delete from FileSharing f
+                where f.file.id = :fileId
+                and (:ids is null or f.id not in :ids)
+            """)
+    void deleteAllByFileIdAndIdNotIn(@Param("fileId") UUID fileId, @Param("ids") Collection<UUID> ids);
 
     List<FileSharingJpaEntity> findAllByFileId(UUID fileId);
 

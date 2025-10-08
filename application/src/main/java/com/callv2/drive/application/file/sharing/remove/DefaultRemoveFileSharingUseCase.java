@@ -8,6 +8,7 @@ import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
+import com.callv2.drive.domain.file.FileSharingID;
 import com.callv2.drive.domain.member.MemberID;
 
 public class DefaultRemoveFileSharingUseCase extends RemoveFileSharingUseCase {
@@ -31,7 +32,7 @@ public class DefaultRemoveFileSharingUseCase extends RemoveFileSharingUseCase {
 
         final FileID fileId = FileID.of(input.fileId());
         final MemberID revoker = MemberID.of(input.revoker());
-        final MemberID revokedMember = MemberID.of(input.revokedMember());
+        final FileSharingID fileSharing = FileSharingID.of(input.sharingId());
 
         final File file = fileGateway
                 .findByIdWithMemberAccess(fileId, revoker)
@@ -40,14 +41,19 @@ public class DefaultRemoveFileSharingUseCase extends RemoveFileSharingUseCase {
         final Acl acl = aclGateway.findByResource(Resource.file(file))
                 .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
 
-        acl.revokeAccess(revoker, revokedMember);
-        file.unshare(revoker, revokedMember);
+        file.getSharing(fileSharing)
+                .ifPresent(sharing -> {
 
-        aclGateway.update(acl);
-        fileGateway.update(file);
+                    acl.revokeAccess(revoker, sharing.getSharedTo());
+                    file.unshare(revoker, fileSharing);
 
-        eventDispatcher.notify(acl);
-        eventDispatcher.notify(file);
+                    aclGateway.update(acl);
+                    fileGateway.update(file);
+
+                    eventDispatcher.notify(acl);
+                    eventDispatcher.notify(file);
+
+                });
 
     }
 

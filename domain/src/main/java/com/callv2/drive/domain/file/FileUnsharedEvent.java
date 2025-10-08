@@ -33,19 +33,25 @@ public class FileUnsharedEvent extends Event<FileUnsharedEvent.Data> {
     public record Data(
             UUID fileId,
             UUID fileOwnerId,
-            UUID unsharedToId,
-            UUID unsharedByID,
-            Instant unsharedAt) implements Serializable {
+            UUID sharingId,
+            UUID sharedToId,
+            UUID sharedByID,
+            UUID virtualFolderId,
+            UUID unsharedById,
+            Instant sharedAt) implements Serializable {
 
         public static Data of(
                 final File file,
-                final MemberID unsharedToId,
+                final FileSharing sharing,
                 final MemberID unsharedById,
                 final Instant unsharedAt) {
             return new Data(
                     file.getId().getValue(),
                     file.getOwner().getValue(),
-                    unsharedToId.getValue(),
+                    sharing.getId().getValue(),
+                    sharing.getSharedTo().getValue(),
+                    sharing.getSharedBy().getValue(),
+                    sharing.getVirtualFolder().getValue(),
                     unsharedById.getValue(),
                     unsharedAt);
         }
@@ -53,18 +59,19 @@ public class FileUnsharedEvent extends Event<FileUnsharedEvent.Data> {
 
     public static FileUnsharedEvent create(
             final File file,
-            final MemberID unsharedToId,
+            final FileSharing sharing,
             final MemberID unsharedById) {
         return new FileUnsharedEvent(
                 Instant.now(),
                 Stream.of(
                         EventEntity.of(file),
                         EventEntity.of(Member.class, file.getOwner()),
-                        EventEntity.of(Member.class, unsharedToId),
+                        EventEntity.of(Member.class, sharing.getSharedBy()),
+                        EventEntity.of(Member.class, sharing.getSharedTo()),
                         EventEntity.of(Member.class, unsharedById),
                         EventEntity.of(Folder.class, file.getFolder()))
                         .collect(Collectors.toSet()),
-                Data.of(file, unsharedToId, unsharedById, Instant.now()));
+                Data.of(file, sharing, unsharedById, Instant.now()));
     }
 
     public static String eventKey() {

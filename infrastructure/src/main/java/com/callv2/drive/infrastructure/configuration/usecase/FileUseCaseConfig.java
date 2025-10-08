@@ -19,6 +19,8 @@ import com.callv2.drive.application.file.sharing.create.CreateFileSharingUseCase
 import com.callv2.drive.application.file.sharing.create.DefaultCreateFileSharingUseCase;
 import com.callv2.drive.application.file.sharing.remove.DefaultRemoveFileSharingUseCase;
 import com.callv2.drive.application.file.sharing.remove.RemoveFileSharingUseCase;
+import com.callv2.drive.application.file.sharing.retrieve.list.DefaultListFileSharingUseCase;
+import com.callv2.drive.application.file.sharing.retrieve.list.ListFileSharingUseCase;
 import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
@@ -108,6 +110,11 @@ public class FileUseCaseConfig {
                 eventDispatcher,
                 fileGateway,
                 aclGateway);
+    }
+
+    @Bean
+    ListFileSharingUseCase listFileSharingUseCase() {
+        return new DefaultListFileSharingUseCase(fileGateway, aclGateway);
     }
 
 }

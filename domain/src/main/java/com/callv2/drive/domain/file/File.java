@@ -223,18 +223,23 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         return this;
     }
 
-    public File unshare(final MemberID revokedBy, final MemberID revokedFrom) {
+    public File unshare(final MemberID revokedBy, final FileSharingID sharingId) {
 
         final Notification notification = Notification.create();
 
         if (isNull(revokedBy))
             notification.append(ValidationError.with("revokedBy' are required"));
 
-        if (isNull(revokedFrom))
+        if (isNull(sharingId))
             notification.append(ValidationError.with("revokedFrom' are required"));
 
-        if (sharings.removeIf(sharing -> sharing.getSharedTo().equals(revokedFrom)))
-            this.events.add(FileUnsharedEvent.create(this, revokedFrom, revokedBy));
+        this.sharings.stream()
+                .filter(s -> s.getId().equals(sharingId))
+                .findFirst()
+                .ifPresent(sharing -> {
+                    sharings.remove(sharing);
+                    this.events.add(FileUnsharedEvent.create(this, sharing, revokedBy));
+                });
 
         return this;
     }
@@ -249,6 +254,12 @@ public class File extends AggregateRoot<FileID> implements EventSource {
                 .findFirst()
                 .map(FileSharing::getVirtualFolder)
                 .orElse(this.folder);
+    }
+
+    public Optional<FileSharing> getSharing(final FileSharingID sharingId) {
+        return this.sharings.stream()
+                .filter(sharing -> sharing.getId().equals(sharingId))
+                .findFirst();
     }
 
     private void selfValidate() {

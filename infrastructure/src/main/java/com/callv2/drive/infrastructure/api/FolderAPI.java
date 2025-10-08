@@ -90,7 +90,7 @@ public interface FolderAPI {
     ResponseEntity<Void> delete(@PathVariable("id") UUID id);
 
     @Operation(summary = "Share Folder", description = "This method shares a folder", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping("{id}/sharing")
+    @PostMapping("{id}/sharings")
     ResponseEntity<Void> shareFolder(@PathVariable("id") UUID id, @RequestBody ShareFolderRequest request);
 
 }

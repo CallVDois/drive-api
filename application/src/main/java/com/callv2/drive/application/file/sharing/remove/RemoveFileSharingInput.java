@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public record RemoveFileSharingInput(
         UUID fileId,
-        UUID revoker,
-        UUID revokedMember) {
+        UUID sharingId,
+        UUID revoker) {
 
 }

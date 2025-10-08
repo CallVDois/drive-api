@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
+@Access(AccessType.FIELD)
 public class FileAclID implements Serializable {
 
     @Column(name = "file_id", nullable = false)

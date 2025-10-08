@@ -22,6 +22,7 @@ import com.callv2.drive.infrastructure.api.controller.ApiError;
 import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
+import com.callv2.drive.infrastructure.file.model.FileSharingListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
 import com.callv2.drive.infrastructure.file.model.ShareFileRequest;
 
@@ -81,13 +82,17 @@ public interface FileAPI {
             @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
     @Operation(summary = "Share File", description = "This method shares a file", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping("{id}/sharing")
+    @PostMapping("{id}/sharings")
     ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody ShareFileRequest request);
 
     @Operation(summary = "Unshare File", description = "This method unshares a file", security = @SecurityRequirement(name = "bearerAuth"))
-    @DeleteMapping("{id}/sharing/{memberToUnshareId}")
+    @DeleteMapping("{id}/sharings/{sharingId}")
     ResponseEntity<Void> unshareFile(
             @PathVariable("id") UUID id,
-            @PathVariable("memberToUnshareId") UUID memberToUnshareId);
+            @PathVariable("sharingId") UUID sharingId);
+
+    @Operation(summary = "List Sharings of File", description = "This method lists all sharings of a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping("{id}/sharings")
+    ResponseEntity<List<FileSharingListResponse>> listSharings(@PathVariable("id") UUID id);
 
 }
