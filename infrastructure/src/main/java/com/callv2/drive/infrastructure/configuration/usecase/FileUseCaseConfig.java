@@ -71,7 +71,7 @@ public class FileUseCaseConfig {
 
     @Bean
     DeleteFileUseCase deleteFileUseCase() {
-        return new DefaultDeleteFileUseCase(memberGateway, fileGateway, eventDispatcher);
+        return new DefaultDeleteFileUseCase(aclGateway, memberGateway, fileGateway, eventDispatcher);
     }
 
     @Bean
