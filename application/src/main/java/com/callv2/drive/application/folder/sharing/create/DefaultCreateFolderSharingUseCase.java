@@ -9,6 +9,7 @@ import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.folder.service.FolderProvisioningService;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
@@ -22,15 +23,19 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
     private final AclGateway aclGateway;
     private final FolderGateway folderGateway;
 
+    private final FolderProvisioningService folderProvisioningService;
+
     public DefaultCreateFolderSharingUseCase(
             final EventDispatcher eventDispatcher,
             final MemberGateway memberGateway,
             final AclGateway aclGateway,
-            final FolderGateway folderGateway) {
+            final FolderGateway folderGateway,
+            final FolderProvisioningService folderProvisioningService) {
         this.eventDispatcher = eventDispatcher;
         this.memberGateway = memberGateway;
         this.aclGateway = aclGateway;
         this.folderGateway = folderGateway;
+        this.folderProvisioningService = folderProvisioningService;
     }
 
     @Override
@@ -72,21 +77,10 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
     }
 
     private Folder createSharedInbox(final MemberID memberId) {
-        final Folder inboxFolder = Folder.createInbox(memberId, retrieveMemberRootFolder(memberId));
+        final Folder inboxFolder = Folder.createInbox(memberId,
+                folderProvisioningService.provisionRootFolder(memberId).getId());
         eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder), memberId)));
         return folderGateway.create(inboxFolder);
-    }
-
-    private FolderID retrieveMemberRootFolder(final MemberID memberId) {
-        return folderGateway.findMemberRootFolder(memberId)
-                .orElseGet(() -> createRootFolder(memberId))
-                .getId();
-    }
-
-    private Folder createRootFolder(final MemberID memberId) {
-        final Folder rootFolder = Folder.createRoot(memberId);
-        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(rootFolder), memberId)));
-        return folderGateway.create(rootFolder);
     }
 
 }

@@ -11,6 +11,7 @@ import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.folder.service.FolderProvisioningService;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
@@ -24,17 +25,21 @@ public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
     private final FileGateway fileGateway;
     private final FolderGateway folderGateway;
 
+    private final FolderProvisioningService folderProvisioningService;
+
     public DefaultCreateFileSharingUseCase(
             final EventDispatcher eventDispatcher,
             final MemberGateway memberGateway,
             final AclGateway aclGateway,
             final FileGateway fileGateway,
-            final FolderGateway folderGateway) {
+            final FolderGateway folderGateway,
+            final FolderProvisioningService folderProvisioningService) {
         this.eventDispatcher = eventDispatcher;
         this.memberGateway = memberGateway;
         this.aclGateway = aclGateway;
         this.fileGateway = fileGateway;
         this.folderGateway = folderGateway;
+        this.folderProvisioningService = folderProvisioningService;
     }
 
     @Override
@@ -71,15 +76,10 @@ public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
     }
 
     private Folder createSharedInbox(final MemberID memberId) {
-        final Folder inboxFolder = Folder.createInbox(memberId, retrieveMemberRootFolder(memberId));
+        final Folder inboxFolder = Folder.createInbox(memberId,
+                folderProvisioningService.provisionRootFolder(memberId).getId());
         eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder), memberId)));
         return folderGateway.create(inboxFolder);
-    }
-
-    private FolderID retrieveMemberRootFolder(final MemberID memberId) {
-        return folderGateway.findMemberRootFolder(memberId)
-                .orElseGet(() -> folderGateway.create(Folder.createRoot(memberId)))
-                .getId();
     }
 
 }
