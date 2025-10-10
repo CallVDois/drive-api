@@ -12,10 +12,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
-import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.folder.FolderSharing;
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderSharing;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;

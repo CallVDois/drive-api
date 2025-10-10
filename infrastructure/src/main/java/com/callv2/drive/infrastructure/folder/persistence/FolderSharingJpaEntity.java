@@ -3,9 +3,9 @@ package com.callv2.drive.infrastructure.folder.persistence;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.folder.FolderSharing;
-import com.callv2.drive.domain.folder.FolderSharingID;
+import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderSharing;
+import com.callv2.drive.domain.folder.entity.FolderSharingID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;

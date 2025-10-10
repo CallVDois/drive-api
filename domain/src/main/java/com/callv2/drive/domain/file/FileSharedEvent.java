@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventEntity;
-import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.member.Member;
 
 public class FileSharedEvent extends Event<FileSharedEvent.Data> {

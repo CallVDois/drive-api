@@ -11,7 +11,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.callv2.drive.domain.exception.ValidationException;
-import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.member.MemberID;
 
 public class FileTest {

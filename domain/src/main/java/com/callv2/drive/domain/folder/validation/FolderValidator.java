@@ -1,5 +1,6 @@
-package com.callv2.drive.domain.folder;
+package com.callv2.drive.domain.folder.validation;
 
+import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.Validator;
 
@@ -7,7 +8,7 @@ public class FolderValidator extends Validator {
 
     private final Folder folder;
 
-    protected FolderValidator(final Folder folder, final ValidationHandler handler) {
+    public FolderValidator(final Folder folder, final ValidationHandler handler) {
         super(handler);
         this.folder = folder;
     }

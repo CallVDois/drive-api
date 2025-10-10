@@ -2,7 +2,7 @@ package com.callv2.drive.infrastructure.acl.persistence;
 
 import com.callv2.drive.domain.acl.AccessPermission;
 import com.callv2.drive.domain.acl.Resource;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.EmbeddedId;

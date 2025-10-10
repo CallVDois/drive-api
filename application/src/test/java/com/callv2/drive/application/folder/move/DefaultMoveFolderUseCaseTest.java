@@ -22,9 +22,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.callv2.drive.domain.acl.Acl;
 import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.acl.Resource;
-import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
-import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.valueobject.FolderName;
 import com.callv2.drive.domain.member.MemberID;
 
 @ExtendWith(MockitoExtension.class)

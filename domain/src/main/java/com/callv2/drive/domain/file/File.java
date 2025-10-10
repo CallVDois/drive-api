@@ -14,7 +14,7 @@ import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.ValidationException;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;

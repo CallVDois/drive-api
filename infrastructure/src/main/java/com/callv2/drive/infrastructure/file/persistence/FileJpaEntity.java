@@ -9,7 +9,7 @@ import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.file.FileSharing;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;

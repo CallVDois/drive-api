@@ -6,10 +6,10 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
-import com.callv2.drive.domain.folder.Folder;
-import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.folder.FolderName;
-import com.callv2.drive.domain.folder.FolderSharing;
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderSharing;
+import com.callv2.drive.domain.folder.valueobject.FolderName;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;

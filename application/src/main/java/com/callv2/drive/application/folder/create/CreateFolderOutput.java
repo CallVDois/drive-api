@@ -2,7 +2,7 @@ package com.callv2.drive.application.folder.create;
 
 import java.util.UUID;
 
-import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.folder.entity.Folder;
 
 public record CreateFolderOutput(UUID id) {
 

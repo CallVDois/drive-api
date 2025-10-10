@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.folder.entity.Folder;
 
 public record GetRootFolderOutput(
         UUID id,

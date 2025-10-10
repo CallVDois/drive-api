@@ -3,7 +3,7 @@ package com.callv2.drive.domain.file;
 import java.time.Instant;
 
 import com.callv2.drive.domain.Entity;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationHandler;
 

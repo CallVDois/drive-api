@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventHandler;
-import com.callv2.drive.domain.folder.FolderSharedEvent;
+import com.callv2.drive.domain.folder.event.FolderSharedEvent;
 import com.callv2.drive.infrastructure.messaging.producer.Producer;
 
 @Component

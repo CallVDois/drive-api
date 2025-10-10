@@ -24,7 +24,7 @@ import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
-import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.member.MemberID;
 
 @ExtendWith(MockitoExtension.class)

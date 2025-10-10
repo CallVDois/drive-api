@@ -13,7 +13,7 @@ import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.acl.ResourceType;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.file.FileID;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;

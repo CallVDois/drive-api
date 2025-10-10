@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;

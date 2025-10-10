@@ -1,4 +1,4 @@
-package com.callv2.drive.domain.folder;
+package com.callv2.drive.domain.folder.entity;
 
 import java.time.Instant;
 

@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.callv2.drive.domain.folder.Folder;
+import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.member.MemberID;
 
 public record GetFolderOutput(

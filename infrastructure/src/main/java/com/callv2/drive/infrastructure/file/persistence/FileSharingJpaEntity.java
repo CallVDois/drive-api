@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.callv2.drive.domain.file.FileSharing;
 import com.callv2.drive.domain.file.FileSharingID;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Entity;

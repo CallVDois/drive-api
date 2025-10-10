@@ -4,9 +4,9 @@ import java.util.Objects;
 
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.FileGateway;
-import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 public class DefaultGetFolderUseCase extends GetFolderUseCase {

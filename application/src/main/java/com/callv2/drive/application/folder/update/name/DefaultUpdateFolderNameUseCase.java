@@ -4,10 +4,10 @@ import java.util.Set;
 
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.exception.ValidationException;
-import com.callv2.drive.domain.folder.Folder;
 import com.callv2.drive.domain.folder.FolderGateway;
-import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.folder.valueobject.FolderName;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.handler.Notification;

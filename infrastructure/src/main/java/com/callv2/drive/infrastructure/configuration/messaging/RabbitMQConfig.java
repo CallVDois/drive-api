@@ -15,7 +15,7 @@ import com.callv2.drive.domain.acl.AclUpdatedEvent;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.file.FileDeletedEvent;
 import com.callv2.drive.domain.file.FileSharedEvent;
-import com.callv2.drive.domain.folder.FolderSharedEvent;
+import com.callv2.drive.domain.folder.event.FolderSharedEvent;
 import com.callv2.drive.infrastructure.messaging.producer.rabbitmq.RabbitMQProducer;
 
 @Configuration

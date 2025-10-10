@@ -24,7 +24,7 @@ import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.storage.StorageGateway;
 

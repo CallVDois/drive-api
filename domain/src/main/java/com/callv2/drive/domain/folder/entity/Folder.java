@@ -1,4 +1,4 @@
-package com.callv2.drive.domain.folder;
+package com.callv2.drive.domain.folder.entity;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -14,6 +14,9 @@ import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.folder.event.FolderSharedEvent;
+import com.callv2.drive.domain.folder.validation.FolderValidator;
+import com.callv2.drive.domain.folder.valueobject.FolderName;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
