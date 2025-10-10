@@ -271,7 +271,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
     }
 
     public Queue<Event<?>> getEvents() {
-        return events;
+        return new LinkedList<>(events);
     }
 
     public MemberID getCreator() {

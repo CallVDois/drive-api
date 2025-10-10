@@ -20,6 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.NotAllowedException;
@@ -43,6 +46,9 @@ public class DefaultDeleteFileUseCaseTest {
 
     @InjectMocks
     DefaultDeleteFileUseCase useCase;
+
+    @Mock
+    AclGateway aclGateway;
 
     @Mock
     MemberGateway memberGateway;
@@ -96,11 +102,23 @@ public class DefaultDeleteFileUseCaseTest {
                 false,
                 null);
 
+        final Resource<FileID> resource = Resource.file(file);
+        final Acl fileAcl = Acl.create(resource, file.getOwner());
+
+        when(memberGateway.findById(any()))
+                .thenReturn(Optional.of(deleter));
+
         when(memberGateway.findById(expectedDeleterId))
                 .thenReturn(Optional.of(deleter));
 
+        when(fileGateway.findByIdWithMemberAccess(expectedFileId, expectedDeleterId))
+                .thenReturn(Optional.of(file));
+
         when(fileGateway.findByIdWithMemberAccess(expectedFileId, deleter.getId()))
                 .thenReturn(Optional.of(file));
+
+        when(aclGateway.findByResource(resource))
+                .thenReturn(Optional.of(fileAcl));
 
         when(fileGateway.update(any()))
                 .thenAnswer(returnsFirstArg());

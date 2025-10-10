@@ -15,6 +15,7 @@ import com.callv2.drive.domain.acl.AclUpdatedEvent;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.file.FileDeletedEvent;
 import com.callv2.drive.domain.file.FileSharedEvent;
+import com.callv2.drive.domain.folder.FolderSharedEvent;
 import com.callv2.drive.infrastructure.messaging.producer.rabbitmq.RabbitMQProducer;
 
 @Configuration
@@ -39,6 +40,8 @@ public class RabbitMQConfig {
     private static final String FILE_DELETED_DLQ_QUEUE = "drive.file.deleted.queue.dlq";
 
     private static final String FILE_SHARED_ROUTING_KEY = "drive.file.shared.event";
+
+    private static final String FOLDER_SHARED_ROUTING_KEY = "drive.folder.shared.event";
 
     private static final String MEMBER_CREATED_QUEUE_NAME = "drive.member.created.queue";
     private static final String MEMBER_CREATED_ROUTING_KEY = EVENT_HUB_MEMBER_CREATED_ROUTING_KEY;
@@ -68,6 +71,14 @@ public class RabbitMQConfig {
         return new RabbitMQProducer<>(
                 DRIVE_EXCHANGE_NAME,
                 FILE_SHARED_ROUTING_KEY,
+                rabbitTemplate);
+    }
+
+    @Bean
+    RabbitMQProducer<Event<FolderSharedEvent.Data>> folderSharedProducer(final RabbitTemplate rabbitTemplate) {
+        return new RabbitMQProducer<>(
+                DRIVE_EXCHANGE_NAME,
+                FOLDER_SHARED_ROUTING_KEY,
                 rabbitTemplate);
     }
 

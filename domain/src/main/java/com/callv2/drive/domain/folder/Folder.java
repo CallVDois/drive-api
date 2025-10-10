@@ -5,16 +5,23 @@ import static java.util.Objects.nonNull;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 
 import com.callv2.drive.domain.AggregateRoot;
+import com.callv2.drive.domain.event.Event;
+import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
 
-public class Folder extends AggregateRoot<FolderID> {
+public class Folder extends AggregateRoot<FolderID> implements EventSource {
+
+    private Queue<Event<?>> events;
 
     private Boolean rootFolder;
     private Boolean defaultSharedInbox;
@@ -157,13 +164,12 @@ public class Folder extends AggregateRoot<FolderID> {
             throw ValidationException.with("Could not share the folder", notification);
         }
 
-        this.updatedAt = Instant.now();
-
         final FolderSharing sharing = FolderSharing.create(sharedTo, sharedBy, virtualFolder);
 
-        // this.events.add(FolderSharedEvent.create(this, sharing));
-
         this.sharings.add(sharing);
+        this.updatedAt = Instant.now();
+
+        this.events.add(FolderSharedEvent.create(this, sharedBy, sharedTo, virtualFolder, sharing.getCreatedAt()));
 
         return this;
     }
@@ -220,6 +226,15 @@ public class Folder extends AggregateRoot<FolderID> {
 
         if (notification.hasError())
             throw ValidationException.with("Validation fail has occoured", notification);
+    }
+
+    @Override
+    public Optional<Event<?>> nextEvent() {
+        return Optional.ofNullable(this.events.poll());
+    }
+
+    public Queue<Event<?>> getEvents() {
+        return new LinkedList<>(events);
     }
 
     public Boolean isRootFolder() {
