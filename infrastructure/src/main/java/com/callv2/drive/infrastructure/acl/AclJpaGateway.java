@@ -17,6 +17,7 @@ import com.callv2.drive.domain.acl.AclID;
 import com.callv2.drive.domain.acl.Entry;
 import com.callv2.drive.domain.acl.Permission;
 import com.callv2.drive.domain.acl.Resource;
+import com.callv2.drive.domain.acl.ResourceType;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.infrastructure.acl.persistence.AclJpaEntity;
 import com.callv2.drive.infrastructure.acl.persistence.AclJpaRepository;
@@ -76,9 +77,10 @@ public class AclJpaGateway implements AclGateway {
 
     private Acl save(final Acl acl) {
 
-        switch (acl.getResource().type()) {
-            case FOLDER -> saveFolderAccessAcl(acl);
-            case FILE -> saveFileAccessAcl(acl);
+        if (acl.getResource().type() == ResourceType.FOLDER) {
+            saveFolderAccessAcl(acl);
+        } else if (acl.getResource().type() == ResourceType.FILE) {
+            saveFileAccessAcl(acl);
         }
 
         final AclJpaEntity aclJpa = aclJpaRepository.save(AclJpaEntity.fromDomain(acl));
@@ -107,13 +109,13 @@ public class AclJpaGateway implements AclGateway {
         final Set<Entry<?>> directEntries = entryJpaRepository
                 .findAllByAclIdAndType(aclJpa.getId(), EntryJpaEntity.Type.DIRECT)
                 .stream()
-                .map(entryJpa -> entryJpa.toDomain())
+                .map(EntryJpaEntity::toDomain)
                 .collect(Collectors.toSet());
 
         final Set<Entry<?>> inheritedEntries = entryJpaRepository
                 .findAllByAclIdAndType(aclJpa.getId(), EntryJpaEntity.Type.INHERITED)
                 .stream()
-                .map(entryJpa -> entryJpa.toDomain())
+                .map(EntryJpaEntity::toDomain)
                 .collect(Collectors.toSet());
 
         return aclJpa.toDomain(directEntries, inheritedEntries);
