@@ -5,7 +5,6 @@ import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.acl.Resource;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.exception.NotFoundException;
-import com.callv2.drive.domain.exception.ValidationException;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.file.FileID;
@@ -15,7 +14,6 @@ import com.callv2.drive.domain.folder.FolderID;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
-import com.callv2.drive.domain.validation.handler.Notification;
 
 public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
 
@@ -58,14 +56,8 @@ public class DefaultCreateFileSharingUseCase extends CreateFileSharingUseCase {
                 .findByResource(Resource.file(file))
                 .orElseThrow(() -> NotFoundException.with(File.class, file.getId().getStringValue()));
 
-        final Notification notification = Notification.create();
-
         acl.grantAccess(granterId, granteeId, input.accessPermission());
-
         file.share(granterId, granteeId, retrieveSharedInbox(granteeId));
-
-        if (notification.hasError())
-            throw ValidationException.with("Permission validation failed", notification);
 
         this.eventDispatcher.notify(this.fileGateway.update(file));
         this.eventDispatcher.notify(this.aclGateway.update(acl));
