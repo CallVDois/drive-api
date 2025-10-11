@@ -64,23 +64,11 @@ public class DefaultCreateFolderSharingUseCase extends CreateFolderSharingUseCas
         if (notification.hasError())
             throw ValidationException.with("Permission validation failed", notification);
 
-        folder.share(granterId, granteeId, retrieveSharedInbox(granteeId).getId());
+        folder.share(granterId, granteeId, folderProvisioningService.provisionInboxFolder(granteeId).getId());
 
         this.folderGateway.update(folder);// this.eventDispatcher.notify();
         this.eventDispatcher.notify(this.aclGateway.update(acl));
 
-    }
-
-    private Folder retrieveSharedInbox(final MemberID memberId) {
-        return folderGateway.findDefaultMemberSharedInbox(memberId)
-                .orElseGet(() -> folderGateway.create(createSharedInbox(memberId)));
-    }
-
-    private Folder createSharedInbox(final MemberID memberId) {
-        final Folder inboxFolder = Folder.createInbox(memberId,
-                folderProvisioningService.provisionRootFolder(memberId).getId());
-        eventDispatcher.notify(aclGateway.create(Acl.create(Resource.folder(inboxFolder), memberId)));
-        return folderGateway.create(inboxFolder);
     }
 
 }

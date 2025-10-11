@@ -23,6 +23,7 @@ import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
+import com.callv2.drive.domain.folder.service.FolderProvisioningService;
 import com.callv2.drive.domain.member.MemberGateway;
 
 @Configuration
@@ -34,22 +35,29 @@ public class FolderUseCaseConfig {
     private final MemberGateway memberGateway;
     private final EventDispatcher eventDispatcher;
 
+    private final FolderProvisioningService folderProvisioningService;
+
     public FolderUseCaseConfig(
             final AclGateway aclGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
             final MemberGateway memberGateway,
-            final EventDispatcher eventDispatcher) {
+            final EventDispatcher eventDispatcher,
+            final FolderProvisioningService folderProvisioningService) {
         this.aclGateway = aclGateway;
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.memberGateway = memberGateway;
         this.eventDispatcher = eventDispatcher;
+        this.folderProvisioningService = folderProvisioningService;
     }
 
     @Bean
     GetRootFolderUseCase getRootFolderUseCase() {
-        return new DefaultGetRootFolderUseCase(eventDispatcher, aclGateway, memberGateway, folderGateway, fileGateway);
+        return new DefaultGetRootFolderUseCase(
+                folderProvisioningService,
+                folderGateway,
+                fileGateway);
     }
 
     @Bean
@@ -84,7 +92,12 @@ public class FolderUseCaseConfig {
 
     @Bean
     CreateFolderSharingUseCase createFolderSharingUseCase() {
-        return new DefaultCreateFolderSharingUseCase(eventDispatcher, memberGateway, aclGateway, folderGateway);
+        return new DefaultCreateFolderSharingUseCase(
+                eventDispatcher,
+                memberGateway,
+                aclGateway,
+                folderGateway,
+                folderProvisioningService);
     }
 
 }
