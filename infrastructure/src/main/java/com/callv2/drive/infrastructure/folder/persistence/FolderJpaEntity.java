@@ -91,7 +91,7 @@ public class FolderJpaEntity {
         final var entity = new FolderJpaEntity(
                 folder.getId().getValue(),
                 folder.isRootFolder(),
-                folder.getDefaultSharedInbox(),
+                folder.isDefaultSharedInbox(),
                 folder.getName().value(),
                 folder.getCreator().getValue(),
                 folder.getOwner().getValue(),

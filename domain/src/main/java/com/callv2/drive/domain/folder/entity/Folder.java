@@ -14,6 +14,7 @@ import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.folder.event.FolderCreatedEvent;
 import com.callv2.drive.domain.folder.event.FolderSharedEvent;
 import com.callv2.drive.domain.folder.validation.FolderValidator;
 import com.callv2.drive.domain.folder.valueobject.FolderName;
@@ -103,7 +104,7 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
     public static Folder createRoot(final MemberID creator) {
         Instant now = Instant.now();
 
-        return Folder.with(
+        final Folder folder = Folder.with(
                 FolderID.unique(),
                 creator,
                 creator,
@@ -116,6 +117,11 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 Boolean.FALSE,
                 new HashSet<>(),
                 new LinkedList<>());
+
+        folder.events.add(FolderCreatedEvent.create(folder));
+
+        return folder;
+
     }
 
     public static Folder createInbox(
@@ -125,7 +131,7 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
 
         final Instant now = Instant.now();
 
-        return Folder.with(
+        final Folder folder = Folder.with(
                 FolderID.unique(),
                 owner,
                 owner,
@@ -138,6 +144,11 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 Boolean.TRUE,
                 new HashSet<>(),
                 new LinkedList<>());
+
+        folder.events.add(FolderCreatedEvent.create(folder));
+
+        return folder;
+
     }
 
     public static Folder create(
@@ -161,6 +172,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 Boolean.FALSE,
                 new HashSet<>(),
                 new LinkedList<>());
+
+        folder.events.add(FolderCreatedEvent.create(folder));
 
         return folder;
     }
@@ -260,7 +273,7 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
         return rootFolder;
     }
 
-    public Boolean getDefaultSharedInbox() {
+    public Boolean isDefaultSharedInbox() {
         return defaultSharedInbox;
     }
 
