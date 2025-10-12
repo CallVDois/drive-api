@@ -24,7 +24,7 @@ import com.callv2.drive.domain.validation.handler.Notification;
 
 public class Folder extends AggregateRoot<FolderID> implements EventSource {
 
-    private Queue<Event<?>> events;
+    private final Queue<Event<?>> events;
 
     private Boolean rootFolder;
     private Boolean defaultSharedInbox;
@@ -52,7 +52,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
             final Instant deletedAt,
             final Boolean rootFolder,
             final Boolean defaultSharedInbox,
-            final Set<FolderSharing> sharings) {
+            final Set<FolderSharing> sharings,
+            final Queue<Event<?>> events) {
         super(id);
 
         this.owner = owner;
@@ -65,6 +66,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
         this.rootFolder = rootFolder;
         this.defaultSharedInbox = defaultSharedInbox;
         this.sharings = nonNull(sharings) ? new HashSet<>(sharings) : new HashSet<>();
+
+        this.events = nonNull(events) ? new LinkedList<>(events) : new LinkedList<>();
 
         selfValidate();
     }
@@ -80,7 +83,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
             final Instant deletedAt,
             final Boolean rootFolder,
             final Boolean defaultSharedInbox,
-            final Set<FolderSharing> sharings) {
+            final Set<FolderSharing> sharings,
+            final Queue<Event<?>> events) {
         return new Folder(
                 id,
                 creator,
@@ -92,7 +96,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 deletedAt,
                 rootFolder,
                 defaultSharedInbox,
-                sharings);
+                sharings,
+                events);
     }
 
     public static Folder createRoot(final MemberID creator) {
@@ -109,7 +114,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 null,
                 Boolean.TRUE,
                 Boolean.FALSE,
-                new HashSet<>());
+                new HashSet<>(),
+                new LinkedList<>());
     }
 
     public static Folder createInbox(
@@ -130,7 +136,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 null,
                 Boolean.FALSE,
                 Boolean.TRUE,
-                new HashSet<>());
+                new HashSet<>(),
+                new LinkedList<>());
     }
 
     public static Folder create(
@@ -152,7 +159,8 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 null,
                 Boolean.FALSE,
                 Boolean.FALSE,
-                new HashSet<>());
+                new HashSet<>(),
+                new LinkedList<>());
 
         return folder;
     }

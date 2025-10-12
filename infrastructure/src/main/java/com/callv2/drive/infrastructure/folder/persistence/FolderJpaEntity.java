@@ -3,9 +3,11 @@ package com.callv2.drive.infrastructure.folder.persistence;
 import static java.util.Objects.nonNull;
 
 import java.time.Instant;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
+import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.folder.entity.Folder;
 import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.folder.entity.FolderSharing;
@@ -16,6 +18,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity(name = "Folder")
 @Table(name = "folders")
@@ -51,6 +54,9 @@ public class FolderJpaEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
+    @Transient
+    private Queue<Event<?>> events;
+
     private FolderJpaEntity(
             final UUID id,
             final Boolean rootFolder,
@@ -61,7 +67,8 @@ public class FolderJpaEntity {
             final UUID parentFolderId,
             final Instant createdAt,
             final Instant updatedAt,
-            final Instant deletedAt) {
+            final Instant deletedAt,
+            final Queue<Event<?>> events) {
         this.id = id;
         this.rootFolder = rootFolder;
         this.defaultSharedInbox = defaultSharedInbox;
@@ -72,6 +79,7 @@ public class FolderJpaEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.events = events;
     }
 
     public FolderJpaEntity() {
@@ -90,7 +98,8 @@ public class FolderJpaEntity {
                 parentFolderId,
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
-                folder.getDeletedAt());
+                folder.getDeletedAt(),
+                folder.getEvents());
 
         return entity;
     }
@@ -108,7 +117,8 @@ public class FolderJpaEntity {
                 deletedAt,
                 rootFolder,
                 defaultSharedInbox,
-                domainSharings);
+                domainSharings,
+                events);
     }
 
     public UUID getId() {

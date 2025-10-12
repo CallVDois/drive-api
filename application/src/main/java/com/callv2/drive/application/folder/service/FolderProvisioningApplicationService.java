@@ -2,6 +2,7 @@ package com.callv2.drive.application.folder.service;
 
 import java.util.stream.Collectors;
 
+import com.callv2.drive.application.file.gateway.InboxFolderProvisioningGateway;
 import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.folder.FolderGateway;
@@ -10,7 +11,7 @@ import com.callv2.drive.domain.folder.service.FolderCreationService;
 import com.callv2.drive.domain.folder.service.result.FolderCreationResult;
 import com.callv2.drive.domain.member.MemberID;
 
-public class FolderProvisioningApplicationService {
+public class FolderProvisioningApplicationService implements InboxFolderProvisioningGateway {
 
     private final EventDispatcher eventDispatcher;
     private final FolderGateway folderGateway;

@@ -1,4 +1,4 @@
-package com.callv2.drive.infrastructure.configuration.usecase;
+package com.callv2.drive.infrastructure.configuration.application.usecase;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

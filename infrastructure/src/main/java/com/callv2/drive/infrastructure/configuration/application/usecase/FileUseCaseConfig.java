@@ -1,8 +1,9 @@
-package com.callv2.drive.infrastructure.configuration.usecase;
+package com.callv2.drive.infrastructure.configuration.application.usecase;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.callv2.drive.application.file.gateway.InboxFolderProvisioningGateway;
 import com.callv2.drive.application.file.usecase.content.delete.DefaultlDeleteFileContentUseCase;
 import com.callv2.drive.application.file.usecase.content.delete.DeleteFileContentUseCase;
 import com.callv2.drive.application.file.usecase.content.get.DefaultGetFileContentUseCase;
@@ -38,6 +39,7 @@ public class FileUseCaseConfig {
     private final FileGateway fileGateway;
     private final StorageKeyGenerator storageKeyGenerator;
     private final StorageGateway storageGateway;
+    private final InboxFolderProvisioningGateway inboxFolderProvisioningGateway;
     private final EventDispatcher eventDispatcher;
 
     public FileUseCaseConfig(
@@ -47,6 +49,7 @@ public class FileUseCaseConfig {
             final FileGateway fileGateway,
             final StorageKeyGenerator storageKeyGenerator,
             final StorageGateway storageService,
+            final InboxFolderProvisioningGateway inboxFolderProvisioningGateway,
             final EventDispatcher eventDispatcher) {
         this.aclGateway = aclGateway;
         this.memberGateway = memberGateway;
@@ -54,6 +57,7 @@ public class FileUseCaseConfig {
         this.fileGateway = fileGateway;
         this.storageKeyGenerator = storageKeyGenerator;
         this.storageGateway = storageService;
+        this.inboxFolderProvisioningGateway = inboxFolderProvisioningGateway;
         this.eventDispatcher = eventDispatcher;
     }
 
@@ -101,7 +105,8 @@ public class FileUseCaseConfig {
                 memberGateway,
                 aclGateway,
                 fileGateway,
-                folderGateway);
+                folderGateway,
+                inboxFolderProvisioningGateway);
     }
 
     @Bean
