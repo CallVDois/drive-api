@@ -3,6 +3,7 @@ package com.callv2.drive.infrastructure.configuration.usecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.callv2.drive.application.folder.service.FolderProvisioningApplicationService;
 import com.callv2.drive.application.folder.usecase.create.CreateFolderUseCase;
 import com.callv2.drive.application.folder.usecase.create.DefaultCreateFolderUseCase;
 import com.callv2.drive.application.folder.usecase.delete.DefaultDeleteFolderUseCase;
@@ -32,28 +33,32 @@ public class FolderUseCaseConfig {
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
     private final MemberGateway memberGateway;
+
     private final EventDispatcher eventDispatcher;
+
+    private final FolderProvisioningApplicationService folderProvisioningApplicationService;
 
     public FolderUseCaseConfig(
             final AclGateway aclGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
             final MemberGateway memberGateway,
-            final EventDispatcher eventDispatcher) {
+            final EventDispatcher eventDispatcher,
+            final FolderProvisioningApplicationService folderProvisioningApplicationService) {
         this.aclGateway = aclGateway;
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.memberGateway = memberGateway;
         this.eventDispatcher = eventDispatcher;
+        this.folderProvisioningApplicationService = folderProvisioningApplicationService;
     }
 
     @Bean
     GetRootFolderUseCase getRootFolderUseCase() {
         return new DefaultGetRootFolderUseCase(
-                eventDispatcher,
-                aclGateway,
                 folderGateway,
-                fileGateway);
+                fileGateway,
+                folderProvisioningApplicationService);
     }
 
     @Bean
@@ -92,7 +97,8 @@ public class FolderUseCaseConfig {
                 eventDispatcher,
                 memberGateway,
                 aclGateway,
-                folderGateway);
+                folderGateway,
+                folderProvisioningApplicationService);
     }
 
 }

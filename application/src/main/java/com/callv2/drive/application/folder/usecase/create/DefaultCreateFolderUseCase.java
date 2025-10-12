@@ -91,7 +91,7 @@ public class DefaultCreateFolderUseCase extends CreateFolderUseCase {
                 .orElseThrow(() -> NotAllowedException.with("You don't have any permissions in this folder"));
 
         if (!folderAclPermission.canWrite())
-            throw NotAllowedException.with("You don't have permission to create files in this folder");
+            throw NotAllowedException.with("You don't have write permission in this folder");
 
     }
 
