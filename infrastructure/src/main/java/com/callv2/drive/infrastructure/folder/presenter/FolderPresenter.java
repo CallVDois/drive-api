@@ -6,8 +6,10 @@ import com.callv2.drive.application.folder.usecase.create.CreateFolderOutput;
 import com.callv2.drive.application.folder.usecase.retrieve.get.GetFolderOutput;
 import com.callv2.drive.application.folder.usecase.retrieve.get.root.GetRootFolderOutput;
 import com.callv2.drive.application.folder.usecase.retrieve.list.FolderListOutput;
+import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.FolderSharingListOutput;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
+import com.callv2.drive.infrastructure.folder.model.FolderSharingListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
 
 public interface FolderPresenter {
@@ -94,6 +96,15 @@ public interface FolderPresenter {
                 output.id(),
                 output.name(),
                 output.parentFolder());
+    }
+
+    static FolderSharingListResponse present(final FolderSharingListOutput output) {
+        return new FolderSharingListResponse(
+                output.id(),
+                output.sharedTo(),
+                output.sharedBy(),
+                output.accessPermission(),
+                output.createdAt());
     }
 
 }

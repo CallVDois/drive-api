@@ -21,6 +21,7 @@ import com.callv2.drive.infrastructure.folder.filter.FolderField;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
+import com.callv2.drive.infrastructure.folder.model.FolderSharingListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.ShareFolderRequest;
@@ -92,5 +93,9 @@ public interface FolderAPI {
     @Operation(summary = "Share Folder", description = "This method shares a folder", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("{id}/sharings")
     ResponseEntity<Void> shareFolder(@PathVariable("id") UUID id, @RequestBody ShareFolderRequest request);
+
+    @Operation(summary = "List Sharings of Folder", description = "This method lists all sharings of a folder", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping("{id}/sharings")
+    ResponseEntity<List<FolderSharingListResponse>> listSharings(@PathVariable("id") UUID id);
 
 }

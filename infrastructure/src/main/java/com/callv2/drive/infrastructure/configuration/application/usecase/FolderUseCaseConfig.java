@@ -18,6 +18,8 @@ import com.callv2.drive.application.folder.usecase.retrieve.list.DefaultListFold
 import com.callv2.drive.application.folder.usecase.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.application.folder.usecase.sharing.create.CreateFolderSharingUseCase;
 import com.callv2.drive.application.folder.usecase.sharing.create.DefaultCreateFolderSharingUseCase;
+import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.DefaultListFolderSharingUseCase;
+import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.ListFolderSharingUseCase;
 import com.callv2.drive.application.folder.usecase.update.name.DefaultUpdateFolderNameUseCase;
 import com.callv2.drive.application.folder.usecase.update.name.UpdateFolderNameUseCase;
 import com.callv2.drive.domain.acl.AclGateway;
@@ -99,6 +101,11 @@ public class FolderUseCaseConfig {
                 aclGateway,
                 folderGateway,
                 folderProvisioningApplicationService);
+    }
+
+    @Bean
+    ListFolderSharingUseCase listFolderSharingUseCase() {
+        return new DefaultListFolderSharingUseCase(folderGateway, aclGateway);
     }
 
 }
