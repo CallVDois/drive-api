@@ -20,6 +20,8 @@ import com.callv2.drive.application.folder.usecase.retrieve.list.FolderListInput
 import com.callv2.drive.application.folder.usecase.retrieve.list.ListFoldersUseCase;
 import com.callv2.drive.application.folder.usecase.sharing.create.CreateFolderSharingInput;
 import com.callv2.drive.application.folder.usecase.sharing.create.CreateFolderSharingUseCase;
+import com.callv2.drive.application.folder.usecase.sharing.remove.RemoveFolderSharingInput;
+import com.callv2.drive.application.folder.usecase.sharing.remove.RemoveFolderSharingUseCase;
 import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.ListFolderSharingInput;
 import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.ListFolderSharingUseCase;
 import com.callv2.drive.application.folder.usecase.update.name.UpdateFolderNameInput;
@@ -54,6 +56,7 @@ public class FolderController implements FolderAPI {
     private final DeleteFolderUseCase deleteFolderUseCase;
     private final CreateFolderSharingUseCase createFolderSharingUseCase;
     private final ListFolderSharingUseCase listFolderSharingUseCase;
+    private final RemoveFolderSharingUseCase removeFolderSharingUseCase;
 
     public FolderController(
             final GetRootFolderUseCase getRootFolderUseCase,
@@ -64,7 +67,8 @@ public class FolderController implements FolderAPI {
             final UpdateFolderNameUseCase updateFolderNameUseCase,
             final DeleteFolderUseCase deleteFolderUseCase,
             final CreateFolderSharingUseCase createFolderSharingUseCase,
-            final ListFolderSharingUseCase listFolderSharingUseCase) {
+            final ListFolderSharingUseCase listFolderSharingUseCase,
+            final RemoveFolderSharingUseCase removeFolderSharingUseCase) {
         this.getRootFolderUseCase = getRootFolderUseCase;
         this.createFolderUseCase = createFolderUseCase;
         this.getFolderUseCase = getFolderUseCase;
@@ -74,6 +78,7 @@ public class FolderController implements FolderAPI {
         this.deleteFolderUseCase = deleteFolderUseCase;
         this.createFolderSharingUseCase = createFolderSharingUseCase;
         this.listFolderSharingUseCase = listFolderSharingUseCase;
+        this.removeFolderSharingUseCase = removeFolderSharingUseCase;
     }
 
     @Override
@@ -185,6 +190,17 @@ public class FolderController implements FolderAPI {
                 .toList();
 
         return ResponseEntity.ok(response);
+
+    }
+
+    @Override
+    public ResponseEntity<Void> unshareFolder(final UUID id, final UUID sharingId) {
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        this.removeFolderSharingUseCase.execute(RemoveFolderSharingInput.of(id, sharingId, actorId));
+
+        return ResponseEntity.noContent().build();
 
     }
 

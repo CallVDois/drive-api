@@ -87,15 +87,37 @@ public interface FolderAPI {
     ResponseEntity<Void> changeName(@PathVariable("id") UUID id, @RequestBody String request);
 
     @Operation(summary = "Delete folder", description = "This method delete a folder by id", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "Folder deleted successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @DeleteMapping("{id}")
     ResponseEntity<Void> delete(@PathVariable("id") UUID id);
 
     @Operation(summary = "Share Folder", description = "This method shares a folder", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "Folder shared successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @PostMapping("{id}/sharings")
     ResponseEntity<Void> shareFolder(@PathVariable("id") UUID id, @RequestBody ShareFolderRequest request);
 
     @Operation(summary = "List Sharings of Folder", description = "This method lists all sharings of a folder", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "Folder sharing listed successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @GetMapping("{id}/sharings")
     ResponseEntity<List<FolderSharingListResponse>> listSharings(@PathVariable("id") UUID id);
+
+    @Operation(summary = "Unshare Folder", description = "This method unshares a folder", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "Folder unshared successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "Folder not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @DeleteMapping("{id}/sharings/{sharingId}")
+    ResponseEntity<Void> unshareFolder(
+            @PathVariable("id") UUID id,
+            @PathVariable("sharingId") UUID sharingId);
 
 }
