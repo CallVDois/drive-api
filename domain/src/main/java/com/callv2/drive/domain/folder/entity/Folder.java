@@ -112,14 +112,18 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 new HashSet<>());
     }
 
-    public static Folder createInbox(final MemberID owner, final FolderID parentFolder) {
+    public static Folder createInbox(
+            final MemberID owner,
+            final FolderID parentFolder,
+            final FolderName name) {
+
         final Instant now = Instant.now();
 
         return Folder.with(
                 FolderID.unique(),
                 owner,
                 owner,
-                FolderName.of("Shared"),
+                name,
                 parentFolder,
                 now,
                 now,

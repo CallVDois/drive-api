@@ -23,7 +23,6 @@ import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
-import com.callv2.drive.domain.folder.service.FolderProvisioningService;
 import com.callv2.drive.domain.member.MemberGateway;
 
 @Configuration
@@ -35,27 +34,24 @@ public class FolderUseCaseConfig {
     private final MemberGateway memberGateway;
     private final EventDispatcher eventDispatcher;
 
-    private final FolderProvisioningService folderProvisioningService;
-
     public FolderUseCaseConfig(
             final AclGateway aclGateway,
             final FolderGateway folderGateway,
             final FileGateway fileGateway,
             final MemberGateway memberGateway,
-            final EventDispatcher eventDispatcher,
-            final FolderProvisioningService folderProvisioningService) {
+            final EventDispatcher eventDispatcher) {
         this.aclGateway = aclGateway;
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.memberGateway = memberGateway;
         this.eventDispatcher = eventDispatcher;
-        this.folderProvisioningService = folderProvisioningService;
     }
 
     @Bean
     GetRootFolderUseCase getRootFolderUseCase() {
         return new DefaultGetRootFolderUseCase(
-                folderProvisioningService,
+                eventDispatcher,
+                aclGateway,
                 folderGateway,
                 fileGateway);
     }
@@ -96,8 +92,7 @@ public class FolderUseCaseConfig {
                 eventDispatcher,
                 memberGateway,
                 aclGateway,
-                folderGateway,
-                folderProvisioningService);
+                folderGateway);
     }
 
 }

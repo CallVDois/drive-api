@@ -25,7 +25,6 @@ import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
-import com.callv2.drive.domain.folder.service.FolderProvisioningService;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.storage.StorageGateway;
 import com.callv2.drive.domain.storage.StorageKeyGenerator;
@@ -41,8 +40,6 @@ public class FileUseCaseConfig {
     private final StorageGateway storageGateway;
     private final EventDispatcher eventDispatcher;
 
-    private final FolderProvisioningService folderProvisioningService;
-
     public FileUseCaseConfig(
             final AclGateway aclGateway,
             final MemberGateway memberGateway,
@@ -50,8 +47,7 @@ public class FileUseCaseConfig {
             final FileGateway fileGateway,
             final StorageKeyGenerator storageKeyGenerator,
             final StorageGateway storageService,
-            final EventDispatcher eventDispatcher,
-            final FolderProvisioningService folderProvisioningService) {
+            final EventDispatcher eventDispatcher) {
         this.aclGateway = aclGateway;
         this.memberGateway = memberGateway;
         this.folderGateway = folderGateway;
@@ -59,7 +55,6 @@ public class FileUseCaseConfig {
         this.storageKeyGenerator = storageKeyGenerator;
         this.storageGateway = storageService;
         this.eventDispatcher = eventDispatcher;
-        this.folderProvisioningService = folderProvisioningService;
     }
 
     @Bean
@@ -106,8 +101,7 @@ public class FileUseCaseConfig {
                 memberGateway,
                 aclGateway,
                 fileGateway,
-                folderGateway,
-                folderProvisioningService);
+                folderGateway);
     }
 
     @Bean

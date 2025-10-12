@@ -31,6 +31,7 @@ import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
 import com.callv2.drive.domain.folder.FolderGateway;
 import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.valueobject.FolderName;
 import com.callv2.drive.domain.member.Member;
 import com.callv2.drive.domain.member.MemberGateway;
 import com.callv2.drive.domain.member.MemberID;
@@ -91,7 +92,10 @@ public class DefaultCreateFileSharingUseCaseTest {
                 1L);
 
         final var expectedRootFolder = Folder.createRoot(expectedGranteeId);
-        final var expectedInboxFolder = Folder.createInbox(expectedGranteeId, expectedRootFolder.getId());
+        final var expectedInboxFolder = Folder.createInbox(
+                expectedGranteeId,
+                expectedRootFolder.getId(),
+                FolderName.of("Shared"));
         final var expectedOriginalFileFolder = expectedRootFolder;
 
         final var expectedFile = File.create(
