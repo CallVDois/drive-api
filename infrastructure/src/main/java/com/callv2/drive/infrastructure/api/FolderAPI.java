@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("folders")
 public interface FolderAPI {
 
-    @Operation(summary = "Retrive a folder", description = "This method retrive a root folder", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Retrive a root folder", description = "This method retrive a root folder", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Root folder retrieved successfully", content = @Content(schema = @Schema(implementation = GetFolderResponse.class)))
     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @GetMapping("root")
