@@ -1,9 +1,9 @@
 package com.callv2.drive.infrastructure.file.presenter;
 
-import com.callv2.drive.application.file.create.CreateFileOutput;
-import com.callv2.drive.application.file.retrieve.get.GetFileOutput;
-import com.callv2.drive.application.file.retrieve.list.FileListOutput;
-import com.callv2.drive.application.file.sharing.retrieve.list.FileSharingListOutput;
+import com.callv2.drive.application.file.usecase.create.CreateFileOutput;
+import com.callv2.drive.application.file.usecase.retrieve.get.GetFileOutput;
+import com.callv2.drive.application.file.usecase.retrieve.list.FileListOutput;
+import com.callv2.drive.application.file.usecase.sharing.retrieve.list.FileSharingListOutput;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
 import com.callv2.drive.infrastructure.file.model.FileSharingListResponse;

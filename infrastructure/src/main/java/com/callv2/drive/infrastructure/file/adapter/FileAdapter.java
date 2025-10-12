@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.callv2.drive.application.file.content.delete.DeleteFileContentInput;
-import com.callv2.drive.application.file.create.CreateFileInput;
-import com.callv2.drive.application.file.sharing.create.CreateFileSharingInput;
+import com.callv2.drive.application.file.usecase.content.delete.DeleteFileContentInput;
+import com.callv2.drive.application.file.usecase.create.CreateFileInput;
+import com.callv2.drive.application.file.usecase.sharing.create.CreateFileSharingInput;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.infrastructure.file.model.DeleteFileContentMessage;
 import com.callv2.drive.infrastructure.file.model.ShareFileRequest;

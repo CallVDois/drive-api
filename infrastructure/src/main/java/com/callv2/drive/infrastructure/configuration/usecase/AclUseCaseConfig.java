@@ -3,8 +3,8 @@ package com.callv2.drive.infrastructure.configuration.usecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.callv2.drive.application.acl.DefaultRecalculateAclInheritanceUseCase;
-import com.callv2.drive.application.acl.RecalculateAclInheritanceUseCase;
+import com.callv2.drive.application.acl.usecase.inheritance.recalculate.DefaultRecalculateAclInheritanceUseCase;
+import com.callv2.drive.application.acl.usecase.inheritance.recalculate.RecalculateAclInheritanceUseCase;
 import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.file.FileGateway;
