@@ -82,16 +82,28 @@ public interface FileAPI {
             @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
     @Operation(summary = "Share File", description = "This method shares a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "File shared successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @PostMapping("{id}/sharings")
     ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody ShareFileRequest request);
 
     @Operation(summary = "Unshare File", description = "This method unshares a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "File unshared successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @DeleteMapping("{id}/sharings/{sharingId}")
     ResponseEntity<Void> unshareFile(
             @PathVariable("id") UUID id,
             @PathVariable("sharingId") UUID sharingId);
 
     @Operation(summary = "List Sharings of File", description = "This method lists all sharings of a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "File sharing listed successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
     @GetMapping("{id}/sharings")
     ResponseEntity<List<FileSharingListResponse>> listSharings(@PathVariable("id") UUID id);
 
