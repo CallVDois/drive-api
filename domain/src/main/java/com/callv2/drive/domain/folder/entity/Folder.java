@@ -14,8 +14,12 @@ import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.file.FileSharing;
+import com.callv2.drive.domain.file.FileSharingID;
+import com.callv2.drive.domain.file.FileUnsharedEvent;
 import com.callv2.drive.domain.folder.event.FolderCreatedEvent;
 import com.callv2.drive.domain.folder.event.FolderSharedEvent;
+import com.callv2.drive.domain.folder.event.FolderUnsharedEvent;
 import com.callv2.drive.domain.folder.validation.FolderValidator;
 import com.callv2.drive.domain.folder.valueobject.FolderName;
 import com.callv2.drive.domain.member.MemberID;
@@ -202,6 +206,28 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
         return this;
     }
 
+    public Folder unshare(final MemberID revokedBy, final FolderSharingID sharingId) {
+
+        final Notification notification = Notification.create();
+
+        if (isNull(revokedBy))
+            notification.append(ValidationError.with("revokedBy' are required"));
+
+        if (isNull(sharingId))
+            notification.append(ValidationError.with("revokedFrom' are required"));
+
+        this.sharings
+                .stream()
+                .filter(s -> s.getId().equals(sharingId))
+                .findFirst()
+                .ifPresent(sharing -> {
+                    sharings.remove(sharing);
+                    this.events.add(FolderUnsharedEvent.create(this, revokedBy, sharing.getSharedTo(), Instant.now()));
+                });
+
+        return this;
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new FolderValidator(this, handler).validate();
@@ -246,6 +272,13 @@ public class Folder extends AggregateRoot<FolderID> implements EventSource {
                 .findFirst()
                 .map(FolderSharing::getVirtualFolder)
                 .orElse(this.parentFolder);
+    }
+
+    public Optional<FolderSharing> getSharing(final FolderSharingID sharingId) {
+        return this.sharings
+                .stream()
+                .filter(sharing -> sharing.getId().equals(sharingId))
+                .findFirst();
     }
 
     private void selfValidate() {
