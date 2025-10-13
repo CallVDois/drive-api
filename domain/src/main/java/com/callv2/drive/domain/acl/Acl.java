@@ -176,6 +176,9 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
 
         this.revokeDirectEntries(revokedMember);
 
+        this.updatedAt = Instant.now();
+        this.events.add(AclUpdatedEvent.create(this));
+
         return this;
 
     }
