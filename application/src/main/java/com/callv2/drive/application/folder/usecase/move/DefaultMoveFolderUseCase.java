@@ -1,6 +1,7 @@
 package com.callv2.drive.application.folder.usecase.move;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import com.callv2.drive.domain.acl.AccessPermission;
@@ -49,6 +50,10 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
 
         final Notification notification = Notification.create();
         validateMove(folder, newParentFolder, actorId, notification);
+
+        if (!folder.getOwner().equals(actorId))
+            validateSharedFolderMove(folder, newParentFolder, actorId, notification);
+
         if (notification.hasError())
             throw ValidationException.with("Invalid move operation", notification);
 
@@ -65,11 +70,49 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
                 .orElseThrow(() -> NotFoundException.with(Folder.class, id.getValue().toString()));
     }
 
+    private void validateSharedFolderMove(
+            final Folder folder,
+            final Folder newParentFolder,
+            final MemberID actorId,
+            final Notification notification) {
+
+        Folder parentFolderA = folder;
+        Folder parentFolderB = newParentFolder;
+
+        do {
+
+            Optional<Folder> parentFolderAOpt = folderGateway
+                    .findByIdWithMemberAccess(parentFolderA.getParentFolder(), actorId);
+
+            Optional<Folder> parentFolderBOpt = folderGateway
+                    .findByIdWithMemberAccess(parentFolderB.getParentFolder(), actorId);
+
+            if (parentFolderAOpt.isEmpty() && parentFolderBOpt.isEmpty()) {
+                notification.append(
+                        ValidationError.with(
+                                "Cannot complete the move — one of the folders is outside your accessible hierarchy."));
+
+                break;
+            }
+
+            parentFolderA = parentFolderAOpt.orElse(parentFolderA);
+            parentFolderB = parentFolderBOpt.orElse(parentFolderB);
+
+        } while (!parentFolderA.equals(parentFolderB));
+
+    }
+
     private void validateMove(
             final Folder folder,
             final Folder newParentFolder,
             final MemberID actorId,
             final Notification notification) {
+
+        if (!folder.getOwner().equals(newParentFolder.getOwner())) {
+            notification
+                    .append(ValidationError.with("You cannot move a folder to a drive that belongs to another owner."));
+            return;
+        }
 
         final Set<Folder> newParentFolderSubFolders = this.folderGateway
                 .findByParentFolderIdWithMemberAccess(newParentFolder.getId(), actorId);
@@ -95,7 +138,7 @@ public class DefaultMoveFolderUseCase extends MoveFolderUseCase {
                 break;
             }
 
-            actualParent = findFolder(actualParent.getParentFolder(), actorId);
+            actualParent = findFolder(actualParent.getVirtualParentFolder(actorId), actorId);
         }
 
     }
