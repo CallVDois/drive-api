@@ -1,13 +1,15 @@
 package com.callv2.drive.infrastructure.file.persistence;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 import com.callv2.drive.domain.file.Content;
 import com.callv2.drive.domain.file.File;
 import com.callv2.drive.domain.file.FileID;
 import com.callv2.drive.domain.file.FileName;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.file.FileSharing;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;
@@ -95,7 +97,8 @@ public class FileJpaEntity {
     public FileJpaEntity() {
     }
 
-    public static FileJpaEntity from(final File file) {
+    public static FileJpaEntity fromDomain(final File file) {
+
         return new FileJpaEntity(
                 file.getId().getValue(),
                 file.getCreator().getValue(),
@@ -113,7 +116,8 @@ public class FileJpaEntity {
                 file.getIsDeleted());
     }
 
-    public File toDomain() {
+    public File toDomain(final Set<FileSharing> domainSharings) {
+
         return File.with(
                 FileID.of(getId()),
                 MemberID.of(getCreatorId()),
@@ -126,7 +130,8 @@ public class FileJpaEntity {
                 getCreatedAt(),
                 getUpdatedAt(),
                 getDeletedAt(),
-                getIsDeleted());
+                getIsDeleted(),
+                domainSharings);
     }
 
     public UUID getId() {

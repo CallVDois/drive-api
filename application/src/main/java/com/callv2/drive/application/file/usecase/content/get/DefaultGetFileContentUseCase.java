@@ -1,0 +1,41 @@
+package com.callv2.drive.application.file.usecase.content.get;
+
+import java.util.Objects;
+
+import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.file.File;
+import com.callv2.drive.domain.file.FileGateway;
+import com.callv2.drive.domain.file.FileID;
+import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.storage.StorageGateway;
+
+public class DefaultGetFileContentUseCase extends GetFileContentUseCase {
+
+    private final FileGateway fileGateway;
+    private final StorageGateway storageService;
+
+    public DefaultGetFileContentUseCase(
+            final FileGateway fileGateway,
+            final StorageGateway storageService) {
+        this.fileGateway = Objects.requireNonNull(fileGateway);
+        this.storageService = Objects.requireNonNull(storageService);
+    }
+
+    @Override
+    public GetFileContentOutput execute(GetFileContentInput input) {
+
+        final FileID fileId = FileID.of(input.fileId());
+        final MemberID actorId = MemberID.of(input.actorId());
+
+        final File file = fileGateway
+                .findByIdWithMemberAccess(fileId, actorId)
+                .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
+
+        return GetFileContentOutput.with(
+                file.getName().value(),
+                file.getContent().size(),
+                storageService.retrieve(file.getContent().storageKey()));
+
+    }
+
+}

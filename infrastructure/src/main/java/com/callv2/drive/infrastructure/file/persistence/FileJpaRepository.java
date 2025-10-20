@@ -8,9 +8,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 public interface FileJpaRepository extends
-        JpaRepository<FileJpaEntity, UUID>, JpaSpecificationExecutor<FileJpaEntity> {
+        JpaRepository<FileJpaEntity, UUID>,
+        JpaSpecificationExecutor<FileJpaEntity> {
 
-    List<FileJpaEntity> findByFolderIdAndIsDeletedFalse(UUID folderId);
+    List<FileJpaEntity> findByFolderId(UUID folderId);
 
     List<FileJpaEntity> findByOwnerId(UUID ownerId);
 
