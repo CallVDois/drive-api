@@ -1,6 +1,7 @@
 package com.callv2.drive.infrastructure.api;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
+import com.callv2.drive.infrastructure.member.filter.MemberField;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaListResponse;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
@@ -33,14 +35,14 @@ public interface MemberAdminAPI {
     @ApiResponse(responseCode = "200", description = "Retrieve successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @GetMapping("{id}/quotas")
-    ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable(value = "id", required = true) String id);
+    ResponseEntity<MemberQuotaResponse> getQuota(@PathVariable("id") UUID id);
 
     @Operation(summary = "Approve drive quota request", description = "This method approve a drive amount quota request", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "204", description = "Approved successfuly")
     @ApiResponse(responseCode = "404", description = "Member not found", content = @Content(schema = @Schema(implementation = Void.class)))
     @PatchMapping("{id}/quotas/requests")
     ResponseEntity<Void> approveQuotaRequest(
-            @PathVariable(value = "id", required = true) String id,
+            @PathVariable("id") UUID id,
             @RequestParam(value = "approved", defaultValue = "true") boolean approved);
 
     @Operation(summary = "List quotas requests", description = "This method list quotas requests", security = @SecurityRequirement(name = "bearerAuth"))
@@ -51,7 +53,7 @@ public interface MemberAdminAPI {
     ResponseEntity<Page<QuotaRequestListResponse>> listQuotaRequests(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
-            @RequestParam(name = "orderField", required = false, defaultValue = "quotaRequestedAt") String orderField,
+            @RequestParam(name = "orderField", required = false, defaultValue = "QUOTA_REQUESTED_AT") MemberField orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection);
 
     @Operation(summary = "List members quotas", description = "This method list members quotas", security = @SecurityRequirement(name = "bearerAuth"))
@@ -62,10 +64,10 @@ public interface MemberAdminAPI {
     ResponseEntity<Page<MemberQuotaListResponse>> listQuotas(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
-            @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
+            @RequestParam(name = "orderField", required = false, defaultValue = "CREATED_AT") MemberField orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
-            @RequestParam(name = "filters", required = false) List<String> filters);
+            @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
 
     @Operation(summary = "Get quota summary", description = "Returns an aggregated summary of quotas, including total allocated quota, used quota, available quota, and total members.", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Quota summary retrieved successfully", content = @Content(schema = @Schema(implementation = QuotaSummaryResponse.class)))

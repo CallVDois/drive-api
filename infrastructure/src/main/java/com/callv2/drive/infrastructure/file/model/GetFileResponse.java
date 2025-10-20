@@ -5,12 +5,16 @@ import java.util.UUID;
 
 public record GetFileResponse(
         UUID id,
-        String ownerId,
+        UUID ownerId,
         UUID folderId,
         String name,
         String contentType,
         Long contentSize,
+        UUID createdBy,
         Instant createdAt,
-        Instant updatedAt) {
+        UUID updatedBy,
+        Instant updatedAt,
+        UUID deletedBy,
+        Instant deletedAt) {
 
 }

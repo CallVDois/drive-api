@@ -37,7 +37,7 @@ public class DefaultMemberGateway implements MemberGateway {
     @Override
     public Member create(final Member member) {
         if (this.memberJpaRepository.existsById(member.getId().getValue()))
-            throw AlreadyExistsException.with(Member.class, member.getId().getValue());
+            throw AlreadyExistsException.with(Member.class, member.getId().getStringValue());
 
         return this.memberJpaRepository.save(MemberJpaEntity.fromDomain(member)).toDomain();
     }
@@ -52,7 +52,7 @@ public class DefaultMemberGateway implements MemberGateway {
 
         final PageRequest pageRequest = QueryAdapter.of(searchQuery.pagination());
 
-        final Specification<MemberJpaEntity> specification = filterService.buildSpecification(
+        final Specification<MemberJpaEntity> specification = filterService.build(
                 MemberJpaEntity.class,
                 searchQuery.filterMethod(),
                 searchQuery.filters());
@@ -81,25 +81,28 @@ public class DefaultMemberGateway implements MemberGateway {
     public Member update(final Member member) {
 
         if (!this.memberJpaRepository.existsById(member.getId().getValue()))
-            throw NotFoundException.with(Member.class, member.getId().getValue());
+            throw NotFoundException.with(Member.class, member.getId().getStringValue());
 
         final MemberJpaEntity memberJpa = MemberJpaEntity.fromDomain(member);
         final Integer rowsUpdated = memberJpaRepository.update(
                 memberJpa.getId(),
                 memberJpa.getUsername(),
                 memberJpa.getNickname(),
+                memberJpa.getQuotaInBytes(),
                 memberJpa.getQuotaAmount(),
                 memberJpa.getQuotaUnit(),
+                memberJpa.getQuotaRequestInBytes(),
                 memberJpa.getQuotaRequestAmount(),
                 memberJpa.getQuotaRequestUnit(),
                 memberJpa.getQuotaRequestedAt(),
+                memberJpa.getHasSystemAccess(),
                 memberJpa.getCreatedAt(),
                 memberJpa.getUpdatedAt(),
                 memberJpa.getSynchronizedVersion());
 
         if (rowsUpdated != 1)
             throw new OptimisticLockingFailureException(
-                    "Member update failed due to version conflict for id: " + member.getId().getValue());
+                    "Member update failed due to SynchronizedVersion conflict for id: " + member.getId().getValue());
 
         return member;
     }

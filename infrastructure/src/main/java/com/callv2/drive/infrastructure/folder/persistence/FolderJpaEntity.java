@@ -1,17 +1,24 @@
 package com.callv2.drive.infrastructure.folder.persistence;
 
+import static java.util.Objects.nonNull;
+
 import java.time.Instant;
+import java.util.Queue;
+import java.util.Set;
 import java.util.UUID;
 
-import com.callv2.drive.domain.folder.Folder;
-import com.callv2.drive.domain.folder.FolderID;
-import com.callv2.drive.domain.folder.FolderName;
+import com.callv2.drive.domain.event.Event;
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderSharing;
+import com.callv2.drive.domain.folder.valueobject.FolderName;
 import com.callv2.drive.domain.member.MemberID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity(name = "Folder")
 @Table(name = "folders")
@@ -23,11 +30,17 @@ public class FolderJpaEntity {
     @Column(name = "is_root_folder", nullable = false)
     private Boolean rootFolder;
 
+    @Column(name = "is_default_shared_inbox", nullable = false)
+    private Boolean defaultSharedInbox;
+
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "creator_id", nullable = false)
+    private UUID creatorId;
+
     @Column(name = "owner_id", nullable = false)
-    private String ownerId;
+    private UUID ownerId;
 
     @Column(name = "parent_folder_id")
     private UUID parentFolderId;
@@ -41,55 +54,71 @@ public class FolderJpaEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
+    @Transient
+    private Queue<Event<?>> events;
+
     private FolderJpaEntity(
             final UUID id,
             final Boolean rootFolder,
+            final Boolean defaultSharedInbox,
             final String name,
-            final String ownerId,
+            final UUID creatorId,
+            final UUID ownerId,
             final UUID parentFolderId,
             final Instant createdAt,
             final Instant updatedAt,
-            final Instant deletedAt) {
+            final Instant deletedAt,
+            final Queue<Event<?>> events) {
         this.id = id;
         this.rootFolder = rootFolder;
+        this.defaultSharedInbox = defaultSharedInbox;
         this.name = name;
+        this.creatorId = creatorId;
         this.ownerId = ownerId;
         this.parentFolderId = parentFolderId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
-
+        this.events = events;
     }
 
     public FolderJpaEntity() {
     }
 
     public static FolderJpaEntity fromDomain(final Folder folder) {
-        final UUID parentFolderId = folder.getParentFolder() == null ? null : folder.getParentFolder().getValue();
+        final UUID parentFolderId = nonNull(folder.getParentFolder()) ? folder.getParentFolder().getValue() : null;
 
         final var entity = new FolderJpaEntity(
                 folder.getId().getValue(),
                 folder.isRootFolder(),
+                folder.isDefaultSharedInbox(),
                 folder.getName().value(),
+                folder.getCreator().getValue(),
                 folder.getOwner().getValue(),
                 parentFolderId,
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
-                folder.getDeletedAt());
+                folder.getDeletedAt(),
+                folder.getEvents());
 
         return entity;
     }
 
-    public Folder toDomain() {
+    public Folder toDomain(final Set<FolderSharing> domainSharings) {
+
         return Folder.with(
                 FolderID.of(id),
+                MemberID.of(creatorId),
                 MemberID.of(ownerId),
                 FolderName.of(name),
                 FolderID.of(parentFolderId),
                 createdAt,
                 updatedAt,
                 deletedAt,
-                rootFolder);
+                rootFolder,
+                defaultSharedInbox,
+                domainSharings,
+                events);
     }
 
     public UUID getId() {
@@ -108,6 +137,14 @@ public class FolderJpaEntity {
         this.rootFolder = rootFolder;
     }
 
+    public Boolean getDefaultSharedInbox() {
+        return defaultSharedInbox;
+    }
+
+    public void setDefaultSharedInbox(Boolean defaultSharedInbox) {
+        this.defaultSharedInbox = defaultSharedInbox;
+    }
+
     public String getName() {
         return name;
     }
@@ -116,11 +153,19 @@ public class FolderJpaEntity {
         this.name = name;
     }
 
-    public String getOwnerId() {
+    public UUID getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(UUID creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public UUID getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(String ownerId) {
+    public void setOwnerId(UUID ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -155,4 +200,5 @@ public class FolderJpaEntity {
     public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
     }
+
 }

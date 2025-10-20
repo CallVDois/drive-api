@@ -9,9 +9,9 @@ public record Pagination(
         return new Pagination(page, perPage, order);
     }
 
-    public record Order(String field, Direction direction) {
+    public record Order(Filter.Field field, Direction direction) {
 
-        public static Order of(final String field, final Direction direction) {
+        public static Order of(final Filter.Field field, final Direction direction) {
             return new Order(field, direction);
         }
 

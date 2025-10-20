@@ -11,7 +11,7 @@ public record GetFolderResponse(
         UUID parentFolder,
         Set<GetFolderResponse.SubFolder> subFolders,
         Set<GetFolderResponse.File> files,
-        String ownerId,
+        UUID ownerId,
         Instant createdAt,
         Instant updatedAt) {
 

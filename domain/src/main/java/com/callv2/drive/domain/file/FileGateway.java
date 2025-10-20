@@ -3,7 +3,7 @@ package com.callv2.drive.domain.file;
 import java.util.List;
 import java.util.Optional;
 
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.SearchQuery;
@@ -12,13 +12,15 @@ public interface FileGateway {
 
     File create(File file);
 
-    Optional<File> findById(FileID id);
+    File update(File file);
 
-    List<File> findByFolder(FolderID folderId);
+    Optional<File> findByIdWithMemberAccess(final FileID id, final MemberID memberId);
+
+    List<File> findAllByFolder(FolderID folderId);
 
     List<File> findByOwner(MemberID ownerId);
 
-    Page<File> findAll(SearchQuery searchQuery);
+    Page<File> findAllWithMemberAccess(SearchQuery searchQuery, MemberID memberId);
 
     void deleteById(FileID id);
 

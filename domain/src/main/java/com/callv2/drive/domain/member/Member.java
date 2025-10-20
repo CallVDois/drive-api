@@ -79,7 +79,7 @@ public class Member extends AggregateRoot<MemberID> {
         if (!this.id.equals(member.id))
             throw IdMismatchException.with(
                     Member.class,
-                    member.id.getValue());
+                    member.id.getStringValue());
 
         if (this.synchronizedVersion > member.synchronizedVersion)
             throw SynchronizedVersionOutdatedException

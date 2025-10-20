@@ -1,12 +1,14 @@
 package com.callv2.drive.infrastructure.api.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.callv2.drive.application.member.quota.request.create.CreateRequestQuotaInput;
-import com.callv2.drive.application.member.quota.request.create.CreateRequestQuotaUseCase;
-import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaInput;
-import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaUseCase;
+import com.callv2.drive.application.member.usecase.quota.request.create.CreateRequestQuotaInput;
+import com.callv2.drive.application.member.usecase.quota.request.create.CreateRequestQuotaUseCase;
+import com.callv2.drive.application.member.usecase.quota.retrieve.get.GetQuotaInput;
+import com.callv2.drive.application.member.usecase.quota.retrieve.get.GetQuotaUseCase;
 import com.callv2.drive.domain.member.QuotaUnit;
 import com.callv2.drive.infrastructure.api.MemberAPI;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
@@ -29,7 +31,7 @@ public class MemberController implements MemberAPI {
     @Override
     public ResponseEntity<Void> requestQuota(final long amount, final QuotaUnit unit) {
 
-        final String memberId = SecurityContext.getAuthenticatedUser();
+        final UUID memberId = SecurityContext.getAuthenticatedUserId();
 
         this.createRequestQuotaUseCase.execute(CreateRequestQuotaInput.of(memberId, amount, unit));
 
@@ -40,7 +42,7 @@ public class MemberController implements MemberAPI {
     public ResponseEntity<MemberQuotaResponse> getQuota() {
         return ResponseEntity
                 .ok(MemberPresenter.present(
-                        this.getQuotaUseCase.execute(GetQuotaInput.of(SecurityContext.getAuthenticatedUser()))));
+                        this.getQuotaUseCase.execute(GetQuotaInput.of(SecurityContext.getAuthenticatedUserId()))));
     }
 
 }

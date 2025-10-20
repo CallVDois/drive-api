@@ -1,0 +1,41 @@
+package com.callv2.drive.application.member.usecase.quota.retrieve.get;
+
+import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.file.Content;
+import com.callv2.drive.domain.file.File;
+import com.callv2.drive.domain.file.FileGateway;
+import com.callv2.drive.domain.member.Member;
+import com.callv2.drive.domain.member.MemberGateway;
+import com.callv2.drive.domain.member.MemberID;
+
+public class DefaultGetQuotaUseCase extends GetQuotaUseCase {
+
+    private final MemberGateway memberGateway;
+    private final FileGateway fileGateway;
+
+    public DefaultGetQuotaUseCase(final MemberGateway memberGateway, final FileGateway fileGateway) {
+        this.memberGateway = memberGateway;
+        this.fileGateway = fileGateway;
+    }
+
+    @Override
+    public GetQuotaOutput execute(GetQuotaInput input) {
+
+        final MemberID ownerId = MemberID.of(input.memberId());
+
+        final Member owner = memberGateway
+                .findById(ownerId)
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.memberId().toString()));
+
+        final Long actualUsedQuota = fileGateway
+                .findByOwner(ownerId)
+                .stream()
+                .map(File::getContent)
+                .mapToLong(Content::size)
+                .sum();
+
+        return GetQuotaOutput.from(owner, actualUsedQuota);
+
+    }
+
+}

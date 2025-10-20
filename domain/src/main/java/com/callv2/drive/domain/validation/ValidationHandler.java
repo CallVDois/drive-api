@@ -10,6 +10,8 @@ public interface ValidationHandler {
 
     <T> T validate(final Validation<T> validation);
 
+    void validate(final ValidationVoid validation);
+
     List<ValidationError> getErrors();
 
     default boolean hasError() {
@@ -20,6 +22,13 @@ public interface ValidationHandler {
     public interface Validation<T> {
 
         T validate();
+
+    }
+
+    @FunctionalInterface
+    public interface ValidationVoid {
+
+        void validate();
 
     }
 
