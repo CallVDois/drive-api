@@ -169,7 +169,7 @@ public class Acl extends AggregateRoot<AclID> implements EventSource {
         }
 
         effectiveAccessPermission(revoker)
-                .filter(sp -> sp.allows(AccessPermission.SHARE))
+                .filter(sp -> sp.allows(AccessPermission.MANAGE))
                 .orElseThrow(() -> NotAllowedException.with(
                         "'granter' does not have share permission to revoke accessPermission",
                         "accessPermission level too low"));
