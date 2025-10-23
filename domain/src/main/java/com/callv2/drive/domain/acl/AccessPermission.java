@@ -1,7 +1,7 @@
 package com.callv2.drive.domain.acl;
 
 public enum AccessPermission implements Permission<AccessPermission> {
-    SHARE(0),
+    MANAGE(0),
     WRITE(1),
     READ(2);
 
@@ -24,7 +24,7 @@ public enum AccessPermission implements Permission<AccessPermission> {
     }
 
     public Boolean canShare() {
-        return this.level <= SHARE.level;
+        return this.level <= MANAGE.level;
     }
 
     public Boolean canWrite() {
@@ -40,7 +40,7 @@ public enum AccessPermission implements Permission<AccessPermission> {
     }
 
     public static AccessPermission mostPrivileged() {
-        return SHARE;
+        return MANAGE;
     }
 
     public Boolean allows(final AccessPermission permission) {
