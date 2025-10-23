@@ -49,6 +49,17 @@ public class Notification implements ValidationHandler {
     }
 
     @Override
+    public void validate(final ValidationVoid validation) {
+        try {
+            validation.validate();
+        } catch (DomainException e) {
+            this.errors.addAll(e.getErrors().stream().map(ValidationError::fromDomainError).toList());
+        } catch (Throwable e) {
+            this.errors.add(new ValidationError(e.getMessage()));
+        }
+    }
+
+    @Override
     public List<ValidationError> getErrors() {
         return this.errors == null ? List.of() : List.copyOf(this.errors);
     }
