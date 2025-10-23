@@ -4,10 +4,12 @@ import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.callv2.drive.application.file.content.delete.DeleteFileContentInput;
-import com.callv2.drive.application.file.create.CreateFileInput;
+import com.callv2.drive.application.file.usecase.content.delete.DeleteFileContentInput;
+import com.callv2.drive.application.file.usecase.create.CreateFileInput;
+import com.callv2.drive.application.file.usecase.sharing.create.CreateFileSharingInput;
 import com.callv2.drive.domain.exception.InternalErrorException;
 import com.callv2.drive.infrastructure.file.model.DeleteFileContentMessage;
+import com.callv2.drive.infrastructure.file.model.ShareFileRequest;
 
 public interface FileAdapter {
 
@@ -27,6 +29,17 @@ public interface FileAdapter {
 
     static DeleteFileContentInput adapt(DeleteFileContentMessage message) {
         return DeleteFileContentInput.of(message.data().fileId(), message.data().deleterId());
+    }
+
+    static CreateFileSharingInput adapt(
+            UUID fileId,
+            UUID granterId,
+            ShareFileRequest request) {
+        return CreateFileSharingInput.with(
+                fileId,
+                granterId,
+                request.grantee(),
+                request.accessPermission());
     }
 
 }

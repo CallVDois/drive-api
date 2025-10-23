@@ -1,0 +1,30 @@
+package com.callv2.drive.application.file.usecase.retrieve.get;
+
+import java.util.Objects;
+
+import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.file.File;
+import com.callv2.drive.domain.file.FileGateway;
+import com.callv2.drive.domain.file.FileID;
+import com.callv2.drive.domain.member.MemberID;
+
+public class DefaultGetFileUseCase extends GetFileUseCase {
+
+    private final FileGateway fileGateway;
+
+    public DefaultGetFileUseCase(final FileGateway fileGateway) {
+        this.fileGateway = Objects.requireNonNull(fileGateway);
+    }
+
+    @Override
+    public GetFileOutput execute(GetFileInput input) {
+
+        final MemberID actorId = MemberID.of(input.actorId());
+
+        return fileGateway
+                .findByIdWithMemberAccess(FileID.of(input.fileId()), actorId)
+                .map(file -> GetFileOutput.from(file, actorId))
+                .orElseThrow(() -> NotFoundException.with(File.class, input.fileId().toString()));
+    }
+
+}

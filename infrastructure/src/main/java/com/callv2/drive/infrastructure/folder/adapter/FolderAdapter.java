@@ -2,8 +2,8 @@ package com.callv2.drive.infrastructure.folder.adapter;
 
 import java.util.UUID;
 
-import com.callv2.drive.application.folder.create.CreateFolderInput;
-import com.callv2.drive.application.folder.retrieve.get.GetFolderInput;
+import com.callv2.drive.application.folder.usecase.create.CreateFolderInput;
+import com.callv2.drive.application.folder.usecase.retrieve.get.GetFolderInput;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 
 public interface FolderAdapter {

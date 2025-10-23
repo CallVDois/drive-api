@@ -8,18 +8,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.callv2.drive.application.folder.create.CreateFolderUseCase;
-import com.callv2.drive.application.folder.delete.DeleteFolderInput;
-import com.callv2.drive.application.folder.delete.DeleteFolderUseCase;
-import com.callv2.drive.application.folder.move.MoveFolderInput;
-import com.callv2.drive.application.folder.move.MoveFolderUseCase;
-import com.callv2.drive.application.folder.retrieve.get.GetFolderUseCase;
-import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderInput;
-import com.callv2.drive.application.folder.retrieve.get.root.GetRootFolderUseCase;
-import com.callv2.drive.application.folder.retrieve.list.FolderListInput;
-import com.callv2.drive.application.folder.retrieve.list.ListFoldersUseCase;
-import com.callv2.drive.application.folder.update.name.UpdateFolderNameInput;
-import com.callv2.drive.application.folder.update.name.UpdateFolderNameUseCase;
+import com.callv2.drive.application.folder.usecase.create.CreateFolderUseCase;
+import com.callv2.drive.application.folder.usecase.delete.DeleteFolderInput;
+import com.callv2.drive.application.folder.usecase.delete.DeleteFolderUseCase;
+import com.callv2.drive.application.folder.usecase.move.MoveFolderInput;
+import com.callv2.drive.application.folder.usecase.move.MoveFolderUseCase;
+import com.callv2.drive.application.folder.usecase.retrieve.get.GetFolderUseCase;
+import com.callv2.drive.application.folder.usecase.retrieve.get.root.GetRootFolderInput;
+import com.callv2.drive.application.folder.usecase.retrieve.get.root.GetRootFolderUseCase;
+import com.callv2.drive.application.folder.usecase.retrieve.list.FolderListInput;
+import com.callv2.drive.application.folder.usecase.retrieve.list.ListFoldersUseCase;
+import com.callv2.drive.application.folder.usecase.sharing.create.CreateFolderSharingInput;
+import com.callv2.drive.application.folder.usecase.sharing.create.CreateFolderSharingUseCase;
+import com.callv2.drive.application.folder.usecase.sharing.remove.RemoveFolderSharingInput;
+import com.callv2.drive.application.folder.usecase.sharing.remove.RemoveFolderSharingUseCase;
+import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.ListFolderSharingInput;
+import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.ListFolderSharingUseCase;
+import com.callv2.drive.application.folder.usecase.update.name.UpdateFolderNameInput;
+import com.callv2.drive.application.folder.usecase.update.name.UpdateFolderNameUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
@@ -27,11 +33,14 @@ import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.FolderAPI;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
 import com.callv2.drive.infrastructure.folder.adapter.FolderAdapter;
+import com.callv2.drive.infrastructure.folder.filter.FolderField;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderRequest;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
+import com.callv2.drive.infrastructure.folder.model.FolderSharingListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.MoveFolderRequest;
+import com.callv2.drive.infrastructure.folder.model.ShareFolderRequest;
 import com.callv2.drive.infrastructure.folder.presenter.FolderPresenter;
 import com.callv2.drive.infrastructure.security.SecurityContext;
 
@@ -45,6 +54,9 @@ public class FolderController implements FolderAPI {
     private final ListFoldersUseCase listFoldersUseCase;
     private final UpdateFolderNameUseCase updateFolderNameUseCase;
     private final DeleteFolderUseCase deleteFolderUseCase;
+    private final CreateFolderSharingUseCase createFolderSharingUseCase;
+    private final ListFolderSharingUseCase listFolderSharingUseCase;
+    private final RemoveFolderSharingUseCase removeFolderSharingUseCase;
 
     public FolderController(
             final GetRootFolderUseCase getRootFolderUseCase,
@@ -53,7 +65,10 @@ public class FolderController implements FolderAPI {
             final MoveFolderUseCase moveFolderUseCase,
             final ListFoldersUseCase listFoldersUseCase,
             final UpdateFolderNameUseCase updateFolderNameUseCase,
-            final DeleteFolderUseCase deleteFolderUseCase) {
+            final DeleteFolderUseCase deleteFolderUseCase,
+            final CreateFolderSharingUseCase createFolderSharingUseCase,
+            final ListFolderSharingUseCase listFolderSharingUseCase,
+            final RemoveFolderSharingUseCase removeFolderSharingUseCase) {
         this.getRootFolderUseCase = getRootFolderUseCase;
         this.createFolderUseCase = createFolderUseCase;
         this.getFolderUseCase = getFolderUseCase;
@@ -61,6 +76,9 @@ public class FolderController implements FolderAPI {
         this.listFoldersUseCase = listFoldersUseCase;
         this.updateFolderNameUseCase = updateFolderNameUseCase;
         this.deleteFolderUseCase = deleteFolderUseCase;
+        this.createFolderSharingUseCase = createFolderSharingUseCase;
+        this.listFolderSharingUseCase = listFolderSharingUseCase;
+        this.removeFolderSharingUseCase = removeFolderSharingUseCase;
     }
 
     @Override
@@ -100,21 +118,23 @@ public class FolderController implements FolderAPI {
     public ResponseEntity<Page<FolderListResponse>> list(
             final int page,
             final int perPage,
-            final String orderField,
+            final FolderField orderField,
             final Pagination.Order.Direction orderDirection,
             final Filter.Operator filterOperator,
-            final List<String> filters) {
+            final List<String> filterGroups) {
 
-        final List<Filter> searchFilters = filters == null ? List.of()
-                : filters
+        final List<Filter.Group> searchFilterGroups = filterGroups == null ? List.of()
+                : filterGroups
                         .stream()
-                        .map(QueryAdapter::of)
+                        .map(source -> QueryAdapter.of(
+                                source,
+                                List.of(FolderField.values())))
                         .toList();
 
         final SearchQuery query = SearchQuery.of(
                 Pagination.of(page, perPage, Pagination.Order.of(orderField, orderDirection)),
                 filterOperator,
-                searchFilters);
+                searchFilterGroups);
 
         final var actorId = SecurityContext.getAuthenticatedUserId();
 
@@ -141,6 +161,47 @@ public class FolderController implements FolderAPI {
         this.deleteFolderUseCase.execute(new DeleteFolderInput(id, memberId));
 
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> shareFolder(UUID id, ShareFolderRequest request) {
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        this.createFolderSharingUseCase.execute(
+                CreateFolderSharingInput.with(
+                        id,
+                        actorId,
+                        request.grantee(),
+                        request.accessPermission()));
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @Override
+    public ResponseEntity<List<FolderSharingListResponse>> listSharings(final UUID id) {
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        final var response = this.listFolderSharingUseCase.execute(ListFolderSharingInput.of(id, actorId))
+                .stream()
+                .map(FolderPresenter::present)
+                .toList();
+
+        return ResponseEntity.ok(response);
+
+    }
+
+    @Override
+    public ResponseEntity<Void> unshareFolder(final UUID id, final UUID sharingId) {
+
+        final var actorId = SecurityContext.getAuthenticatedUserId();
+
+        this.removeFolderSharingUseCase.execute(RemoveFolderSharingInput.of(id, sharingId, actorId));
+
+        return ResponseEntity.noContent().build();
+
     }
 
 }

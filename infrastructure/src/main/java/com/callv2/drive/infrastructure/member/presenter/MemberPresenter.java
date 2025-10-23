@@ -1,9 +1,9 @@
 package com.callv2.drive.infrastructure.member.presenter;
 
-import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaOutput;
-import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaOutput;
-import com.callv2.drive.application.member.quota.retrieve.list.ListQuotaOutput;
-import com.callv2.drive.application.member.quota.retrieve.summary.GetQuotasSummaryOutput;
+import com.callv2.drive.application.member.usecase.quota.request.list.ListRequestQuotaOutput;
+import com.callv2.drive.application.member.usecase.quota.retrieve.get.GetQuotaOutput;
+import com.callv2.drive.application.member.usecase.quota.retrieve.list.ListQuotaOutput;
+import com.callv2.drive.application.member.usecase.quota.retrieve.summary.GetQuotasSummaryOutput;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaListResponse;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;

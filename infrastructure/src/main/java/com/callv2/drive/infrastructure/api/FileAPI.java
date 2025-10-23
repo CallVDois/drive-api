@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,9 +19,12 @@ import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Page;
 import com.callv2.drive.domain.pagination.Pagination;
 import com.callv2.drive.infrastructure.api.controller.ApiError;
+import com.callv2.drive.infrastructure.file.filter.FileField;
 import com.callv2.drive.infrastructure.file.model.CreateFileResponse;
 import com.callv2.drive.infrastructure.file.model.FileListResponse;
+import com.callv2.drive.infrastructure.file.model.FileSharingListResponse;
 import com.callv2.drive.infrastructure.file.model.GetFileResponse;
+import com.callv2.drive.infrastructure.file.model.ShareFileRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -72,9 +76,35 @@ public interface FileAPI {
     ResponseEntity<Page<FileListResponse>> list(
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
-            @RequestParam(name = "orderField", required = false, defaultValue = "createdAt") String orderField,
+            @RequestParam(name = "orderField", required = false, defaultValue = "CREATED_AT") FileField orderField,
             @RequestParam(name = "orderDirection", required = false, defaultValue = "DESC") Pagination.Order.Direction orderDirection,
             @RequestParam(name = "filterOperator", required = false, defaultValue = "AND") Filter.Operator filterOperator,
-            @RequestParam(name = "filters", required = false) List<String> filters);
+            @RequestParam(name = "filterGroups", required = false) List<String> filterGroups);
+
+    @Operation(summary = "Share File", description = "This method shares a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "File shared successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @PostMapping("{id}/sharings")
+    ResponseEntity<Void> shareFile(@PathVariable("id") UUID id, @RequestBody ShareFileRequest request);
+
+    @Operation(summary = "Unshare File", description = "This method unshares a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "File unshared successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @DeleteMapping("{id}/sharings/{sharingId}")
+    ResponseEntity<Void> unshareFile(
+            @PathVariable("id") UUID id,
+            @PathVariable("sharingId") UUID sharingId);
+
+    @Operation(summary = "List Sharings of File", description = "This method lists all sharings of a file", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "204", description = "File sharing listed successfully", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "404", description = "File not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "422", description = "A validation error was thrown", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    @GetMapping("{id}/sharings")
+    ResponseEntity<List<FileSharingListResponse>> listSharings(@PathVariable("id") UUID id);
 
 }

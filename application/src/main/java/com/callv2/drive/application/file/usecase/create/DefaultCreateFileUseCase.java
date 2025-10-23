@@ -1,0 +1,168 @@
+package com.callv2.drive.application.file.usecase.create;
+
+import java.util.List;
+import java.util.Objects;
+
+import com.callv2.drive.domain.acl.AccessPermission;
+import com.callv2.drive.domain.acl.Acl;
+import com.callv2.drive.domain.acl.AclGateway;
+import com.callv2.drive.domain.acl.Resource;
+import com.callv2.drive.domain.event.EventDispatcher;
+import com.callv2.drive.domain.exception.InternalErrorException;
+import com.callv2.drive.domain.exception.NotAllowedException;
+import com.callv2.drive.domain.exception.NotFoundException;
+import com.callv2.drive.domain.exception.QuotaExceededException;
+import com.callv2.drive.domain.exception.ValidationException;
+import com.callv2.drive.domain.file.Content;
+import com.callv2.drive.domain.file.File;
+import com.callv2.drive.domain.file.FileGateway;
+import com.callv2.drive.domain.file.FileName;
+import com.callv2.drive.domain.folder.FolderGateway;
+import com.callv2.drive.domain.folder.entity.Folder;
+import com.callv2.drive.domain.folder.entity.FolderID;
+import com.callv2.drive.domain.member.Member;
+import com.callv2.drive.domain.member.MemberGateway;
+import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.storage.StorageGateway;
+import com.callv2.drive.domain.storage.StorageKeyGenerator;
+import com.callv2.drive.domain.validation.ValidationError;
+import com.callv2.drive.domain.validation.handler.Notification;
+
+public class DefaultCreateFileUseCase extends CreateFileUseCase {
+
+    private final EventDispatcher eventDispatcher;
+
+    private final MemberGateway memberGateway;
+    private final FolderGateway folderGateway;
+    private final FileGateway fileGateway;
+    private final StorageKeyGenerator storageKeyGenerator;
+    private final StorageGateway storageGateway;
+    private final AclGateway aclGateway;
+
+    public DefaultCreateFileUseCase(
+            final EventDispatcher eventDispatcher,
+            final MemberGateway memberGateway,
+            final FolderGateway folderGateway,
+            final FileGateway fileGateway,
+            final StorageKeyGenerator storageKeyGenerator,
+            final StorageGateway storageGateway,
+            final AclGateway aclGateway) {
+        this.eventDispatcher = Objects.requireNonNull(eventDispatcher);
+        this.memberGateway = Objects.requireNonNull(memberGateway);
+        this.folderGateway = Objects.requireNonNull(folderGateway);
+        this.fileGateway = Objects.requireNonNull(fileGateway);
+        this.storageKeyGenerator = Objects.requireNonNull(storageKeyGenerator);
+        this.storageGateway = Objects.requireNonNull(storageGateway);
+        this.aclGateway = Objects.requireNonNull(aclGateway);
+    }
+
+    @Override
+    public CreateFileOutput execute(final CreateFileInput input) {
+
+        final MemberID creatorId = memberGateway
+                .findById(MemberID.of(input.creatorId()))
+                .map(Member::getId)
+                .orElseThrow(() -> NotFoundException.with(Member.class, input.creatorId().toString()));
+
+        final FolderID folderId = FolderID.of(input.folderId());
+        final Folder folder = folderGateway
+                .findByIdWithMemberAccess(folderId, creatorId)
+                .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
+
+        final Acl folderAcl = this.aclGateway
+                .findByResource(Resource.folder(folder))
+                .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
+
+        final AccessPermission folderAclPermission = folderAcl
+                .effectiveAccessPermission(creatorId)
+                .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
+
+        if (!folderAclPermission.canWrite())
+            throw NotAllowedException.with("You don't have permission to create files in this folder");
+
+        final Member owner = memberGateway
+                .findById(folder.getOwner())
+                .orElseThrow(() -> NotFoundException.with(Member.class, folder.getOwner().toString()));
+
+        checkQuota(owner, input.size());
+
+        final Notification notification = Notification.create();
+
+        final FileName fileName = FileName.of(input.name());
+        fileName.validate(notification);
+        if (notification.hasError())
+            throw ValidationException.with("Could not create Aggregate File", notification);
+
+        final List<File> filesOnSameFolder = fileGateway.findAllByFolder(folderId);
+        if (filesOnSameFolder.stream().map(File::getName).anyMatch(fileName::equals))
+            throw ValidationException.with("Could not create Aggregate File",
+                    ValidationError.with("File with same name already exists on this folder"));
+
+        final Content content = storeContentFile(input);// TODO handle exception and delete content if necessary
+
+        final File file = notification
+                .validate(() -> File.create(creatorId, folder.getOwner(), folderId, fileName, content));
+
+        if (notification.hasError())
+            throw ValidationException.with("Could not create Aggregate File", notification);
+
+        final Acl fileInheritedAcl = folderAcl.createInherited(Resource.file(file));
+
+        eventDispatcher.notify(aclGateway.create(fileInheritedAcl));
+        storeFile(file);
+
+        eventDispatcher.notify(file);
+
+        return CreateFileOutput.from(file);
+    }
+
+    private void checkQuota(final Member owner, final Long newFileSize) {
+
+        final Long actualUsedQuota = fileGateway
+                .findByOwner(owner.getId())
+                .stream()
+                .map(File::getContent)
+                .mapToLong(Content::size)
+                .sum();
+
+        if (actualUsedQuota + newFileSize > owner.getQuota().sizeInBytes())
+            throw QuotaExceededException.with(owner.getQuota());
+
+    }
+
+    private void storeFile(final File file) {
+        try {
+            fileGateway.create(file);
+        } catch (Exception e) {
+            deleteContentFile(file.getContent().storageKey());
+            throw InternalErrorException.with("Could not store File", e);
+        }
+    }
+
+    private Content storeContentFile(final CreateFileInput input) {
+
+        try {
+
+            final String storageKey = storageKeyGenerator.generate();
+            final String contentType = input.contentType();
+            final Long contentSize = input.size();
+
+            storageGateway.store(storageKey, input.content());
+
+            return Content.of(storageKey, contentType, contentSize);
+
+        } catch (Exception e) {
+            throw InternalErrorException.with("Could not store BinaryContent", e);
+        }
+
+    }
+
+    private void deleteContentFile(final String contentLocation) {
+        try {
+            storageGateway.delete(contentLocation);
+        } catch (Exception e) {
+            throw InternalErrorException.with("Could not delete BinaryContent", e);
+        }
+    }
+
+}

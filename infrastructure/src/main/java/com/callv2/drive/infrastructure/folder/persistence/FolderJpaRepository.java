@@ -12,4 +12,6 @@ public interface FolderJpaRepository extends
 
     Optional<FolderJpaEntity> findByRootFolderTrueAndOwnerId(UUID ownerId);
 
+    Optional<FolderJpaEntity> findByDefaultSharedInboxTrueAndOwnerId(UUID ownerId);
+
 }

@@ -6,13 +6,13 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.callv2.drive.application.member.quota.request.approve.ApproveRequestQuotaInput;
-import com.callv2.drive.application.member.quota.request.approve.ApproveRequestQuotaUseCase;
-import com.callv2.drive.application.member.quota.request.list.ListRequestQuotaUseCase;
-import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaInput;
-import com.callv2.drive.application.member.quota.retrieve.get.GetQuotaUseCase;
-import com.callv2.drive.application.member.quota.retrieve.list.ListQuotasUseCase;
-import com.callv2.drive.application.member.quota.retrieve.summary.GetQuotasSummaryUseCase;
+import com.callv2.drive.application.member.usecase.quota.request.approve.ApproveRequestQuotaInput;
+import com.callv2.drive.application.member.usecase.quota.request.approve.ApproveRequestQuotaUseCase;
+import com.callv2.drive.application.member.usecase.quota.request.list.ListRequestQuotaUseCase;
+import com.callv2.drive.application.member.usecase.quota.retrieve.get.GetQuotaInput;
+import com.callv2.drive.application.member.usecase.quota.retrieve.get.GetQuotaUseCase;
+import com.callv2.drive.application.member.usecase.quota.retrieve.list.ListQuotasUseCase;
+import com.callv2.drive.application.member.usecase.quota.retrieve.summary.GetQuotasSummaryUseCase;
 import com.callv2.drive.domain.pagination.Filter;
 import com.callv2.drive.domain.pagination.Filter.Operator;
 import com.callv2.drive.domain.pagination.Page;
@@ -21,6 +21,7 @@ import com.callv2.drive.domain.pagination.Pagination.Order.Direction;
 import com.callv2.drive.domain.pagination.SearchQuery;
 import com.callv2.drive.infrastructure.api.MemberAdminAPI;
 import com.callv2.drive.infrastructure.filter.adapter.QueryAdapter;
+import com.callv2.drive.infrastructure.member.filter.MemberField;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaListResponse;
 import com.callv2.drive.infrastructure.member.model.MemberQuotaResponse;
 import com.callv2.drive.infrastructure.member.model.QuotaRequestListResponse;
@@ -64,7 +65,7 @@ public class MemberAdminController implements MemberAdminAPI {
     public ResponseEntity<Page<QuotaRequestListResponse>> listQuotaRequests(
             final int page,
             final int perPage,
-            final String orderField,
+            final MemberField orderField,
             final Pagination.Order.Direction orderDirection) {
 
         final SearchQuery query = SearchQuery.of(
@@ -80,21 +81,23 @@ public class MemberAdminController implements MemberAdminAPI {
     public ResponseEntity<Page<MemberQuotaListResponse>> listQuotas(
             int page,
             int perPage,
-            String orderField,
+            MemberField orderField,
             Direction orderDirection,
             Operator filterOperator,
-            List<String> filters) {
+            List<String> filterGroups) {
 
-        final List<Filter> searchFilters = filters == null ? List.of()
-                : filters
+        final List<Filter.Group> searchFilterGroups = filterGroups == null ? List.of()
+                : filterGroups
                         .stream()
-                        .map(QueryAdapter::of)
+                        .map(source -> QueryAdapter.of(
+                                source,
+                                List.of(MemberField.values())))
                         .toList();
 
         final SearchQuery query = SearchQuery.of(
                 Pagination.of(page, perPage, Pagination.Order.of(orderField, orderDirection)),
                 filterOperator,
-                searchFilters);
+                searchFilterGroups);
 
         return ResponseEntity.ok(listQuotasUseCase.execute(query).map(MemberPresenter::present));
 

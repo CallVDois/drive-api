@@ -8,8 +8,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 
-import com.callv2.drive.application.member.synchronize.SynchronizeMemberInput;
-import com.callv2.drive.application.member.synchronize.SynchronizeMemberUseCase;
+import com.callv2.drive.application.member.usecase.synchronize.SynchronizeMemberInput;
+import com.callv2.drive.application.member.usecase.synchronize.SynchronizeMemberUseCase;
 import com.callv2.drive.domain.exception.AlreadyExistsException;
 import com.callv2.drive.domain.exception.IdMismatchException;
 import com.callv2.drive.domain.exception.SynchronizedVersionOutdatedException;

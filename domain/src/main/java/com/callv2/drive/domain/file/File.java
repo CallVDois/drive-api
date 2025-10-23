@@ -1,16 +1,22 @@
 package com.callv2.drive.domain.file;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 
 import com.callv2.drive.domain.AggregateRoot;
 import com.callv2.drive.domain.event.Event;
 import com.callv2.drive.domain.event.EventSource;
 import com.callv2.drive.domain.exception.ValidationException;
-import com.callv2.drive.domain.folder.FolderID;
+import com.callv2.drive.domain.folder.entity.FolderID;
 import com.callv2.drive.domain.member.MemberID;
+import com.callv2.drive.domain.validation.ValidationError;
 import com.callv2.drive.domain.validation.ValidationHandler;
 import com.callv2.drive.domain.validation.handler.Notification;
 
@@ -35,6 +41,8 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     private Boolean isDeleted;
 
+    private final Set<FileSharing> sharings;
+
     private File(
             final FileID anId,
             final MemberID creator,
@@ -47,7 +55,8 @@ public class File extends AggregateRoot<FileID> implements EventSource {
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
-            final Boolean isDeleted) {
+            final Boolean isDeleted,
+            final Set<FileSharing> sharings) {
         super(anId);
 
         this.folder = folder;
@@ -61,6 +70,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
         this.isDeleted = isDeleted;
+        this.sharings = nonNull(sharings) ? new HashSet<>(sharings) : new HashSet<>();
 
         this.events = new LinkedList<>();
 
@@ -84,7 +94,8 @@ public class File extends AggregateRoot<FileID> implements EventSource {
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt,
-            final Boolean isDeleted) {
+            final Boolean isDeleted,
+            final Set<FileSharing> sharings) {
         return new File(
                 id,
                 creator,
@@ -97,7 +108,8 @@ public class File extends AggregateRoot<FileID> implements EventSource {
                 createdAt,
                 updatedAt,
                 deletedAt,
-                isDeleted);
+                isDeleted,
+                sharings);
     }
 
     public static File with(final File file) {
@@ -113,7 +125,8 @@ public class File extends AggregateRoot<FileID> implements EventSource {
                 file.getCreatedAt(),
                 file.getUpdatedAt(),
                 file.getDeletedAt(),
-                file.getIsDeleted());
+                file.getIsDeleted(),
+                file.getSharings());
     }
 
     @Override
@@ -142,7 +155,8 @@ public class File extends AggregateRoot<FileID> implements EventSource {
                 now,
                 now,
                 null,
-                false);
+                false,
+                Set.of());
     }
 
     public File update(
@@ -184,6 +198,70 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     }
 
+    public File share(final MemberID sharedBy, final MemberID sharedTo, final FolderID virtualFolder) {
+
+        final Notification notification = Notification.create();
+
+        if (isNull(sharedBy) || isNull(sharedTo) || isNull(virtualFolder)) {
+            notification.append(ValidationError.with("Member's and virtual folder are required"));
+            throw ValidationException.with("Could not share the file", notification);
+        }
+
+        if (this.owner.equals(sharedTo) || sharedBy.equals(sharedTo)) {
+            notification.append(ValidationError.with("Cannot share a file with yourself"));
+            throw ValidationException.with("Could not share the file", notification);
+        }
+
+        if (this.sharings.stream().anyMatch(s -> s.getSharedTo().equals(sharedTo)))
+            return this;
+
+        final FileSharing sharing = FileSharing.create(sharedTo, sharedBy, virtualFolder);
+        this.sharings.add(sharing);
+
+        this.events.add(FileSharedEvent.create(this, sharing));
+
+        return this;
+    }
+
+    public File unshare(final MemberID revokedBy, final FileSharingID sharingId) {
+
+        final Notification notification = Notification.create();
+
+        if (isNull(revokedBy))
+            notification.append(ValidationError.with("revokedBy' are required"));
+
+        if (isNull(sharingId))
+            notification.append(ValidationError.with("revokedFrom' are required"));
+
+        this.sharings.stream()
+                .filter(s -> s.getId().equals(sharingId))
+                .findFirst()
+                .ifPresent(sharing -> {
+                    sharings.remove(sharing);
+                    this.events.add(FileUnsharedEvent.create(this, sharing, revokedBy));
+                });
+
+        return this;
+    }
+
+    public FolderID getVirtualFolder(final MemberID member) {
+
+        if (this.owner.equals(member))
+            return this.folder;
+
+        return this.sharings.stream()
+                .filter(sharing -> sharing.getSharedTo().equals(member))
+                .findFirst()
+                .map(FileSharing::getVirtualFolder)
+                .orElse(this.folder);
+    }
+
+    public Optional<FileSharing> getSharing(final FileSharingID sharingId) {
+        return this.sharings.stream()
+                .filter(sharing -> sharing.getId().equals(sharingId))
+                .findFirst();
+    }
+
     private void selfValidate() {
         final var notification = Notification.create();
         validate(notification);
@@ -193,7 +271,7 @@ public class File extends AggregateRoot<FileID> implements EventSource {
     }
 
     public Queue<Event<?>> getEvents() {
-        return events;
+        return new LinkedList<>(events);
     }
 
     public MemberID getCreator() {
@@ -238,6 +316,10 @@ public class File extends AggregateRoot<FileID> implements EventSource {
 
     public Boolean getIsDeleted() {
         return isDeleted;
+    }
+
+    public Set<FileSharing> getSharings() {
+        return Set.copyOf(sharings);
     }
 
     @Override
