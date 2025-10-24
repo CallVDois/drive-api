@@ -204,7 +204,7 @@ public class FolderJpaGateway implements FolderGateway {
     }
 
     private static Specification<FolderJpaEntity> folderByIdSpecification(final UUID folderId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), folderId));
+        return (root, _, criteriaBuilder) -> criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), folderId));
     }
 
     private static Specification<FolderJpaEntity> findByParentFolderIdSpecification(final UUID parentFolderId) {

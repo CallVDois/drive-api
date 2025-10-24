@@ -23,7 +23,7 @@ public class Like extends SpecificationFilter {
 
         validateFilter(filter);
 
-        return (root, query, criteriaBuilder) -> criteriaBuilder
+        return (root, _, criteriaBuilder) -> criteriaBuilder
                 .like(
                         criteriaBuilder.upper(criteriaBuilder.toString(root.get(filter.field().value()))),
                         "%" + filter.value().toUpperCase() + "%");

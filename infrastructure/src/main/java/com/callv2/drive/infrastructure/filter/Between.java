@@ -28,7 +28,7 @@ public class Between extends SpecificationFilter {
 
         validateFilter(filter);
 
-        return (root, query, criteriaBuilder) -> between(
+        return (root, _, criteriaBuilder) -> between(
                 (Class<Comparable>) root.get(filter.field().value()).getJavaType(),
                 root,
                 criteriaBuilder,

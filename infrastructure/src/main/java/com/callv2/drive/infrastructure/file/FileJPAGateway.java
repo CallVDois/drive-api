@@ -160,7 +160,7 @@ public class FileJPAGateway implements FileGateway {
     }
 
     private static Specification<FileJpaEntity> fileByIdSpecification(final UUID fileId) {
-        return (root, query, criteriaBuilder) -> {
+        return (root, _, criteriaBuilder) -> {
             return criteriaBuilder.and(criteriaBuilder.equal(root.get("id"), fileId));
         };
     }

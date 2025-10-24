@@ -13,10 +13,10 @@ public final class SimpleExecutorChainHandler implements ExecutorChainHandler {
     private final PostInvocationExecutorChain postInvocationExecutorChain;
     private final PostInvocationExecutorChain errorInvocationExecutorChain;
 
-    private final PreInvocationExecutorChain noOpPreInvocationExecutorChain = new PreInvocationExecutorChain(j -> {
+    private final PreInvocationExecutorChain noOpPreInvocationExecutorChain = new PreInvocationExecutorChain(_ -> {
     });
 
-    private final PostInvocationExecutorChain noOpPostInvocationExecutorChain = new PostInvocationExecutorChain(j -> {
+    private final PostInvocationExecutorChain noOpPostInvocationExecutorChain = new PostInvocationExecutorChain(_ -> {
     });
 
     public SimpleExecutorChainHandler(

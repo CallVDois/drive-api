@@ -42,7 +42,7 @@ public class FilterService {
         final var elementsIterator = group.elements().iterator();
 
         if (!elementsIterator.hasNext())
-            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+            return (_, _, criteriaBuilder) -> criteriaBuilder.conjunction();
 
         final var firstElement = elementsIterator.next();
         Specification<T> groupSpecification = buildSpecification(entityClass, firstElement.filter());

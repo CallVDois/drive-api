@@ -11,11 +11,11 @@ public class EventDispatcher {
     private final ConcurrentHashMap<String, List<EventHandler<?>>> handlers = new ConcurrentHashMap<>();
 
     public void register(final String eventKey, final EventHandler<?> handler) {
-        this.handlers.computeIfAbsent(eventKey, k -> new ArrayList<>()).add(handler);
+        this.handlers.computeIfAbsent(eventKey, _ -> new ArrayList<>()).add(handler);
     }
 
     public void unregister(final Event<?> event, final EventHandler<?> handler) {
-        this.handlers.computeIfPresent(event.key(), (k, v) -> {
+        this.handlers.computeIfPresent(event.key(), (_, v) -> {
             v.remove(handler);
             return v.isEmpty() ? null : v;
         });
