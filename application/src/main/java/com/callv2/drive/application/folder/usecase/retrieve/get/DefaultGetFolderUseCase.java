@@ -1,7 +1,9 @@
 package com.callv2.drive.application.folder.usecase.retrieve.get;
 
+import java.util.List;
 import java.util.Objects;
 
+import com.callv2.drive.application.folder.service.PathResolutionApplicationService;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
@@ -14,11 +16,15 @@ public class DefaultGetFolderUseCase extends GetFolderUseCase {
     private final FolderGateway folderGateway;
     private final FileGateway fileGateway;
 
+    private final PathResolutionApplicationService pathResolutionService;
+
     public DefaultGetFolderUseCase(
             final FolderGateway folderGateway,
-            final FileGateway fileGateway) {
+            final FileGateway fileGateway,
+            final PathResolutionApplicationService pathResolutionService) {
         this.folderGateway = Objects.requireNonNull(folderGateway);
         this.fileGateway = Objects.requireNonNull(fileGateway);
+        this.pathResolutionService = Objects.requireNonNull(pathResolutionService);
     }
 
     @Override
@@ -31,12 +37,16 @@ public class DefaultGetFolderUseCase extends GetFolderUseCase {
                 .findByIdWithMemberAccess(folderId, actorId)
                 .orElseThrow(() -> NotFoundException.with(Folder.class, input.folderId().toString()));
 
+        final List<Folder> pathFolders = pathResolutionService.resolvePath(folder, actorId);
+
         return GetFolderOutput
                 .from(
                         actorId,
                         folder,
+                        pathFolders,
                         folderGateway.findByParentFolderIdWithMemberAccess(folder.getId(), actorId),
                         fileGateway.findAllByFolder(folder.getId()));
+
     }
 
 }

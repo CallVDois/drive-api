@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.callv2.drive.application.folder.service.FolderProvisioningApplicationService;
+import com.callv2.drive.application.folder.service.PathResolutionApplicationService;
 import com.callv2.drive.domain.acl.AclGateway;
 import com.callv2.drive.domain.event.EventDispatcher;
 import com.callv2.drive.domain.folder.FolderGateway;
@@ -30,6 +31,11 @@ public class FolderApplicationServiceConfig {
                 eventDispatcher,
                 folderGateway,
                 aclGateway);
+    }
+
+    @Bean
+    PathResolutionApplicationService pathResolutionApplicationService() {
+        return new PathResolutionApplicationService(folderGateway);
     }
 
 }

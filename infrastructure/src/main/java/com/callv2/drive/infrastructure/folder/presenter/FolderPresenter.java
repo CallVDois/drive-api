@@ -1,5 +1,9 @@
 package com.callv2.drive.infrastructure.folder.presenter;
 
+import static java.util.Objects.isNull;
+
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.callv2.drive.application.folder.usecase.create.CreateFolderOutput;
@@ -9,6 +13,7 @@ import com.callv2.drive.application.folder.usecase.retrieve.list.FolderListOutpu
 import com.callv2.drive.application.folder.usecase.sharing.retrieve.list.FolderSharingListOutput;
 import com.callv2.drive.infrastructure.folder.model.CreateFolderResponse;
 import com.callv2.drive.infrastructure.folder.model.FolderListResponse;
+import com.callv2.drive.infrastructure.folder.model.FolderPath;
 import com.callv2.drive.infrastructure.folder.model.FolderSharingListResponse;
 import com.callv2.drive.infrastructure.folder.model.GetFolderResponse;
 
@@ -24,6 +29,7 @@ public interface FolderPresenter {
                 output.name(),
                 output.isRootFolder(),
                 output.parentFolder(),
+                present(output.path()),
                 output.subFolders().stream()
                         .map(FolderPresenter::present)
                         .collect(Collectors.toSet()),
@@ -55,6 +61,7 @@ public interface FolderPresenter {
                 output.name(),
                 true,
                 null,
+                present(present(output.id(), output.name())),
                 output
                         .subFolders()
                         .stream()
@@ -105,6 +112,32 @@ public interface FolderPresenter {
                 output.sharedBy(),
                 output.accessPermission(),
                 output.createdAt());
+    }
+
+    static FolderPath present(final List<GetFolderOutput.PathSegment> pathItems) {
+
+        if (isNull(pathItems))
+            return new FolderPath(List.of());
+
+        final var segments = pathItems
+                .stream()
+                .map(pathItem -> present(pathItem.id(), pathItem.name()))
+                .collect(Collectors.toList());
+
+        return new FolderPath(segments);
+    }
+
+    static FolderPath present(final FolderPath.Segment segment) {
+
+        if (isNull(segment))
+            return new FolderPath(List.of());
+
+        return new FolderPath(List.of(segment));
+
+    }
+
+    static FolderPath.Segment present(final UUID id, final String name) {
+        return new FolderPath.Segment(id, name);
     }
 
 }

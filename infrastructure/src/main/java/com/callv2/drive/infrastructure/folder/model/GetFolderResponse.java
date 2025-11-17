@@ -9,6 +9,7 @@ public record GetFolderResponse(
         String name,
         Boolean rootFolder,
         UUID parentFolder,
+        FolderPath path,
         Set<GetFolderResponse.SubFolder> subFolders,
         Set<GetFolderResponse.File> files,
         UUID ownerId,
