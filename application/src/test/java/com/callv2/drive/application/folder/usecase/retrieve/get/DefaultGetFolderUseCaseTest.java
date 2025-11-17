@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.callv2.drive.application.folder.service.PathResolutionApplicationService;
 import com.callv2.drive.domain.exception.NotFoundException;
 import com.callv2.drive.domain.file.FileGateway;
 import com.callv2.drive.domain.folder.FolderGateway;
@@ -39,18 +41,23 @@ public class DefaultGetFolderUseCaseTest {
     @Mock
     FileGateway fileGateway;
 
+    @Mock
+    PathResolutionApplicationService pathResolutionService;
+
     @Test
     void givenAValidFolderId_whenCallsExecute_thenShouldReturnFolder() {
 
         final var ownerId = MemberID.of(UUID.randomUUID());
         final var actorId = ownerId;
 
+        final var expectedRootFolder = Folder.createRoot(ownerId);
+
         final var expectedFolderName = "folder";
         final var expectedFolder = Folder.create(
                 ownerId,
                 ownerId,
                 FolderName.of(expectedFolderName),
-                Folder.createRoot(ownerId));
+                expectedRootFolder);
 
         final var expectedSubFolder1 = Folder.create(
                 ownerId,
@@ -76,6 +83,9 @@ public class DefaultGetFolderUseCaseTest {
         when(folderGateway.findByParentFolderIdWithMemberAccess(expectedFolder.getId(), actorId))
                 .thenReturn(expectedSubFolders);
 
+        when(pathResolutionService.resolvePath(expectedFolder, actorId))
+                .thenReturn(List.of(expectedFolder, expectedRootFolder));
+
         final var input = GetFolderInput.with(expectedFolderId.getValue(), ownerId.getValue());
 
         final var actualOutput = assertDoesNotThrow(() -> useCase.execute(input));
@@ -84,6 +94,10 @@ public class DefaultGetFolderUseCaseTest {
         assertEquals(expectedFolderName, actualOutput.name());
         assertEquals(expectedFolder.getParentFolder().getValue(), actualOutput.parentFolder());
         assertEquals(expectedSubFolders.size(), actualOutput.subFolders().size());
+        assertEquals(expectedRootFolder.getId().getValue(), actualOutput.path().get(1).id());
+        assertEquals(expectedRootFolder.getName().value(), actualOutput.path().get(1).name());
+        assertEquals(expectedFolder.getId().getValue(), actualOutput.path().get(0).id());
+        assertEquals(expectedFolder.getName().value(), actualOutput.path().get(0).name());
         assertEquals(expectedCreatedAt, actualOutput.createdAt());
         assertEquals(expectedUpdatedAt, actualOutput.updatedAt());
         assertEquals(expectedDeletedAt, actualOutput.deletedAt());
@@ -93,6 +107,9 @@ public class DefaultGetFolderUseCaseTest {
 
         verify(folderGateway, times(1)).findByParentFolderIdWithMemberAccess(any(), any());
         verify(folderGateway, times(1)).findByParentFolderIdWithMemberAccess(eq(expectedFolder.getId()), eq(actorId));
+
+        verify(pathResolutionService, times(1)).resolvePath(any(), any());
+        verify(pathResolutionService, times(1)).resolvePath(eq(expectedFolder), eq(actorId));
 
     }
 
@@ -120,6 +137,8 @@ public class DefaultGetFolderUseCaseTest {
 
         verify(folderGateway, times(1)).findByIdWithMemberAccess(any(), any());
         verify(folderGateway, times(1)).findByIdWithMemberAccess(eq(expectedFolderId), eq(expectActorId));
+
+        verify(pathResolutionService, times(0)).resolvePath(any(), any());
 
     }
 
