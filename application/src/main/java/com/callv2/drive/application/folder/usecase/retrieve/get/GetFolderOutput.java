@@ -14,6 +14,7 @@ public record GetFolderOutput(
         String name,
         Boolean isRootFolder,
         UUID parentFolder,
+        List<GetFolderOutput.PathSegment> path,
         Set<GetFolderOutput.SubFolder> subFolders,
         Set<GetFolderOutput.File> files,
         UUID ownerId,
@@ -24,6 +25,7 @@ public record GetFolderOutput(
     public static GetFolderOutput from(
             final MemberID actor,
             final Folder folder,
+            final List<Folder> path,
             final Set<Folder> subFolders,
             final List<com.callv2.drive.domain.file.File> files) {
 
@@ -32,6 +34,10 @@ public record GetFolderOutput(
                 folder.getName().value(),
                 folder.isRootFolder(),
                 folder.getVirtualParentFolder(actor).getValue(),
+                path
+                        .stream()
+                        .map(GetFolderOutput.PathSegment::from)
+                        .collect(Collectors.toList()),
                 subFolders
                         .stream()
                         .map(GetFolderOutput.SubFolder::from)
@@ -44,6 +50,16 @@ public record GetFolderOutput(
                 folder.getCreatedAt(),
                 folder.getUpdatedAt(),
                 folder.getDeletedAt());
+    }
+
+    public static record PathSegment(UUID id, String name) {
+
+        public static GetFolderOutput.PathSegment from(final Folder folder) {
+            return new GetFolderOutput.PathSegment(
+                    folder.getId().getValue(),
+                    folder.getName().value());
+        }
+
     }
 
     public static record SubFolder(UUID id, String name) {

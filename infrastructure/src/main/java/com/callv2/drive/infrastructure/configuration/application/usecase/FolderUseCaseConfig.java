@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.callv2.drive.application.folder.service.FolderProvisioningApplicationService;
+import com.callv2.drive.application.folder.service.PathResolutionApplicationService;
 import com.callv2.drive.application.folder.usecase.create.CreateFolderUseCase;
 import com.callv2.drive.application.folder.usecase.create.DefaultCreateFolderUseCase;
 import com.callv2.drive.application.folder.usecase.delete.DefaultDeleteFolderUseCase;
@@ -41,6 +42,7 @@ public class FolderUseCaseConfig {
     private final EventDispatcher eventDispatcher;
 
     private final FolderProvisioningApplicationService folderProvisioningApplicationService;
+    private final PathResolutionApplicationService pathResolutionService;
 
     public FolderUseCaseConfig(
             final AclGateway aclGateway,
@@ -48,13 +50,15 @@ public class FolderUseCaseConfig {
             final FileGateway fileGateway,
             final MemberGateway memberGateway,
             final EventDispatcher eventDispatcher,
-            final FolderProvisioningApplicationService folderProvisioningApplicationService) {
+            final FolderProvisioningApplicationService folderProvisioningApplicationService,
+            final PathResolutionApplicationService pathResolutionService) {
         this.aclGateway = aclGateway;
         this.folderGateway = folderGateway;
         this.fileGateway = fileGateway;
         this.memberGateway = memberGateway;
         this.eventDispatcher = eventDispatcher;
         this.folderProvisioningApplicationService = folderProvisioningApplicationService;
+        this.pathResolutionService = pathResolutionService;
     }
 
     @Bean
@@ -72,7 +76,7 @@ public class FolderUseCaseConfig {
 
     @Bean
     GetFolderUseCase getFolderUseCase() {
-        return new DefaultGetFolderUseCase(folderGateway, fileGateway);
+        return new DefaultGetFolderUseCase(folderGateway, fileGateway, pathResolutionService);
     }
 
     @Bean
